@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: rdd-parceiro-api
+    env: docker
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DATA_DIR
+        value: /data
