@@ -1,1 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste RDD Parceiro</title>
 
+<style>
+body {
+    font-family: Arial, sans-serif;
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+button {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#status {
+    margin-top: 20px;
+    padding: 15px;
+    background: #eee;
+    white-space: pre-wrap;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Teste RDD Parceiro</h2>
+
+<p>Este teste verifica a comunicação com a API do Render.</p>
+
+<input id="nome" placeholder="Nome" value="Teste Parceiro">
+
+<input id="cpf" placeholder="CPF" value="00000000000">
+
+<input id="obra" placeholder="Obra" value="Obra Teste">
+
+<input id="documento" placeholder="Número do documento" value="TESTE001">
+
+<input id="valor" placeholder="Valor" value="20,00">
+
+<button onclick="gerarRDD()">GERAR RDD + CUPOM</button>
+
+<div id="status">Aguardando teste...</div>
+
+<script>
+
+async function gerarRDD() {
+
+    const status = document.getElementById("status");
+
+    status.textContent = "⏳ Enviando dados para o Render...";
+
+    const payload = {
+        nome: document.getElementById("nome").value,
+        cpf: document.getElementById("cpf").value,
+        obra: document.getElementById("obra").value,
+
+        receipts: [
+            {
+                date: new Date().toISOString().slice(0, 10),
+                account: "",
+                description: "TESTE DE COMUNICAÇÃO",
+                document: document.getElementById("documento").value,
+                category: "Materiais",
+                value: document.getElementById("valor").value
+            }
+        ]
+    };
+
+    const formData = new FormData();
+
+    formData.append("payload", JSON.stringify(payload));
+
+    try {
+
+        const response = await fetch(
+            "https://rdd-parceiro-api-1.onrender.com/api/generate",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        if (!response.ok) {
+
+            const erro = await response.text();
+
+            throw new Error(
+                "HTTP " + response.status + "\n\n" + erro
+            );
+        }
+
+        const blob = await response.blob();
+
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "RDD-teste.pdf";
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        status.textContent =
+            "✅ SUCESSO!\n\n" +
+            "A API recebeu os dados e devolveu o PDF.";
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        status.textContent =
+            "❌ ERRO AO COMUNICAR COM O RENDER\n\n" +
+            erro.message;
+    }
+}
+
+</script>
+
+</body>
+</html>
