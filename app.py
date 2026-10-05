@@ -26,7 +26,6 @@ from openpyxl import load_workbook
 
 from PIL import Image
 from pillow_heif import register_heif_opener
-
 import fitz  # PyMuPDF
 
 
@@ -43,7 +42,11 @@ register_heif_opener()
 
 BASE_DIR = Path(__file__).resolve().parent
 
-TEMPLATE = BASE_DIR / "template" / "RDD.PARCEIRO.xlsx"
+TEMPLATE = (
+    BASE_DIR
+    / "template"
+    / "RDD.PARCEIRO.xlsx"
+)
 
 DATA_DIR = Path(
     os.getenv(
@@ -84,12 +87,24 @@ app = FastAPI(
 )
 
 
+# ============================================================
+# CORS
+# ============================================================
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
+
+    # IMPORTANTE:
+    # Permite que o GitHub Pages leia o nome
+    # enviado pelo FileResponse no header
+    # Content-Disposition.
+    expose_headers=[
+        "Content-Disposition"
+    ],
 )
 
 
@@ -98,6 +113,7 @@ app.add_middleware(
 # ============================================================
 
 def db():
+
     con = sqlite3.connect(
         DB_PATH,
         timeout=30
@@ -200,12 +216,14 @@ def parse_date(value):
     for fmt in formatos:
 
         try:
+
             return datetime.strptime(
                 s,
                 fmt
             ).date()
 
         except ValueError:
+
             pass
 
     return None
@@ -223,6 +241,7 @@ def money(value):
         value,
         (int, float)
     ):
+
         return float(value)
 
     s = str(value).strip()
@@ -264,7 +283,9 @@ def safe_filename(name):
     Remove caracteres inválidos para nome de arquivo.
     """
 
-    name = str(name or "").strip()
+    name = str(
+        name or ""
+    ).strip()
 
     if not name:
 
@@ -316,6 +337,7 @@ def get_next_rdd_number():
             n = int(row[0])
 
             if n < 210:
+
                 n = 210
 
             con.execute("""
@@ -388,13 +410,19 @@ def keep_only_rdd_sheet(wb):
     # Remove todas as abas que não sejam RDD
     # --------------------------------------------------------
 
-    for sheet_name in list(wb.sheetnames):
+    for sheet_name in list(
+        wb.sheetnames
+    ):
 
         if sheet_name != "RDD":
 
-            ws_remove = wb[sheet_name]
+            ws_remove = wb[
+                sheet_name
+            ]
 
-            wb.remove(ws_remove)
+            wb.remove(
+                ws_remove
+            )
 
     # --------------------------------------------------------
     # Garante que RDD esteja visível
@@ -408,7 +436,9 @@ def keep_only_rdd_sheet(wb):
     # Define RDD como aba ativa
     # --------------------------------------------------------
 
-    wb.active = wb.index(ws)
+    wb.active = wb.index(
+        ws
+    )
 
     return ws
 
@@ -428,11 +458,15 @@ def clear_expense_rows(ws):
 
         for col in "FGHIJK":
 
-            ws[f"{col}{row}"] = None
+            ws[
+                f"{col}{row}"
+            ] = None
 
         # Mantém o cálculo do total da linha
 
-        ws[f"L{row}"] = (
+        ws[
+            f"L{row}"
+        ] = (
             f"=SUM(F{row}:K{row})"
         )
 
@@ -475,7 +509,7 @@ def fill_workbook(
         )
 
         # ----------------------------------------------------
-        # 4. CAMPOS FIXOS
+        # 4. FINALIDADE
         # ----------------------------------------------------
 
         ws["C3"] = (
@@ -615,14 +649,20 @@ def fill_workbook(
             # -----------------------------------------------
 
             d = parse_date(
-                item.get("date")
+                item.get(
+                    "date"
+                )
             )
 
             if d:
 
-                ws[f"B{row}"] = d
+                ws[
+                    f"B{row}"
+                ] = d
 
-                ws[f"B{row}"].number_format = (
+                ws[
+                    f"B{row}"
+                ].number_format = (
                     "dd/mm/yyyy"
                 )
 
@@ -630,7 +670,9 @@ def fill_workbook(
             # CONTA
             # -----------------------------------------------
 
-            ws[f"C{row}"] = str(
+            ws[
+                f"C{row}"
+            ] = str(
                 item.get(
                     "account",
                     ""
@@ -641,7 +683,9 @@ def fill_workbook(
             # DESCRIÇÃO
             # -----------------------------------------------
 
-            ws[f"D{row}"] = str(
+            ws[
+                f"D{row}"
+            ] = str(
                 item.get(
                     "description",
                     ""
@@ -666,7 +710,9 @@ def fill_workbook(
                     "número do documento é obrigatório."
                 )
 
-            ws[f"E{row}"] = document
+            ws[
+                f"E{row}"
+            ] = document
 
             # -----------------------------------------------
             # CATEGORIA
@@ -1156,9 +1202,9 @@ async def generate(
         # ----------------------------------------------------
         # ENVIA PDF
         #
-        # O nome exibido para download será:
+        # Nome:
         #
-        # Rafael Souza - RDD-211.pdf
+        # Rafael Souza - RDD-210.pdf
         # ----------------------------------------------------
 
         background = BackgroundTask(
@@ -1169,7 +1215,11 @@ async def generate(
         return FileResponse(
             path=final_pdf,
             media_type="application/pdf",
+
+            # ESTE É O NOME QUE SERÁ ENVIADO
+            # PARA O NAVEGADOR
             filename=final_filename,
+
             background=background
         )
 
