@@ -1,0 +1,1609 @@
+/* =========================================================
+   RDD PARCEIRO BMB3
+   Layout responsivo - Desktop + Tablet + Celular
+   ========================================================= */
+
+:root {
+    --navy: #06284A;
+    --navy-dark: #041C35;
+    --navy-light: #0B3B68;
+
+    --gold: #D6A84F;
+    --gold-light: #E8C477;
+
+    --white: #FFFFFF;
+    --background: #F3F6F9;
+    --card: #FFFFFF;
+
+    --text: #172B3A;
+    --text-light: #687786;
+    --border: #D9E1E8;
+
+    --success: #16855B;
+    --danger: #C62828;
+
+    --shadow: 0 8px 25px rgba(6, 40, 74, 0.10);
+
+    --radius: 16px;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+    font-family:
+        Inter,
+        "Segoe UI",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: var(--background);
+    color: var(--text);
+
+    min-height: 100vh;
+
+    -webkit-font-smoothing: antialiased;
+}
+
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+
+button {
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   APP
+   ========================================================= */
+
+.app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =========================================================
+   CABEÇALHO
+   ========================================================= */
+
+.topbar {
+    width: 100%;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--navy-dark),
+            var(--navy)
+        );
+
+    color: var(--white);
+
+    min-height: 88px;
+
+    padding:
+        18px
+        5vw;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    box-shadow:
+        0 3px 12px rgba(0, 0, 0, 0.15);
+}
+
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+.brand img {
+    width: 58px;
+    height: 58px;
+
+    object-fit: contain;
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 6px;
+}
+
+
+.brand h1 {
+    font-size: 25px;
+    line-height: 1.1;
+
+    font-weight: 750;
+
+    letter-spacing: -0.4px;
+}
+
+
+.brand p {
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    color: #DDE8F2;
+}
+
+
+.portal {
+    background: rgba(255, 255, 255, 0.10);
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+
+    padding: 9px 14px;
+
+    border-radius: 30px;
+
+    font-size: 12px;
+
+    white-space: nowrap;
+}
+
+
+.portal::first-letter {
+    color: var(--gold);
+}
+
+
+/* =========================================================
+   CONTEÚDO
+   ========================================================= */
+
+main {
+    width: 100%;
+
+    max-width: 1180px;
+
+    margin: 0 auto;
+
+    padding:
+        28px
+        24px
+        100px;
+}
+
+
+/* =========================================================
+   PROGRESSO
+   ========================================================= */
+
+.progress {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-bottom: 25px;
+}
+
+
+.step {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color: #82909D;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.step b {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #E2E8ED;
+
+    color: #6E7C88;
+
+    font-size: 13px;
+}
+
+
+.step.active {
+    color: var(--navy);
+}
+
+
+.step.active b {
+    background: var(--gold);
+
+    color: var(--navy-dark);
+
+    box-shadow:
+        0 0 0 4px rgba(214, 168, 79, 0.16);
+}
+
+
+.progress i {
+    width: 70px;
+    height: 2px;
+
+    background: #D8E0E7;
+}
+
+
+.progress .step.active + i {
+    background: var(--gold);
+}
+
+
+/* =========================================================
+   TELAS
+   ========================================================= */
+
+.screen {
+    display: none;
+}
+
+
+.screen.on {
+    display: block;
+
+    animation:
+        fadeIn 0.25s ease;
+}
+
+
+@keyframes fadeIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   CARD
+   ========================================================= */
+
+.card {
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    box-shadow: var(--shadow);
+
+    padding: 28px;
+}
+
+
+.title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    margin-bottom: 28px;
+
+    padding-bottom: 20px;
+
+    border-bottom: 1px solid #E8EDF1;
+}
+
+
+.title > strong {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(214, 168, 79, 0.15);
+
+    color: var(--gold);
+
+    border-radius: 12px;
+
+    font-size: 22px;
+}
+
+
+.title h2 {
+    color: var(--navy);
+
+    font-size: 21px;
+
+    line-height: 1.2;
+
+    margin-bottom: 5px;
+}
+
+
+.title p {
+    color: var(--text-light);
+
+    font-size: 13px;
+}
+
+
+.title aside {
+    margin-left: auto;
+
+    text-align: right;
+
+    padding-left: 20px;
+}
+
+
+.title aside small {
+    display: block;
+
+    color: var(--text-light);
+
+    font-size: 11px;
+
+    margin-bottom: 4px;
+}
+
+
+.title aside b {
+    display: inline-block;
+
+    background: var(--navy);
+
+    color: var(--white);
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+
+    letter-spacing: 0.3px;
+}
+
+
+/* =========================================================
+   FORMULÁRIO
+   ========================================================= */
+
+.grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+label {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    color: #425466;
+
+    font-size: 12px;
+
+    font-weight: 650;
+}
+
+
+label.full {
+    grid-column: 1 / -1;
+}
+
+
+input,
+select {
+    width: 100%;
+
+    height: 46px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 9px;
+
+    background: #FFFFFF;
+
+    color: var(--text);
+
+    padding:
+        0
+        13px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s,
+        background 0.2s;
+}
+
+
+input::placeholder {
+    color: #A4AFB8;
+}
+
+
+input:focus,
+select:focus {
+    border-color: var(--gold);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(214, 168, 79, 0.14);
+}
+
+
+input:disabled {
+    background: #F3F6F8;
+
+    color: #687786;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   BOTÕES
+   ========================================================= */
+
+.primary,
+.secondary {
+    min-height: 46px;
+
+    border-radius: 9px;
+
+    padding:
+        0
+        20px;
+
+    font-weight: 700;
+
+    border: none;
+
+    transition:
+        transform 0.15s,
+        box-shadow 0.15s,
+        background 0.15s;
+}
+
+
+.primary {
+    background:
+        linear-gradient(
+            135deg,
+            var(--navy),
+            var(--navy-light)
+        );
+
+    color: white;
+
+    box-shadow:
+        0 5px 12px
+        rgba(6, 40, 74, 0.18);
+}
+
+
+.primary:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 17px
+        rgba(6, 40, 74, 0.25);
+}
+
+
+.primary:active,
+.secondary:active {
+    transform: translateY(0);
+}
+
+
+.secondary {
+    background: #EEF2F5;
+
+    color: var(--navy);
+
+    border:
+        1px solid
+        #D8E0E7;
+}
+
+
+.secondary:hover {
+    background: #E4EAF0;
+}
+
+
+/* botão Avançar da primeira etapa */
+
+#next1 {
+    margin-top: 26px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   UPLOAD DE CUPONS
+   ========================================================= */
+
+.upload {
+    margin-bottom: 22px;
+}
+
+
+.upload button {
+    width: 100%;
+
+    min-height: 145px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #FAFCFD,
+            #F4F7F9
+        );
+
+    border:
+        2px dashed
+        #C7D1DA;
+
+    border-radius: 14px;
+
+    color: var(--navy);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    transition:
+        border-color 0.2s,
+        background 0.2s;
+}
+
+
+.upload button:hover {
+    border-color: var(--gold);
+
+    background:
+        #FFFDF8;
+}
+
+
+.upload button span {
+    font-size: 34px;
+}
+
+
+.upload button b {
+    font-size: 15px;
+}
+
+
+.upload button small {
+    color: var(--text-light);
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   LISTA DE CUPONS
+   ========================================================= */
+
+#list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+
+.coupon {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 12px;
+
+    background: white;
+}
+
+
+.coupon img {
+    width: 62px;
+    height: 62px;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+
+    border: 1px solid #E1E7EC;
+}
+
+
+.coupon-info {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.coupon-info strong {
+    display: block;
+
+    color: var(--navy);
+
+    font-size: 13px;
+
+    margin-bottom: 4px;
+}
+
+
+.coupon-info span {
+    display: block;
+
+    color: var(--text-light);
+
+    font-size: 11px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+.coupon-value {
+    font-weight: 750;
+
+    color: var(--navy);
+
+    white-space: nowrap;
+}
+
+
+.coupon-actions {
+    display: flex;
+
+    gap: 5px;
+}
+
+
+.coupon-actions button {
+    width: 34px;
+    height: 34px;
+
+    border: 1px solid #DDE4EA;
+
+    background: #F7F9FA;
+
+    border-radius: 7px;
+
+    color: var(--navy);
+}
+
+
+.coupon-actions button:hover {
+    background: #EDF2F6;
+}
+
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+.total {
+    margin-top: 18px;
+
+    padding: 17px 18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #F4F7F9,
+            #EDF2F6
+        );
+
+    border-radius: 11px;
+
+    border: 1px solid #DDE5EB;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+
+.total span {
+    color: var(--text-light);
+
+    font-size: 12px;
+}
+
+
+.total span b {
+    color: var(--navy);
+}
+
+
+.total > b {
+    color: var(--navy);
+
+    font-size: 15px;
+}
+
+
+.total em {
+    color: var(--success);
+
+    font-style: normal;
+
+    margin-left: 5px;
+}
+
+
+/* =========================================================
+   AÇÕES
+   ========================================================= */
+
+.actions {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 25px;
+}
+
+
+.actions .primary,
+.actions .secondary {
+    min-width: 190px;
+}
+
+
+/* =========================================================
+   REVISÃO
+   ========================================================= */
+
+.review {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+.review-section {
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 11px;
+
+    overflow: hidden;
+}
+
+
+.review-section h3 {
+    background: var(--navy);
+
+    color: white;
+
+    padding: 11px 14px;
+
+    font-size: 13px;
+}
+
+
+.review-section > div {
+    padding: 14px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 10px;
+}
+
+
+.review-item {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.review-item small {
+    color: var(--text-light);
+
+    font-size: 10px;
+}
+
+
+.review-item strong {
+    color: var(--text);
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   FINALIZAÇÃO
+   ========================================================= */
+
+.done {
+    text-align: center;
+
+    padding:
+        65px
+        30px;
+}
+
+
+.done > div {
+    width: 72px;
+    height: 72px;
+
+    margin:
+        0
+        auto
+        20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(22, 133, 91, 0.12);
+
+    color: var(--success);
+
+    font-size: 35px;
+
+    font-weight: 800;
+}
+
+
+.done h2 {
+    color: var(--navy);
+
+    font-size: 25px;
+
+    margin-bottom: 8px;
+}
+
+
+.done p {
+    color: var(--text-light);
+
+    font-size: 14px;
+
+    margin-bottom: 25px;
+}
+
+
+/* =========================================================
+   MENU INFERIOR
+   ========================================================= */
+
+nav {
+    display: none;
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(4, 28, 53, 0.68);
+
+    backdrop-filter: blur(3px);
+}
+
+
+.modal.open {
+    display: flex;
+}
+
+
+.modalbox {
+    position: relative;
+
+    width: 100%;
+
+    max-width: 620px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0, 0, 0, 0.30);
+}
+
+
+.modalbox h3 {
+    color: var(--navy);
+
+    font-size: 20px;
+
+    margin-bottom: 20px;
+}
+
+
+#close {
+    position: absolute;
+
+    top: 15px;
+    right: 15px;
+
+    width: 34px;
+    height: 34px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #EEF2F5;
+
+    color: var(--navy);
+
+    font-size: 22px;
+
+    line-height: 1;
+}
+
+
+#close:hover {
+    background: #E1E7EC;
+}
+
+
+#photo {
+    width: 100%;
+
+    margin-bottom: 18px;
+
+    text-align: center;
+}
+
+
+#photo img {
+    max-width: 100%;
+
+    max-height: 280px;
+
+    border-radius: 10px;
+
+    border: 1px solid var(--border);
+
+    object-fit: contain;
+}
+
+
+#save {
+    width: 100%;
+
+    margin-top: 22px;
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE - TABLET
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+    main {
+        padding:
+            22px
+            18px
+            90px;
+    }
+
+
+    .topbar {
+        padding:
+            16px
+            20px;
+    }
+
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    label.full {
+        grid-column: auto;
+    }
+
+
+    .title aside {
+        display: none;
+    }
+
+
+    .progress {
+        justify-content: flex-start;
+
+        overflow-x: auto;
+
+        padding-bottom: 5px;
+    }
+
+
+    .progress i {
+        width: 35px;
+
+        flex-shrink: 0;
+    }
+
+
+    .step {
+        flex-shrink: 0;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE - CELULAR
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    body {
+        background: #F1F4F7;
+    }
+
+
+    .topbar {
+        min-height: 72px;
+
+        padding:
+            12px
+            15px;
+
+        position: sticky;
+
+        top: 0;
+
+        z-index: 50;
+    }
+
+
+    .brand {
+        gap: 10px;
+    }
+
+
+    .brand img {
+        width: 43px;
+        height: 43px;
+
+        border-radius: 9px;
+
+        padding: 4px;
+    }
+
+
+    .brand h1 {
+        font-size: 18px;
+    }
+
+
+    .brand p {
+        font-size: 10px;
+
+        margin-top: 3px;
+    }
+
+
+    .portal {
+        display: none;
+    }
+
+
+    main {
+        padding:
+            16px
+            12px
+            85px;
+    }
+
+
+    .progress {
+        gap: 6px;
+
+        margin-bottom: 15px;
+    }
+
+
+    .step {
+        gap: 5px;
+
+        font-size: 10px;
+    }
+
+
+    .step b {
+        width: 27px;
+        height: 27px;
+
+        font-size: 11px;
+    }
+
+
+    .progress i {
+        width: 20px;
+    }
+
+
+    .card {
+        padding: 18px 15px;
+
+        border-radius: 14px;
+    }
+
+
+    .title {
+        gap: 10px;
+
+        margin-bottom: 20px;
+
+        padding-bottom: 15px;
+    }
+
+
+    .title > strong {
+        width: 39px;
+        height: 39px;
+
+        font-size: 18px;
+
+        border-radius: 9px;
+    }
+
+
+    .title h2 {
+        font-size: 17px;
+    }
+
+
+    .title p {
+        font-size: 11px;
+    }
+
+
+    .grid {
+        gap: 14px;
+    }
+
+
+    label {
+        font-size: 11px;
+    }
+
+
+    input,
+    select {
+        height: 45px;
+
+        font-size: 14px;
+
+        padding:
+            0
+            11px;
+    }
+
+
+    #next1 {
+        margin-top: 20px;
+    }
+
+
+    .upload button {
+        min-height: 125px;
+    }
+
+
+    .upload button span {
+        font-size: 29px;
+    }
+
+
+    .upload button b {
+        font-size: 13px;
+    }
+
+
+    .upload button small {
+        font-size: 10px;
+    }
+
+
+    .coupon {
+        align-items: flex-start;
+
+        padding: 10px;
+    }
+
+
+    .coupon img {
+        width: 55px;
+        height: 55px;
+    }
+
+
+    .coupon-value {
+        font-size: 12px;
+    }
+
+
+    .coupon-actions {
+        flex-direction: column;
+    }
+
+
+    .total {
+        flex-direction: column;
+
+        align-items: stretch;
+
+        gap: 8px;
+
+        padding: 14px;
+    }
+
+
+    .total > b {
+        text-align: right;
+    }
+
+
+    .actions {
+        flex-direction: column-reverse;
+
+        margin-top: 20px;
+    }
+
+
+    .actions .primary,
+    .actions .secondary {
+        width: 100%;
+
+        min-width: 0;
+    }
+
+
+    .review-section > div {
+        grid-template-columns: 1fr;
+    }
+
+
+    .done {
+        padding:
+            45px
+            18px;
+    }
+
+
+    .done h2 {
+        font-size: 22px;
+    }
+
+
+    /*
+       MENU INFERIOR
+    */
+
+    nav {
+        position: fixed;
+
+        display: flex;
+
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        height: 64px;
+
+        z-index: 100;
+
+        background: white;
+
+        border-top:
+            1px solid
+            #DDE4EA;
+
+        box-shadow:
+            0 -4px 15px
+            rgba(0, 0, 0, 0.08);
+
+        align-items: center;
+        justify-content: space-around;
+    }
+
+
+    nav span {
+        width: 33.33%;
+
+        height: 100%;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+        justify-content: center;
+
+        gap: 3px;
+
+        color: #84919C;
+
+        font-size: 18px;
+    }
+
+
+    nav span small {
+        font-size: 9px;
+
+        font-weight: 600;
+    }
+
+
+    nav span.active {
+        color: var(--navy);
+    }
+
+
+    nav span.active:first-letter {
+        color: var(--gold);
+    }
+
+
+    /*
+       MODAL NO CELULAR
+    */
+
+    .modal {
+        align-items: flex-end;
+
+        padding: 0;
+    }
+
+
+    .modalbox {
+        max-height: 92vh;
+
+        border-radius:
+            18px
+            18px
+            0
+            0;
+
+        padding:
+            22px
+            15px
+            25px;
+    }
+
+
+    .modalbox h3 {
+        font-size: 18px;
+    }
+
+
+    #photo img {
+        max-height: 220px;
+    }
+
+}
+
+
+/* =========================================================
+   CELULARES MUITO PEQUENOS
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .brand h1 {
+        font-size: 16px;
+    }
+
+
+    .brand p {
+        font-size: 9px;
+    }
+
+
+    .step span {
+        display: none;
+    }
+
+
+    .progress {
+        justify-content: space-between;
+    }
+
+
+    .progress i {
+        flex: 1;
+
+        width: auto;
+    }
+
+
+    .card {
+        padding:
+            16px
+            12px;
+    }
+
+
+    .title h2 {
+        font-size: 16px;
+    }
+
+}
+
+
+/* =========================================================
+   ACESSIBILIDADE
+   ========================================================= */
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline:
+        3px solid
+        rgba(214, 168, 79, 0.35);
+
+    outline-offset: 2px;
+}
+
+
+/* =========================================================
+   IMPRESSÃO
+   ========================================================= */
+
+@media print {
+
+    body {
+        background: white;
+    }
+
+
+    .topbar,
+    .progress,
+    nav,
+    .actions {
+        display: none !important;
+    }
+
+
+    main {
+        max-width: none;
+
+        padding: 0;
+    }
+
+
+    .card {
+        box-shadow: none;
+
+        border: none;
+
+        padding: 0;
+    }
+
+}
