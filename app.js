@@ -5,6 +5,10 @@ const API_URL = "https://rdd-parceiro-api-1.onrender.com";
 // ESTADO GLOBAL ÚNICO
 // ============================================================
 
+// ============================================================
+// PARTE 1
+// ============================================================
+
 if (!window.RDD_PARCEIRO_STATE) {
 
     window.RDD_PARCEIRO_STATE = {
@@ -797,7 +801,7 @@ async function processarArquivos(
                     " de " +
                     arquivos.length +
                     "...";
-                
+
             }
 
 
@@ -1407,296 +1411,12 @@ function interpretarCupom(
 
 }
 
-
 // ============================================================
-// RENDERIZAR CUPONS
+// PARTE 2
 // ============================================================
-
-function renderizarCupons() {
-
-    const lista =
-        document.getElementById(
-            "list"
-        );
-
-
-    if (!lista) {
-
-        return;
-
-    }
-
-
-    lista.innerHTML = "";
-
-
-    STATE.cupons.forEach(
-        function (cupom, index) {
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "coupon-card";
-
-
-            const statusOK =
-                cupom.status ===
-                "ok";
-
-
-            const statusHTML =
-                statusOK
-
-                    ? `
-                        <span style="
-                            color:#0b6b45;
-                            font-weight:bold;
-                        ">
-                            ✓ Dados identificados
-                        </span>
-                    `
-
-                    : `
-                        <span style="
-                            color:#b42318;
-                            font-weight:bold;
-                        ">
-                            ⚠️ Revisão necessária
-                        </span>
-                    `;
-
-
-            const valor =
-                cupom.value
-                    ? "R$ " +
-                      cupom.value
-                    : "Não identificado";
-
-
-            card.innerHTML = `
-
-                <div style="
-                    display:flex;
-                    gap:15px;
-                    align-items:flex-start;
-                ">
-
-                    <img
-                        src="${cupom.previewURL}"
-                        alt="Cupom ${index + 1}"
-                        style="
-                            width:90px;
-                            height:110px;
-                            object-fit:cover;
-                            border-radius:10px;
-                            border:1px solid #ddd;
-                            cursor:pointer;
-                        "
-                        data-zoom="${index}"
-                    >
-
-                    <div style="
-                        flex:1;
-                        min-width:0;
-                    ">
-
-                        <div style="
-                            display:flex;
-                            justify-content:space-between;
-                            gap:10px;
-                            align-items:center;
-                            margin-bottom:8px;
-                        ">
-
-                            <strong>
-                                🧾 Cupom ${index + 1}
-                            </strong>
-
-                            ${statusHTML}
-
-                        </div>
-
-
-                        <div style="
-                            font-size:13px;
-                            line-height:1.7;
-                        ">
-
-                            <div>
-                                <strong>Data:</strong>
-                                ${formatarDataExibicao(
-                                    cupom.date
-                                )}
-                            </div>
-
-
-                            <div>
-                                <strong>
-                                    Estabelecimento:
-                                </strong>
-
-                                ${escapeHTML(
-                                    cupom.description ||
-                                    "Não identificado"
-                                )}
-                            </div>
-
-
-                            <div>
-                                <strong>
-                                    Documento:
-                                </strong>
-
-                                ${escapeHTML(
-                                    cupom.document ||
-                                    "Não identificado"
-                                )}
-                            </div>
-
-
-                            <div>
-                                <strong>
-                                    Categoria:
-                                </strong>
-
-                                <span style="
-                                    font-weight:bold;
-                                    color:#071b33;
-                                ">
-                                    MATERIAIS
-                                </span>
-                            </div>
-
-
-                            <div>
-                                <strong>
-                                    Valor:
-                                </strong>
-
-                                ${escapeHTML(
-                                    valor
-                                )}
-                            </div>
-
-                        </div>
-
-
-                        <div style="
-                            display:flex;
-                            gap:8px;
-                            flex-wrap:wrap;
-                            margin-top:12px;
-                        ">
-
-                            <button
-                                type="button"
-                                class="btn btn-secondary"
-                                data-zoom="${index}"
-                                style="
-                                    min-height:38px;
-
-                                        padding:0 12px;
-                                "
-                            >
-                                🔍 Ver cupom
-                            </button>
-
-
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                data-edit="${index}"
-                                style="
-                                    min-height:38px;
-                                    padding:0 12px;
-                                "
-                            >
-                                ✏️ Editar
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `;
-
-
-            lista.appendChild(
-                card
-            );
 
         }
     );
-
-
-    // --------------------------------------------------------
-    // BOTÃO EDITAR
-    // --------------------------------------------------------
-
-    lista
-        .querySelectorAll(
-            "[data-edit]"
-        )
-        .forEach(
-            function (botao) {
-
-                botao.addEventListener(
-                    "click",
-                    function () {
-
-                        const index =
-                            Number(
-                                botao.dataset.edit
-                            );
-
-
-                        abrirEdicao(
-                            index
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-
-    // --------------------------------------------------------
-    // BOTÃO VER
-    // --------------------------------------------------------
-
-    lista
-        .querySelectorAll(
-            "[data-zoom]"
-        )
-        .forEach(
-            function (elemento) {
-
-                elemento.addEventListener(
-                    "click",
-                    function () {
-
-                        const index =
-                            Number(
-                                elemento.dataset.zoom
-                            );
-
-
-                        abrirVisualizacao(
-                            index
-                        );
-
-                    }
-                );
-
-            }
-        );
 
 
     atualizarResumo();
@@ -2698,6 +2418,659 @@ function ativarZoomImagem() {
 
 
 // ============================================================
+// PARTE 3
+// ============================================================
+// ============================================================
+// GERAR RDD
+// ============================================================
+
+async function gerarRDD() {
+
+    if (
+        !STATE.cupons.length
+    ) {
+
+        alert(
+            "Adicione pelo menos um cupom."
+        );
+
+        return;
+
+    }
+
+
+    const faltando =
+        STATE.cupons.filter(
+            function (cupom) {
+
+                return (
+                    !cupom.document ||
+                    !cupom.category
+                );
+
+            }
+        );
+
+
+    if (
+        faltando.length
+    ) {
+
+        alert(
+            "Existem cupons sem número de documento."
+        );
+
+        return;
+
+    }
+
+
+    const nome =
+        document.getElementById(
+            "nome"
+        );
+
+
+    const cpf =
+        document.getElementById(
+            "cpf"
+        );
+
+
+    const obra =
+        document.getElementById(
+            "obra"
+        );
+
+
+    const payload = {
+
+        nome:
+            nome
+                ? nome.value.trim()
+                : "",
+
+        cpf:
+            cpf
+                ? cpf.value.trim()
+                : "",
+
+        obra:
+            obra
+                ? obra.value.trim()
+                : "",
+
+        receipts:
+            STATE.cupons.map(
+                function (cupom) {
+
+                    return {
+
+                        date:
+                            cupom.date || "",
+
+                        account:
+                            "",
+
+                        description:
+                            cupom.description ||
+                            "",
+
+                        document:
+                            cupom.document ||
+                            "",
+
+                        category:
+                            "materiais",
+
+                        value:
+                            cupom.value ||
+                            ""
+
+                    };
+
+                }
+            )
+
+    };
+
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "payload",
+        JSON.stringify(
+            payload
+        )
+    );
+
+
+    STATE.cupons.forEach(
+        function (cupom) {
+
+            formData.append(
+                "receipts",
+                cupom.file,
+                cupom.originalName
+            );
+
+        }
+    );
+
+
+    const generate =
+        document.getElementById(
+            "generate"
+        );
+
+
+    if (generate) {
+
+        generate.disabled =
+            true;
+
+        generate.textContent =
+            "GERANDO RDD...";
+
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                API_URL +
+                "/api/generate",
+                {
+
+                    method:
+                        "POST",
+
+                    body:
+                        formData
+
+                }
+            );
+
+
+        if (!resposta.ok) {
+
+            let mensagem =
+                "Erro ao gerar o RDD.";
+
+
+            try {
+
+                const erro =
+                    await resposta.json();
+
+
+                if (erro.detail) {
+
+                    mensagem =
+                        erro.detail;
+
+                }
+
+            } catch (e) {}
+
+
+            throw new Error(
+                mensagem
+            );
+
+        }
+
+
+        const blob =
+            await resposta.blob();
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            url;
+
+
+        link.download =
+            "RDD_PARCEIRO.pdf";
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        if (message) {
+
+            message.innerHTML = `
+
+                <div style="
+                    background:#f0fdf4;
+                    border:1px solid #bbf7d0;
+                    color:#166534;
+                    padding:15px;
+                    border-radius:10px;
+                ">
+
+                    <strong>
+                        RDD gerado com sucesso!
+                    </strong>
+
+                    <br><br>
+
+                    O PDF foi gerado com os
+                    comprovantes anexados.
+
+                </div>
+
+            `;
+
+        }
+
+
+        if (
+            window.RDDMostrarTela
+        ) {
+
+            window.RDDMostrarTela(
+                4
+            );
+
+        }
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao gerar RDD:",
+            erro
+        );
+
+
+        alert(
+            "Não foi possível gerar o RDD.\n\n" +
+            erro.message
+        );
+
+
+    } finally {
+
+        if (generate) {
+
+            generate.disabled =
+                false;
+
+            generate.textContent =
+                "GERAR RDD + CUPONS";
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// VALOR
+// ============================================================
+
+function converterValor(
+    valor
+) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+
+        return 0;
+
+    }
+
+
+    if (
+        typeof valor === "number"
+    ) {
+
+        return valor;
+
+    }
+
+
+    let texto =
+        String(valor)
+            .replace(
+                /[R$\s]/g,
+                ""
+            )
+            .trim();
+
+
+    if (
+        texto.includes(",")
+    ) {
+
+        texto =
+            texto
+                .replace(
+                    /\./g,
+                    ""
+                )
+                .replace(
+                    ",",
+                    "."
+                );
+
+    }
+
+
+    const numero =
+        parseFloat(
+            texto
+        );
+
+
+    return isNaN(numero)
+        ? 0
+        : numero;
+
+}
+
+
+// ============================================================
+// MOEDA
+// ============================================================
+
+function formatarMoeda(
+    valor
+) {
+
+    return valor.toLocaleString(
+        "pt-BR",
+        {
+
+            style:
+                "currency",
+
+            currency:
+                "BRL"
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// DATA
+// ============================================================
+
+function formatarDataExibicao(
+    data
+) {
+
+    if (!data) {
+
+        return "Não identificada";
+
+    }
+
+
+    const partes =
+        data.split("-");
+
+
+    if (
+        partes.length === 3
+    ) {
+
+        return (
+            partes[2] +
+            "/" +
+            partes[1] +
+            "/" +
+            partes[0]
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+// ============================================================
+// ESCAPAR HTML
+// ============================================================
+
+function escapeHTML(
+    texto
+) {
+
+    return String(
+        texto || ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ============================================================
+// ATIVAR ZOOM
+// ============================================================
+
+setTimeout(
+    function () {
+
+        ativarZoomImagem();
+
+    },
+    500
+);
+
+// ============================================================
+// PARTE 4
+// ============================================================
+        }
+
+    );
+
+
+    const save =
+        document.getElementById(
+            "save"
+        );
+
+
+    if (save) {
+
+        save.style.display =
+            "";
+
+    }
+
+
+    STATE.modalCupomIndex =
+        null;
+
+
+    STATE.modoModal =
+        null;
+
+}
+
+
+// ============================================================
+// ZOOM NA IMAGEM
+// ============================================================
+
+function ativarZoomImagem() {
+
+    const photo =
+        document.getElementById(
+            "photo"
+        );
+
+
+    if (!photo) {
+
+        return;
+
+    }
+
+
+    photo.onclick =
+        function () {
+
+            if (
+                !photo.src
+            ) {
+
+                return;
+
+            }
+
+
+            const overlay =
+                document.createElement(
+                    "div"
+                );
+
+
+            overlay.style.position =
+                "fixed";
+
+
+            overlay.style.inset =
+                "0";
+
+
+            overlay.style.background =
+                "rgba(0,0,0,.92)";
+
+
+            overlay.style.zIndex =
+                "99999";
+
+
+            overlay.style.display =
+                "flex";
+
+
+            overlay.style.alignItems =
+                "center";
+
+
+            overlay.style.justifyContent =
+                "center";
+
+
+            overlay.style.padding =
+                "20px";
+
+
+            overlay.style.cursor =
+                "zoom-out";
+
+
+            const imagem =
+                document.createElement(
+                    "img"
+                );
+
+
+            imagem.src =
+                photo.src;
+
+
+            imagem.style.maxWidth =
+                "100%";
+
+
+            imagem.style.maxHeight =
+                "100%";
+
+
+            imagem.style.objectFit =
+                "contain";
+
+
+            overlay.appendChild(
+                imagem
+            );
+
+
+            overlay.addEventListener(
+                "click",
+                function () {
+
+                    overlay.remove();
+
+                }
+            );
+
+
+            document.body.appendChild(
+                overlay
+            );
+
+        };
+
+}
+
+
+// ============================================================
 // NOME DO ARQUIVO PDF
 // ============================================================
 
@@ -2706,46 +3079,65 @@ function obterNomeArquivoResposta(resposta) {
     const contentDisposition =
         resposta.headers.get("Content-Disposition") || "";
 
+
     const utf8Match =
         contentDisposition.match(
             /filename\*=UTF-8''([^;]+)/i
         );
 
+
     if (utf8Match && utf8Match[1]) {
+
         try {
+
             return decodeURIComponent(
                 utf8Match[1]
             ).trim();
+
         } catch (erro) {
+
             console.warn(
                 "Não foi possível decodificar o nome do arquivo:",
                 erro
             );
+
         }
+
     }
+
 
     const quotedMatch =
         contentDisposition.match(
             /filename="([^"]+)"/i
         );
 
+
     if (quotedMatch && quotedMatch[1]) {
+
         return quotedMatch[1].trim();
+
     }
+
 
     const simpleMatch =
         contentDisposition.match(
             /filename=([^;]+)/i
         );
 
+
     if (simpleMatch && simpleMatch[1]) {
+
         return simpleMatch[1]
             .trim()
             .replace(/^['"]|['"]$/g, "");
+
     }
 
+
     return "RDD_PARCEIRO.pdf";
-} 
+
+}
+
 
 // ============================================================
 // GERAR RDD
