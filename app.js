@@ -17,6 +17,8 @@ if (!window.RDD_PARCEIRO_STATE) {
 
         modalCupomIndex: null,
 
+        modoModal: null,
+
         inicializado: false
 
     };
@@ -33,7 +35,6 @@ const STATE = window.RDD_PARCEIRO_STATE;
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    // Evita inicialização duplicada
     if (STATE.inicializado) {
 
         console.log(
@@ -144,12 +145,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function mostrarTela(numero) {
-
-        console.log(
-            "Mudando para tela:",
-            numero
-        );
-
 
         Object.values(telas)
             .forEach(function (tela) {
@@ -372,10 +367,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     "CONTINUAR pressionado."
                 );
 
+
                 console.log(
                     "Cupons no estado:",
                     STATE.cupons.length
                 );
+
 
                 console.log(
                     "Cupons na tela:",
@@ -385,20 +382,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 );
 
 
-                // ------------------------------------------------
-                // VERIFICA O ESTADO REAL
-                // ------------------------------------------------
-
                 if (
                     !STATE.cupons ||
                     STATE.cupons.length === 0
                 ) {
-
-                    /*
-                     * Segurança adicional:
-                     * se os cards existem na tela mas o estado
-                     * estiver vazio, não vamos bloquear o usuário.
-                     */
 
                     const cards =
                         document.querySelectorAll(
@@ -406,21 +393,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         );
 
 
-                    if (cards.length > 0) {
-
-                        console.warn(
-                            "Cards encontrados na tela. " +
-                            "Estado sincronizado."
-                        );
-
-                        /*
-                         * Aqui não conseguimos reconstruir os
-                         * objetos completos a partir dos cards.
-                         * Porém, em condições normais isso não
-                         * deveria acontecer porque STATE é global.
-                         */
-
-                    } else {
+                    if (
+                        cards.length === 0
+                    ) {
 
                         alert(
                             "Adicione pelo menos um cupom antes de continuar."
@@ -432,10 +407,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 }
 
-
-                // ------------------------------------------------
-                // VERIFICA DOCUMENTOS
-                // ------------------------------------------------
 
                 const incompletos =
                     STATE.cupons.filter(
@@ -557,7 +528,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 renderizarCupons();
 
-
                 mostrarTela(1);
 
             },
@@ -633,7 +603,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // ========================================================
 
     mostrarTela(1);
-
 
 });
 
@@ -941,7 +910,8 @@ async function processarCupom(
             const convertido =
                 await window.heic2any({
 
-                    blob: arquivo,
+                    blob:
+                        arquivo,
 
                     toType:
                         "image/jpeg",
@@ -1563,6 +1533,7 @@ function renderizarCupons() {
                                 )}
                             </div>
 
+
                             <div>
                                 <strong>
                                     Estabelecimento:
@@ -1574,6 +1545,7 @@ function renderizarCupons() {
                                 )}
                             </div>
 
+
                             <div>
                                 <strong>
                                     Documento:
@@ -1584,6 +1556,7 @@ function renderizarCupons() {
                                     "Não identificado"
                                 )}
                             </div>
+
 
                             <div>
                                 <strong>
@@ -1597,6 +1570,7 @@ function renderizarCupons() {
                                     MATERIAIS
                                 </span>
                             </div>
+
 
                             <div>
                                 <strong>
@@ -1660,6 +1634,10 @@ function renderizarCupons() {
     );
 
 
+    // --------------------------------------------------------
+    // BOTÃO EDITAR
+    // --------------------------------------------------------
+
     lista
         .querySelectorAll(
             "[data-edit]"
@@ -1687,6 +1665,10 @@ function renderizarCupons() {
             }
         );
 
+
+    // --------------------------------------------------------
+    // BOTÃO VER
+    // --------------------------------------------------------
 
     lista
         .querySelectorAll(
@@ -1901,7 +1883,7 @@ function atualizarRevisao() {
 
 
 // ============================================================
-// MODAL
+// CONFIGURAR MODAL
 // ============================================================
 
 function configurarModal() {
@@ -1983,7 +1965,7 @@ function configurarModal() {
 
 
 // ============================================================
-// EDITAR
+// EDITAR CUPOM
 // ============================================================
 
 function abrirEdicao(index) {
@@ -2001,6 +1983,213 @@ function abrirEdicao(index) {
 
     STATE.modalCupomIndex =
         index;
+
+
+    STATE.modoModal =
+        "editar";
+
+
+    const modal =
+        document.getElementById(
+            "modal"
+        );
+
+
+    const photo =
+        document.getElementById(
+            "photo"
+        );
+
+
+    const mdate =
+        document.getElementById(
+            "mdate"
+        );
+
+
+    const mcat =
+        document.getElementById(
+            "mcat"
+        );
+
+
+    const mdesc =
+        document.getElementById(
+            "mdesc"
+        );
+
+
+    const mdoc =
+        document.getElementById(
+            "mdoc"
+        );
+
+
+    const mvalue =
+        document.getElementById(
+            "mvalue"
+        );
+
+
+    // --------------------------------------------------------
+    // IMAGEM GRANDE DO CUPOM
+    // --------------------------------------------------------
+
+    if (photo) {
+
+        photo.src =
+            cupom.previewURL;
+
+
+        photo.style.display =
+            "block";
+
+
+        photo.style.maxWidth =
+            "100%";
+
+
+        photo.style.maxHeight =
+            "65vh";
+
+
+        photo.style.objectFit =
+            "contain";
+
+
+        photo.style.cursor =
+            "zoom-in";
+
+    }
+
+
+    // --------------------------------------------------------
+    // PREENCHER CAMPOS COM OCR
+    // --------------------------------------------------------
+
+    if (mdate) {
+
+        mdate.value =
+            cupom.date || "";
+
+    }
+
+
+    if (mcat) {
+
+        mcat.value =
+            "materiais";
+
+        mcat.disabled =
+            true;
+
+    }
+
+
+    if (mdesc) {
+
+        mdesc.value =
+            cupom.description || "";
+
+    }
+
+
+    if (mdoc) {
+
+        mdoc.value =
+            cupom.document || "";
+
+    }
+
+
+    if (mvalue) {
+
+        mvalue.value =
+            cupom.value || "";
+
+    }
+
+
+    // --------------------------------------------------------
+    // BOTÃO SALVAR
+    // --------------------------------------------------------
+
+    const save =
+        document.getElementById(
+            "save"
+        );
+
+
+    if (save) {
+
+        save.style.display =
+            "";
+
+        save.disabled =
+            false;
+
+        save.textContent =
+            "💾 Salvar alterações";
+
+    }
+
+
+    // --------------------------------------------------------
+    // TÍTULO
+    // --------------------------------------------------------
+
+    const titulo =
+        document.querySelector(
+            "#modal h2, #modal h3, #modal .modal-title"
+        );
+
+
+    if (titulo) {
+
+        titulo.textContent =
+            "✏️ Editar cupom";
+
+    }
+
+
+    // --------------------------------------------------------
+    // ABRIR
+    // --------------------------------------------------------
+
+    if (modal) {
+
+        modal.classList.add(
+            "show"
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// VISUALIZAR CUPOM
+// ============================================================
+
+function abrirVisualizacao(index) {
+
+    const cupom =
+        STATE.cupons[index];
+
+
+    if (!cupom) {
+
+        return;
+
+    }
+
+
+    STATE.modalCupomIndex =
+        index;
+
+
+    STATE.modoModal =
+        "visualizar";
 
 
     const modal =
@@ -2050,6 +2239,26 @@ function abrirEdicao(index) {
         photo.src =
             cupom.previewURL;
 
+
+        photo.style.display =
+            "block";
+
+
+        photo.style.maxWidth =
+            "100%";
+
+
+        photo.style.maxHeight =
+            "75vh";
+
+
+        photo.style.objectFit =
+            "contain";
+
+
+        photo.style.cursor =
+            "zoom-in";
+
     }
 
 
@@ -2057,6 +2266,9 @@ function abrirEdicao(index) {
 
         mdate.value =
             cupom.date || "";
+
+        mdate.disabled =
+            true;
 
     }
 
@@ -2066,6 +2278,9 @@ function abrirEdicao(index) {
         mcat.value =
             "materiais";
 
+        mcat.disabled =
+            true;
+
     }
 
 
@@ -2073,6 +2288,9 @@ function abrirEdicao(index) {
 
         mdesc.value =
             cupom.description || "";
+
+        mdesc.disabled =
+            true;
 
     }
 
@@ -2082,6 +2300,9 @@ function abrirEdicao(index) {
         mdoc.value =
             cupom.document || "";
 
+        mdoc.disabled =
+            true;
+
     }
 
 
@@ -2089,6 +2310,37 @@ function abrirEdicao(index) {
 
         mvalue.value =
             cupom.value || "";
+
+        mvalue.disabled =
+            true;
+
+    }
+
+
+    const save =
+        document.getElementById(
+            "save"
+        );
+
+
+    if (save) {
+
+        save.style.display =
+            "none";
+
+    }
+
+
+    const titulo =
+        document.querySelector(
+            "#modal h2, #modal h3, #modal .modal-title"
+        );
+
+
+    if (titulo) {
+
+        titulo.textContent =
+            "🔍 Visualizar cupom";
 
     }
 
@@ -2109,6 +2361,16 @@ function abrirEdicao(index) {
 // ============================================================
 
 function salvarEdicao() {
+
+    if (
+        STATE.modoModal !==
+        "editar"
+    ) {
+
+        return;
+
+    }
+
 
     const index =
         STATE.modalCupomIndex;
@@ -2164,6 +2426,10 @@ function salvarEdicao() {
             ? mdoc.value.trim()
             : "";
 
+
+    // --------------------------------------------------------
+    // DOCUMENTO É OBRIGATÓRIO
+    // --------------------------------------------------------
 
     if (!documento) {
 
@@ -2250,34 +2516,72 @@ function fecharModal() {
     }
 
 
+    // Reabilita os campos para a próxima edição
+
+    const campos = [
+
+        "mdate",
+
+        "mcat",
+
+        "mdesc",
+
+        "mdoc",
+
+        "mvalue"
+
+    ];
+
+
+    campos.forEach(
+        function (id) {
+
+            const campo =
+                document.getElementById(
+                    id
+                );
+
+
+            if (campo) {
+
+                campo.disabled =
+                    false;
+
+            }
+
+        }
+    );
+
+
+    const save =
+        document.getElementById(
+            "save"
+        );
+
+
+    if (save) {
+
+        save.style.display =
+            "";
+
+    }
+
+
     STATE.modalCupomIndex =
+        null;
+
+
+    STATE.modoModal =
         null;
 
 }
 
 
 // ============================================================
-// VISUALIZAR CUPOM
+// ZOOM NA IMAGEM
 // ============================================================
 
-function abrirVisualizacao(index) {
-
-    const cupom =
-        STATE.cupons[index];
-
-
-    if (!cupom) {
-
-        return;
-
-    }
-
-
-    const modal =
-        document.getElementById(
-            "modal"
-        );
-
+function ativarZoomImagem() {
 
     const photo =
         document.getElementById(
@@ -2285,95 +2589,109 @@ function abrirVisualizacao(index) {
         );
 
 
-    if (photo) {
+    if (!photo) {
 
-        photo.src =
-            cupom.previewURL;
-
-    }
-
-
-    const mdate =
-        document.getElementById(
-            "mdate"
-        );
-
-
-    const mcat =
-        document.getElementById(
-            "mcat"
-        );
-
-
-    const mdesc =
-        document.getElementById(
-            "mdesc"
-        );
-
-
-    const mdoc =
-        document.getElementById(
-            "mdoc"
-        );
-
-
-    const mvalue =
-        document.getElementById(
-            "mvalue"
-        );
-
-
-    if (mdate) {
-
-        mdate.value =
-            cupom.date || "";
+        return;
 
     }
 
 
-    if (mcat) {
+    photo.onclick =
+        function () {
 
-        mcat.value =
-            "materiais";
+            if (
+                !photo.src
+            ) {
 
-    }
+                return;
 
-
-    if (mdesc) {
-
-        mdesc.value =
-            cupom.description || "";
-
-    }
+            }
 
 
-    if (mdoc) {
-
-        mdoc.value =
-            cupom.document || "";
-
-    }
+            const overlay =
+                document.createElement(
+                    "div"
+                );
 
 
-    if (mvalue) {
-
-        mvalue.value =
-            cupom.value || "";
-
-    }
+            overlay.style.position =
+                "fixed";
 
 
-    STATE.modalCupomIndex =
-        index;
+            overlay.style.inset =
+                "0";
 
 
-    if (modal) {
+            overlay.style.background =
+                "rgba(0,0,0,.92)";
 
-        modal.classList.add(
-            "show"
-        );
 
-    }
+            overlay.style.zIndex =
+                "99999";
+
+
+            overlay.style.display =
+                "flex";
+
+
+            overlay.style.alignItems =
+                "center";
+
+
+            overlay.style.justifyContent =
+                "center";
+
+
+            overlay.style.padding =
+                "20px";
+
+
+            overlay.style.cursor =
+                "zoom-out";
+
+
+            const imagem =
+                document.createElement(
+                    "img"
+                );
+
+
+            imagem.src =
+                photo.src;
+
+
+            imagem.style.maxWidth =
+                "100%";
+
+
+            imagem.style.maxHeight =
+                "100%";
+
+
+            imagem.style.objectFit =
+                "contain";
+
+
+            overlay.appendChild(
+                imagem
+            );
+
+
+            overlay.addEventListener(
+                "click",
+                function () {
+
+                    overlay.remove();
+
+                }
+            );
+
+
+            document.body.appendChild(
+                overlay
+            );
+
+        };
 
 }
 
@@ -2862,3 +3180,17 @@ function escapeHTML(
         );
 
 }
+
+
+// ============================================================
+// ATIVAR ZOOM
+// ============================================================
+
+setTimeout(
+    function () {
+
+        ativarZoomImagem();
+
+    },
+    500
+);
