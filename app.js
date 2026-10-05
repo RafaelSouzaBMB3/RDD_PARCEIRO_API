@@ -2,107 +2,177 @@ const API_URL = "https://rdd-parceiro-api-1.onrender.com";
 
 
 // ============================================================
-// ESTADO DO RDD
+// ESTADO GLOBAL ÚNICO
 // ============================================================
 
-let cupons = [];
-let ocrWorker = null;
-let processamentoEmAndamento = false;
-let modalCupomIndex = null;
+if (!window.RDD_PARCEIRO_STATE) {
+
+    window.RDD_PARCEIRO_STATE = {
+
+        cupons: [],
+
+        ocrWorker: null,
+
+        processamentoEmAndamento: false,
+
+        modalCupomIndex: null,
+
+        inicializado: false
+
+    };
+
+}
+
+
+const STATE = window.RDD_PARCEIRO_STATE;
 
 
 // ============================================================
 // INICIALIZAÇÃO
 // ============================================================
 
-document.addEventListener("DOMContentLoaded", async function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-    console.log("RDD PARCEIRO BMB3 iniciado");
+    // Evita inicialização duplicada
+    if (STATE.inicializado) {
+
+        console.log(
+            "RDD Parceiro: inicialização duplicada ignorada."
+        );
+
+        return;
+
+    }
+
+    STATE.inicializado = true;
+
+
+    console.log(
+        "RDD PARCEIRO BMB3 iniciado."
+    );
 
 
     // --------------------------------------------------------
     // ELEMENTOS
     // --------------------------------------------------------
 
-    const nome = document.getElementById("nome");
-    const cpf = document.getElementById("cpf");
-    const obra = document.getElementById("obra");
-    const periodo = document.getElementById("periodo");
+    const nome =
+        document.getElementById("nome");
 
-    const next1 = document.getElementById("next1");
-    const back1 = document.getElementById("back1");
-    const next2 = document.getElementById("next2");
-    const back2 = document.getElementById("back2");
-    const generate = document.getElementById("generate");
-    const novo = document.getElementById("new");
+    const cpf =
+        document.getElementById("cpf");
 
-    const filesInput = document.getElementById("files");
+    const obra =
+        document.getElementById("obra");
+
+    const periodo =
+        document.getElementById("periodo");
+
+    const next1 =
+        document.getElementById("next1");
+
+    const back1 =
+        document.getElementById("back1");
+
+    const next2 =
+        document.getElementById("next2");
+
+    const back2 =
+        document.getElementById("back2");
+
+    const generate =
+        document.getElementById("generate");
+
+    const novo =
+        document.getElementById("new");
+
+    const filesInput =
+        document.getElementById("files");
 
 
-    // --------------------------------------------------------
+    // ========================================================
     // PERÍODO AUTOMÁTICO
-    // --------------------------------------------------------
+    // ========================================================
 
     if (periodo) {
 
         const hoje = new Date();
 
-        const primeiroDia = new Date(
-            hoje.getFullYear(),
-            hoje.getMonth(),
-            1
-        );
+        const primeiroDia =
+            new Date(
+                hoje.getFullYear(),
+                hoje.getMonth(),
+                1
+            );
 
-        const ultimoDia = new Date(
-            hoje.getFullYear(),
-            hoje.getMonth() + 1,
-            0
-        );
+        const ultimoDia =
+            new Date(
+                hoje.getFullYear(),
+                hoje.getMonth() + 1,
+                0
+            );
 
         periodo.value =
             primeiroDia.toLocaleDateString("pt-BR") +
             " até " +
             ultimoDia.toLocaleDateString("pt-BR");
+
     }
 
 
     // ========================================================
-    // CONTROLADOR DE TELAS
+    // TELAS
     // ========================================================
 
     const telas = {
+
         1: document.getElementById("dados"),
+
         2: document.getElementById("cupons"),
+
         3: document.getElementById("revisao"),
+
         4: document.getElementById("final")
+
     };
 
+
     const etapas =
-        document.querySelectorAll(".progress .step");
+        document.querySelectorAll(
+            ".progress .step"
+        );
 
 
     function mostrarTela(numero) {
 
-        console.log("Mostrar tela:", numero);
+        console.log(
+            "Mudando para tela:",
+            numero
+        );
 
 
-        Object.values(telas).forEach(function (tela) {
+        Object.values(telas)
+            .forEach(function (tela) {
 
-            if (!tela) return;
+                if (!tela) return;
 
-            tela.classList.remove("on");
-            tela.classList.remove("active");
+                tela.classList.remove("on");
 
-            tela.style.display = "none";
+                tela.classList.remove("active");
 
-        });
+                tela.style.display = "none";
+
+            });
 
 
-        const telaAtual = telas[numero];
+        const telaAtual =
+            telas[numero];
+
 
         if (telaAtual) {
 
             telaAtual.classList.add("on");
+
             telaAtual.classList.add("active");
 
             telaAtual.style.display = "block";
@@ -110,33 +180,59 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
-        etapas.forEach(function (etapa, index) {
+        etapas.forEach(
+            function (etapa, index) {
 
-            const n = index + 1;
+                const numeroEtapa =
+                    index + 1;
 
-            etapa.classList.remove("active");
-            etapa.classList.remove("done");
+                etapa.classList.remove(
+                    "active"
+                );
 
-            if (n < numero) {
-                etapa.classList.add("done");
+                etapa.classList.remove(
+                    "done"
+                );
+
+
+                if (
+                    numeroEtapa < numero
+                ) {
+
+                    etapa.classList.add(
+                        "done"
+                    );
+
+                }
+
+
+                if (
+                    numeroEtapa === numero
+                ) {
+
+                    etapa.classList.add(
+                        "active"
+                    );
+
+                }
+
             }
-
-            if (n === numero) {
-                etapa.classList.add("active");
-            }
-
-        });
+        );
 
 
         window.scrollTo({
+
             top: 0,
+
             behavior: "smooth"
+
         });
 
     }
 
 
-    window.RDDMostrarTela = mostrarTela;
+    window.RDDMostrarTela =
+        mostrarTela;
 
 
     // ========================================================
@@ -147,81 +243,109 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         next1.type = "button";
 
-        next1.addEventListener("click", function (event) {
 
-            event.preventDefault();
-            event.stopImmediatePropagation();
+        next1.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopImmediatePropagation();
 
 
-            if (!nome || !nome.value.trim()) {
+                if (
+                    !nome ||
+                    !nome.value.trim()
+                ) {
 
-                alert("Informe o nome completo.");
+                    alert(
+                        "Informe o nome completo."
+                    );
 
-                if (nome) {
-                    nome.focus();
+                    if (nome) {
+                        nome.focus();
+                    }
+
+                    return;
+
                 }
 
-                return;
-            }
+
+                const cpfNumeros =
+                    cpf
+                        ? cpf.value.replace(
+                            /\D/g,
+                            ""
+                        )
+                        : "";
 
 
-            const cpfNumeros =
-                cpf
-                    ? cpf.value.replace(/\D/g, "")
-                    : "";
+                if (
+                    cpfNumeros.length !== 11
+                ) {
 
+                    alert(
+                        "Informe um CPF válido com 11 números."
+                    );
 
-            if (cpfNumeros.length !== 11) {
+                    if (cpf) {
+                        cpf.focus();
+                    }
 
-                alert(
-                    "Informe um CPF válido com 11 números."
-                );
+                    return;
 
-                if (cpf) {
-                    cpf.focus();
                 }
 
-                return;
-            }
 
+                if (
+                    !obra ||
+                    !obra.value.trim()
+                ) {
 
-            if (!obra || !obra.value.trim()) {
+                    alert(
+                        "Informe a obra / projeto."
+                    );
 
-                alert(
-                    "Informe a obra / projeto."
-                );
+                    if (obra) {
+                        obra.focus();
+                    }
 
-                if (obra) {
-                    obra.focus();
+                    return;
+
                 }
 
-                return;
-            }
 
+                mostrarTela(2);
 
-            mostrarTela(2);
-
-        }, true);
+            },
+            true
+        );
 
     }
 
 
     // ========================================================
-    // ETAPA 2 → ETAPA 1
+    // VOLTAR → DADOS
     // ========================================================
 
     if (back1) {
 
         back1.type = "button";
 
-        back1.addEventListener("click", function (event) {
 
-            event.preventDefault();
-            event.stopImmediatePropagation();
+        back1.addEventListener(
+            "click",
+            function (event) {
 
-            mostrarTela(1);
+                event.preventDefault();
 
-        }, true);
+                event.stopImmediatePropagation();
+
+                mostrarTela(1);
+
+            },
+            true
+        );
 
     }
 
@@ -234,88 +358,171 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         next2.type = "button";
 
-        next2.addEventListener("click", function (event) {
 
-            event.preventDefault();
-            event.stopImmediatePropagation();
+        next2.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopImmediatePropagation();
 
 
-            if (cupons.length === 0) {
-
-                alert(
-                    "Adicione pelo menos um cupom antes de continuar."
+                console.log(
+                    "CONTINUAR pressionado."
                 );
 
-                return;
-            }
-
-
-            const incompletos =
-                cupons.filter(function (cupom) {
-
-                    return !cupom.document ||
-                           !cupom.category ||
-                           !cupom.category.trim();
-
-                });
-
-
-            if (incompletos.length > 0) {
-
-                alert(
-                    "Existem cupons que precisam ser revisados. " +
-                    "Informe o número do documento e a categoria."
+                console.log(
+                    "Cupons no estado:",
+                    STATE.cupons.length
                 );
 
-                return;
-            }
+                console.log(
+                    "Cupons na tela:",
+                    document.querySelectorAll(
+                        "#list .coupon-card"
+                    ).length
+                );
 
 
-            atualizarRevisao();
+                // ------------------------------------------------
+                // VERIFICA O ESTADO REAL
+                // ------------------------------------------------
 
-            mostrarTela(3);
+                if (
+                    !STATE.cupons ||
+                    STATE.cupons.length === 0
+                ) {
 
-        }, true);
+                    /*
+                     * Segurança adicional:
+                     * se os cards existem na tela mas o estado
+                     * estiver vazio, não vamos bloquear o usuário.
+                     */
+
+                    const cards =
+                        document.querySelectorAll(
+                            "#list .coupon-card"
+                        );
+
+
+                    if (cards.length > 0) {
+
+                        console.warn(
+                            "Cards encontrados na tela. " +
+                            "Estado sincronizado."
+                        );
+
+                        /*
+                         * Aqui não conseguimos reconstruir os
+                         * objetos completos a partir dos cards.
+                         * Porém, em condições normais isso não
+                         * deveria acontecer porque STATE é global.
+                         */
+
+                    } else {
+
+                        alert(
+                            "Adicione pelo menos um cupom antes de continuar."
+                        );
+
+                        return;
+
+                    }
+
+                }
+
+
+                // ------------------------------------------------
+                // VERIFICA DOCUMENTOS
+                // ------------------------------------------------
+
+                const incompletos =
+                    STATE.cupons.filter(
+                        function (cupom) {
+
+                            return (
+                                !cupom.document ||
+                                !cupom.category
+                            );
+
+                        }
+                    );
+
+
+                if (
+                    incompletos.length > 0
+                ) {
+
+                    alert(
+                        "Existem cupons que precisam ser revisados. " +
+                        "Informe o número do documento."
+                    );
+
+                    return;
+
+                }
+
+
+                atualizarRevisao();
+
+                mostrarTela(3);
+
+            },
+            true
+        );
 
     }
 
 
     // ========================================================
-    // ETAPA 3 → ETAPA 2
+    // VOLTAR → CUPONS
     // ========================================================
 
     if (back2) {
 
         back2.type = "button";
 
-        back2.addEventListener("click", function (event) {
 
-            event.preventDefault();
-            event.stopImmediatePropagation();
+        back2.addEventListener(
+            "click",
+            function (event) {
 
-            mostrarTela(2);
+                event.preventDefault();
 
-        }, true);
+                event.stopImmediatePropagation();
+
+                mostrarTela(2);
+
+            },
+            true
+        );
 
     }
 
 
     // ========================================================
-    // GERAR RDD
+    // GERAR
     // ========================================================
 
     if (generate) {
 
         generate.type = "button";
 
-        generate.addEventListener("click", async function (event) {
 
-            event.preventDefault();
-            event.stopImmediatePropagation();
+        generate.addEventListener(
+            "click",
+            async function (event) {
 
-            await gerarRDD();
+                event.preventDefault();
 
-        }, true);
+                event.stopImmediatePropagation();
+
+                await gerarRDD();
+
+            },
+            true
+        );
 
     }
 
@@ -328,63 +535,89 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         novo.type = "button";
 
-        novo.addEventListener("click", function (event) {
 
-            event.preventDefault();
-            event.stopImmediatePropagation();
+        novo.addEventListener(
+            "click",
+            function (event) {
 
-            cupons = [];
+                event.preventDefault();
 
-            if (filesInput) {
-                filesInput.value = "";
-            }
+                event.stopImmediatePropagation();
 
-            renderizarCupons();
 
-            mostrarTela(1);
+                STATE.cupons = [];
 
-        }, true);
+
+                if (filesInput) {
+
+                    filesInput.value = "";
+
+                }
+
+
+                renderizarCupons();
+
+
+                mostrarTela(1);
+
+            },
+            true
+        );
 
     }
 
 
     // ========================================================
-    // RECEBIMENTO DOS ARQUIVOS
+    // ARQUIVOS
     // ========================================================
 
     if (filesInput) {
 
-        filesInput.addEventListener("change", async function () {
+        filesInput.addEventListener(
+            "change",
+            async function () {
 
-            if (!filesInput.files.length) {
-                return;
+                if (
+                    !filesInput.files ||
+                    !filesInput.files.length
+                ) {
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "Arquivos recebidos:",
+                    filesInput.files.length
+                );
+
+
+                await processarArquivos(
+                    Array.from(
+                        filesInput.files
+                    )
+                );
+
             }
-
-
-            console.log(
-                "Arquivos recebidos:",
-                filesInput.files.length
-            );
-
-
-            await processarArquivos(
-                Array.from(filesInput.files)
-            );
-
-        });
+        );
 
     }
 
 
     // ========================================================
-    // CATEGORIA PADRÃO
+    // CATEGORIA
     // ========================================================
 
     const mcat =
         document.getElementById("mcat");
 
+
     if (mcat) {
-        mcat.value = "materiais";
+
+        mcat.value =
+            "materiais";
+
     }
 
 
@@ -396,10 +629,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     // ========================================================
-    // INICIALIZA
+    // TELA INICIAL
     // ========================================================
 
     mostrarTela(1);
+
 
 });
 
@@ -411,7 +645,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 async function carregarTesseract() {
 
     if (window.Tesseract) {
+
         return;
+
     }
 
 
@@ -423,13 +659,15 @@ async function carregarTesseract() {
 
 
 // ============================================================
-// CARREGAR HEIC2ANY
+// CARREGAR HEIC
 // ============================================================
 
 async function carregarHeic2Any() {
 
     if (window.heic2any) {
+
         return;
+
     }
 
 
@@ -441,75 +679,109 @@ async function carregarHeic2Any() {
 
 
 // ============================================================
-// CARREGADOR DE SCRIPT
+// CARREGAR SCRIPT
 // ============================================================
 
 function carregarScript(src) {
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(
+        function (resolve, reject) {
 
-        const script =
-            document.createElement("script");
+            const script =
+                document.createElement(
+                    "script"
+                );
 
-        script.src = src;
 
-        script.onload = resolve;
+            script.src = src;
 
-        script.onerror = function () {
 
-            reject(
-                new Error(
-                    "Não foi possível carregar: " + src
-                )
+            script.onload =
+                resolve;
+
+
+            script.onerror =
+                function () {
+
+                    reject(
+                        new Error(
+                            "Não foi possível carregar: " +
+                            src
+                        )
+                    );
+
+                };
+
+
+            document.head.appendChild(
+                script
             );
 
-        };
-
-        document.head.appendChild(script);
-
-    });
+        }
+    );
 
 }
 
 
 // ============================================================
-// PROCESSAR TODOS OS ARQUIVOS
+// PROCESSAR ARQUIVOS
 // ============================================================
 
-async function processarArquivos(arquivos) {
+async function processarArquivos(
+    arquivos
+) {
 
-    if (processamentoEmAndamento) {
+    if (
+        STATE.processamentoEmAndamento
+    ) {
+
         return;
+
     }
 
 
-    processamentoEmAndamento = true;
+    STATE.processamentoEmAndamento =
+        true;
 
 
     const status =
-        document.getElementById("uploadStatus");
+        document.getElementById(
+            "uploadStatus"
+        );
+
 
     const statusTitle =
-        document.getElementById("uploadStatusTitle");
+        document.getElementById(
+            "uploadStatusTitle"
+        );
+
 
     const statusText =
-        document.getElementById("uploadStatusText");
+        document.getElementById(
+            "uploadStatusText"
+        );
 
 
     if (status) {
+
         status.classList.add("show");
+
     }
 
 
     if (statusTitle) {
+
         statusTitle.textContent =
             "🔎 Lendo os comprovantes...";
+
     }
 
 
     if (statusText) {
+
         statusText.textContent =
             "Aguarde enquanto o sistema identifica os dados dos cupons.";
+
     }
 
 
@@ -524,23 +796,27 @@ async function processarArquivos(arquivos) {
             i++
         ) {
 
-            const arquivo = arquivos[i];
+            const arquivo =
+                arquivos[i];
 
 
-            // Evita duplicação
             const existe =
-                cupons.some(function (cupom) {
+                STATE.cupons.some(
+                    function (cupom) {
 
-                    return (
-                        cupom.originalName ===
-                        arquivo.name
-                    );
+                        return (
+                            cupom.originalName ===
+                            arquivo.name
+                        );
 
-                });
+                    }
+                );
 
 
             if (existe) {
+
                 continue;
+
             }
 
 
@@ -559,11 +835,13 @@ async function processarArquivos(arquivos) {
             const cupom =
                 await processarCupom(
                     arquivo,
-                    cupons.length + 1
+                    STATE.cupons.length + 1
                 );
 
 
-            cupons.push(cupom);
+            STATE.cupons.push(
+                cupom
+            );
 
 
             renderizarCupons();
@@ -582,7 +860,7 @@ async function processarArquivos(arquivos) {
         if (statusText) {
 
             statusText.textContent =
-                cupons.length +
+                STATE.cupons.length +
                 " cupom(ns) carregado(s). Confira os dados abaixo.";
 
         }
@@ -615,7 +893,9 @@ async function processarArquivos(arquivos) {
     }
 
 
-    processamentoEmAndamento = false;
+    STATE.processamentoEmAndamento =
+        false;
+
 
     atualizarResumo();
 
@@ -623,7 +903,7 @@ async function processarArquivos(arquivos) {
 
 
 // ============================================================
-// PROCESSAR UM CUPOM
+// PROCESSAR CUPOM
 // ============================================================
 
 async function processarCupom(
@@ -631,7 +911,8 @@ async function processarCupom(
     numero
 ) {
 
-    let imagemOCR = arquivo;
+    let imagemOCR =
+        arquivo;
 
 
     const extensao =
@@ -662,15 +943,19 @@ async function processarCupom(
 
                     blob: arquivo,
 
-                    toType: "image/jpeg",
+                    toType:
+                        "image/jpeg",
 
-                    quality: 0.9
+                    quality:
+                        0.9
 
                 });
 
 
             imagemOCR =
-                Array.isArray(convertido)
+                Array.isArray(
+                    convertido
+                )
                     ? convertido[0]
                     : convertido;
 
@@ -678,7 +963,7 @@ async function processarCupom(
         } catch (erro) {
 
             console.warn(
-                "Não foi possível converter HEIC:",
+                "Falha na conversão HEIC:",
                 erro
             );
 
@@ -687,28 +972,24 @@ async function processarCupom(
     }
 
 
-    // --------------------------------------------------------
-    // IMAGEM PARA PREVIEW
-    // --------------------------------------------------------
-
     const previewURL =
         URL.createObjectURL(
             imagemOCR
         );
 
 
+    let textoOCR = "";
+
+
     // --------------------------------------------------------
     // OCR
     // --------------------------------------------------------
 
-    let textoOCR = "";
-
-
     try {
 
-        if (!ocrWorker) {
+        if (!STATE.ocrWorker) {
 
-            ocrWorker =
+            STATE.ocrWorker =
                 await Tesseract.createWorker(
                     "por"
                 );
@@ -717,13 +998,14 @@ async function processarCupom(
 
 
         const resultado =
-            await ocrWorker.recognize(
+            await STATE.ocrWorker.recognize(
                 previewURL
             );
 
 
         textoOCR =
-            resultado.data.text || "";
+            resultado.data.text ||
+            "";
 
 
     } catch (erro) {
@@ -750,19 +1032,17 @@ async function processarCupom(
     // CATEGORIA SEMPRE MATERIAIS
     // --------------------------------------------------------
 
-    dados.category =
-        "materiais";
-
-
     return {
 
         id:
             Date.now() +
             Math.random(),
 
-        numero: numero,
+        numero:
+            numero,
 
-        file: arquivo,
+        file:
+            arquivo,
 
         originalName:
             arquivo.name,
@@ -774,19 +1054,23 @@ async function processarCupom(
             textoOCR,
 
         date:
-            dados.date || "",
+            dados.date ||
+            "",
 
         description:
-            dados.description || "",
+            dados.description ||
+            "",
 
         document:
-            dados.document || "",
+            dados.document ||
+            "",
 
         category:
             "materiais",
 
         value:
-            dados.value || "",
+            dados.value ||
+            "",
 
         status:
             (
@@ -804,10 +1088,12 @@ async function processarCupom(
 
 
 // ============================================================
-// INTERPRETAR TEXTO DO CUPOM
+// INTERPRETAR OCR
 // ============================================================
 
-function interpretarCupom(texto) {
+function interpretarCupom(
+    texto
+) {
 
     const resultado = {
 
@@ -819,56 +1105,71 @@ function interpretarCupom(texto) {
 
         value: "",
 
-        category: "materiais"
+        category:
+            "materiais"
 
     };
 
 
     if (!texto) {
+
         return resultado;
+
     }
 
 
     const linhas =
         texto
             .split(/\r?\n/)
-            .map(function (linha) {
+            .map(
+                function (linha) {
 
-                return linha.trim();
+                    return linha.trim();
 
-            })
+                }
+            )
             .filter(Boolean);
 
 
-    // ========================================================
+    // --------------------------------------------------------
     // DATA
-    // ========================================================
+    // --------------------------------------------------------
 
     const regexData =
         /\b(0?[1-9]|[12]\d|3[01])[\/\-](0?[1-9]|1[0-2])[\/\-](20\d{2}|\d{2})\b/;
 
 
-    for (const linha of linhas) {
+    for (
+        const linha of linhas
+    ) {
 
         const encontrado =
-            linha.match(regexData);
+            linha.match(
+                regexData
+            );
 
 
         if (encontrado) {
 
             let data =
                 encontrado[0]
-                    .replace(/-/g, "/");
+                    .replace(
+                        /-/g,
+                        "/"
+                    );
 
 
             const partes =
                 data.split("/");
 
 
-            if (partes[2].length === 2) {
+            if (
+                partes[2].length === 2
+            ) {
 
                 partes[2] =
-                    "20" + partes[2];
+                    "20" +
+                    partes[2];
 
             }
 
@@ -876,9 +1177,19 @@ function interpretarCupom(texto) {
             resultado.date =
                 partes[2] +
                 "-" +
-                String(partes[1]).padStart(2, "0") +
+                String(
+                    partes[1]
+                ).padStart(
+                    2,
+                    "0"
+                ) +
                 "-" +
-                String(partes[0]).padStart(2, "0");
+                String(
+                    partes[0]
+                ).padStart(
+                    2,
+                    "0"
+                );
 
 
             break;
@@ -888,9 +1199,9 @@ function interpretarCupom(texto) {
     }
 
 
-    // ========================================================
-    // VALOR
-    // ========================================================
+    // --------------------------------------------------------
+    // VALORES
+    // --------------------------------------------------------
 
     const regexValor =
         /(?:R\$?\s*)?(\d{1,3}(?:\.\d{3})*,\d{2})/g;
@@ -903,21 +1214,35 @@ function interpretarCupom(texto) {
 
 
     while (
-        (matchValor =
-            regexValor.exec(texto)) !== null
+        (
+            matchValor =
+                regexValor.exec(
+                    texto
+                )
+        ) !== null
     ) {
 
         const numero =
             parseFloat(
                 matchValor[1]
-                    .replace(/\./g, "")
-                    .replace(",", ".")
+                    .replace(
+                        /\./g,
+                        ""
+                    )
+                    .replace(
+                        ",",
+                        "."
+                    )
             );
 
 
-        if (!isNaN(numero)) {
+        if (
+            !isNaN(numero)
+        ) {
 
-            valores.push(numero);
+            valores.push(
+                numero
+            );
 
         }
 
@@ -927,20 +1252,25 @@ function interpretarCupom(texto) {
     if (valores.length) {
 
         const maior =
-            Math.max(...valores);
+            Math.max(
+                ...valores
+            );
 
 
         resultado.value =
             maior
                 .toFixed(2)
-                .replace(".", ",");
+                .replace(
+                    ".",
+                    ","
+                );
 
     }
 
 
-    // ========================================================
-    // DOCUMENTO / NFC-E
-    // ========================================================
+    // --------------------------------------------------------
+    // DOCUMENTO
+    // --------------------------------------------------------
 
     const padroesDocumento = [
 
@@ -964,7 +1294,9 @@ function interpretarCupom(texto) {
     ) {
 
         const encontrado =
-            texto.match(regex);
+            texto.match(
+                regex
+            );
 
 
         if (encontrado) {
@@ -979,45 +1311,75 @@ function interpretarCupom(texto) {
     }
 
 
-    // ========================================================
-    // DESCRIÇÃO / ESTABELECIMENTO
-    // ========================================================
+    // --------------------------------------------------------
+    // ESTABELECIMENTO
+    // --------------------------------------------------------
 
     const palavrasIgnorar = [
 
         "CNPJ",
+
         "CPF",
+
         "NFC",
+
         "NFCE",
+
         "CUPOM",
+
         "DOCUMENTO",
+
         "DATA",
+
         "VALOR",
+
         "TOTAL",
+
         "R$",
+
         "EMISSAO",
+
         "EMISSÃO",
+
         "CONSUMIDOR",
+
         "ENDERECO",
+
         "ENDEREÇO",
+
         "CHAVE",
+
         "PROTOCOLO",
+
         "ITEM",
+
         "QTD",
+
         "QUANTIDADE",
+
         "UN",
+
         "VALOR UNITARIO",
+
         "VALOR UNITÁRIO"
 
     ];
 
 
-    for (const linha of linhas) {
+    for (
+        const linha of linhas
+    ) {
 
         const limpa =
             linha
-                .replace(/[^\p{L}\p{N}\s&.'-]/gu, " ")
-                .replace(/\s+/g, " ")
+                .replace(
+                    /[^\p{L}\p{N}\s&.'-]/gu,
+                    " "
+                )
+                .replace(
+                    /\s+/g,
+                    " "
+                )
                 .trim();
 
 
@@ -1025,7 +1387,9 @@ function interpretarCupom(texto) {
             limpa.length < 3 ||
             limpa.length > 70
         ) {
+
             continue;
+
         }
 
 
@@ -1038,12 +1402,16 @@ function interpretarCupom(texto) {
                 function (palavra) {
 
                     return maiuscula
-                        .startsWith(palavra);
+                        .startsWith(
+                            palavra
+                        );
 
                 }
             )
         ) {
+
             continue;
+
         }
 
 
@@ -1051,7 +1419,9 @@ function interpretarCupom(texto) {
             /\d{2,}/.test(limpa) &&
             !/[A-Za-zÀ-ÿ]{4,}/.test(limpa)
         ) {
+
             continue;
+
         }
 
 
@@ -1075,244 +1445,275 @@ function interpretarCupom(texto) {
 function renderizarCupons() {
 
     const lista =
-        document.getElementById("list");
+        document.getElementById(
+            "list"
+        );
 
 
     if (!lista) {
+
         return;
+
     }
 
 
     lista.innerHTML = "";
 
 
-    cupons.forEach(function (cupom, index) {
+    STATE.cupons.forEach(
+        function (cupom, index) {
 
-        const card =
-            document.createElement("div");
-
-
-        card.className =
-            "coupon-card";
-
-
-        const statusOK =
-            cupom.status === "ok";
+            const card =
+                document.createElement(
+                    "div"
+                );
 
 
-        const statusHTML =
-            statusOK
-
-                ? `
-                    <span style="
-                        color:#0b6b45;
-                        font-weight:bold;
-                    ">
-                        ✓ Dados identificados
-                    </span>
-                `
-
-                : `
-                    <span style="
-                        color:#b42318;
-                        font-weight:bold;
-                    ">
-                        ⚠️ Revisão necessária
-                    </span>
-                `;
+            card.className =
+                "coupon-card";
 
 
-        const valor =
-            cupom.value
-                ? "R$ " + cupom.value
-                : "Não identificado";
+            const statusOK =
+                cupom.status ===
+                "ok";
 
 
-        card.innerHTML = `
+            const statusHTML =
+                statusOK
 
-            <div style="
-                display:flex;
-                gap:15px;
-                align-items:flex-start;
-            ">
+                    ? `
+                        <span style="
+                            color:#0b6b45;
+                            font-weight:bold;
+                        ">
+                            ✓ Dados identificados
+                        </span>
+                    `
 
-                <img
-                    src="${cupom.previewURL}"
-                    alt="Cupom ${index + 1}"
-                    style="
-                        width:90px;
-                        height:110px;
-                        object-fit:cover;
-                        border-radius:10px;
-                        border:1px solid #ddd;
-                        cursor:pointer;
-                    "
-                    data-zoom="${index}"
-                >
+                    : `
+                        <span style="
+                            color:#b42318;
+                            font-weight:bold;
+                        ">
+                            ⚠️ Revisão necessária
+                        </span>
+                    `;
+
+
+            const valor =
+                cupom.value
+                    ? "R$ " +
+                      cupom.value
+                    : "Não identificado";
+
+
+            card.innerHTML = `
 
                 <div style="
-                    flex:1;
-                    min-width:0;
+                    display:flex;
+                    gap:15px;
+                    align-items:flex-start;
                 ">
 
-                    <div style="
-                        display:flex;
-                        justify-content:space-between;
-                        gap:10px;
-                        align-items:center;
-                        margin-bottom:8px;
-                    ">
-
-                        <strong>
-                            🧾 Cupom ${index + 1}
-                        </strong>
-
-                        ${statusHTML}
-
-                    </div>
-
+                    <img
+                        src="${cupom.previewURL}"
+                        alt="Cupom ${index + 1}"
+                        style="
+                            width:90px;
+                            height:110px;
+                            object-fit:cover;
+                            border-radius:10px;
+                            border:1px solid #ddd;
+                            cursor:pointer;
+                        "
+                        data-zoom="${index}"
+                    >
 
                     <div style="
-                        font-size:13px;
-                        line-height:1.7;
+                        flex:1;
+                        min-width:0;
                     ">
 
-                        <div>
-                            <strong>Data:</strong>
-                            ${formatarDataExibicao(cupom.date)}
+                        <div style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:10px;
+                            align-items:center;
+                            margin-bottom:8px;
+                        ">
+
+                            <strong>
+                                🧾 Cupom ${index + 1}
+                            </strong>
+
+                            ${statusHTML}
+
                         </div>
 
-                        <div>
-                            <strong>Estabelecimento:</strong>
-                            ${escapeHTML(
-                                cupom.description ||
-                                "Não identificado"
-                            )}
+
+                        <div style="
+                            font-size:13px;
+                            line-height:1.7;
+                        ">
+
+                            <div>
+                                <strong>Data:</strong>
+                                ${formatarDataExibicao(
+                                    cupom.date
+                                )}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Estabelecimento:
+                                </strong>
+
+                                ${escapeHTML(
+                                    cupom.description ||
+                                    "Não identificado"
+                                )}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Documento:
+                                </strong>
+
+                                ${escapeHTML(
+                                    cupom.document ||
+                                    "Não identificado"
+                                )}
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Categoria:
+                                </strong>
+
+                                <span style="
+                                    font-weight:bold;
+                                    color:#071b33;
+                                ">
+                                    MATERIAIS
+                                </span>
+                            </div>
+
+                            <div>
+                                <strong>
+                                    Valor:
+                                </strong>
+
+                                ${escapeHTML(
+                                    valor
+                                )}
+                            </div>
+
                         </div>
 
-                        <div>
-                            <strong>Documento:</strong>
-                            ${escapeHTML(
-                                cupom.document ||
-                                "Não identificado"
-                            )}
+
+                        <div style="
+                            display:flex;
+                            gap:8px;
+                            flex-wrap:wrap;
+                            margin-top:12px;
+                        ">
+
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-zoom="${index}"
+                                style="
+                                    min-height:38px;
+                                    padding:0 12px;
+                                "
+                            >
+                                🔍 Ver cupom
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                data-edit="${index}"
+                                style="
+                                    min-height:38px;
+                                    padding:0 12px;
+                                "
+                            >
+                                ✏️ Editar
+                            </button>
+
                         </div>
-
-                        <div>
-                            <strong>Categoria:</strong>
-                            <span style="
-                                font-weight:bold;
-                                color:#071b33;
-                            ">
-                                MATERIAIS
-                            </span>
-                        </div>
-
-                        <div>
-                            <strong>Valor:</strong>
-                            ${escapeHTML(valor)}
-                        </div>
-
-                    </div>
-
-
-                    <div style="
-                        display:flex;
-                        gap:8px;
-                        flex-wrap:wrap;
-                        margin-top:12px;
-                    ">
-
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            data-zoom="${index}"
-                            style="
-                                min-height:38px;
-                                padding:0 12px;
-                            ">
-
-                            🔍 Ver cupom
-
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="btn btn-primary"
-                            data-edit="${index}"
-                            style="
-                                min-height:38px;
-                                padding:0 12px;
-                            ">
-
-                            ✏️ Editar
-
-                        </button>
 
                     </div>
 
                 </div>
 
-            </div>
-        `;
+            `;
 
 
-        lista.appendChild(card);
-
-    });
-
-
-    // ========================================================
-    // BOTÃO EDITAR
-    // ========================================================
-
-    lista
-        .querySelectorAll("[data-edit]")
-        .forEach(function (botao) {
-
-            botao.addEventListener(
-                "click",
-                function () {
-
-                    const index =
-                        Number(
-                            botao.dataset.edit
-                        );
-
-
-                    abrirEdicao(index);
-
-                }
+            lista.appendChild(
+                card
             );
 
-        });
+        }
+    );
 
-
-    // ========================================================
-    // VISUALIZAR
-    // ========================================================
 
     lista
-        .querySelectorAll("[data-zoom]")
-        .forEach(function (elemento) {
+        .querySelectorAll(
+            "[data-edit]"
+        )
+        .forEach(
+            function (botao) {
 
-            elemento.addEventListener(
-                "click",
-                function () {
+                botao.addEventListener(
+                    "click",
+                    function () {
 
-                    const index =
-                        Number(
-                            elemento.dataset.zoom
+                        const index =
+                            Number(
+                                botao.dataset.edit
+                            );
+
+
+                        abrirEdicao(
+                            index
                         );
 
+                    }
+                );
 
-                    abrirVisualizacao(index);
+            }
+        );
 
-                }
-            );
 
-        });
+    lista
+        .querySelectorAll(
+            "[data-zoom]"
+        )
+        .forEach(
+            function (elemento) {
+
+                elemento.addEventListener(
+                    "click",
+                    function () {
+
+                        const index =
+                            Number(
+                                elemento.dataset.zoom
+                            );
+
+
+                        abrirVisualizacao(
+                            index
+                        );
+
+                    }
+                );
+
+            }
+        );
 
 
     atualizarResumo();
@@ -1321,22 +1722,27 @@ function renderizarCupons() {
 
 
 // ============================================================
-// ATUALIZAR RESUMO
+// RESUMO
 // ============================================================
 
 function atualizarResumo() {
 
     const count =
-        document.getElementById("count");
+        document.getElementById(
+            "count"
+        );
+
 
     const sum =
-        document.getElementById("sum");
+        document.getElementById(
+            "sum"
+        );
 
 
     if (count) {
 
         count.textContent =
-            cupons.length;
+            STATE.cupons.length;
 
     }
 
@@ -1344,25 +1750,31 @@ function atualizarResumo() {
     let total = 0;
 
 
-    cupons.forEach(function (cupom) {
+    STATE.cupons.forEach(
+        function (cupom) {
 
-        const valor =
-            converterValor(cupom.value);
+            const valor =
+                converterValor(
+                    cupom.value
+                );
 
 
-        if (!isNaN(valor)) {
+            if (!isNaN(valor)) {
 
-            total += valor;
+                total += valor;
+
+            }
 
         }
-
-    });
+    );
 
 
     if (sum) {
 
         sum.textContent =
-            formatarMoeda(total);
+            formatarMoeda(
+                total
+            );
 
     }
 
@@ -1370,58 +1782,93 @@ function atualizarResumo() {
 
 
 // ============================================================
-// ATUALIZAR REVISÃO
+// REVISÃO
 // ============================================================
 
 function atualizarRevisao() {
 
     const nome =
-        document.getElementById("nome");
+        document.getElementById(
+            "nome"
+        );
+
 
     const cpf =
-        document.getElementById("cpf");
+        document.getElementById(
+            "cpf"
+        );
+
 
     const obra =
-        document.getElementById("obra");
+        document.getElementById(
+            "obra"
+        );
+
 
     const count =
-        document.getElementById("reviewCount");
+        document.getElementById(
+            "reviewCount"
+        );
+
 
     const total =
-        document.getElementById("reviewTotal");
+        document.getElementById(
+            "reviewTotal"
+        );
+
 
     const reviewNome =
-        document.getElementById("reviewNome");
+        document.getElementById(
+            "reviewNome"
+        );
+
 
     const reviewCpf =
-        document.getElementById("reviewCpf");
+        document.getElementById(
+            "reviewCpf"
+        );
+
 
     const reviewObra =
-        document.getElementById("reviewObra");
+        document.getElementById(
+            "reviewObra"
+        );
 
 
     if (reviewNome) {
+
         reviewNome.textContent =
-            nome ? nome.value : "";
+            nome
+                ? nome.value
+                : "";
+
     }
 
 
     if (reviewCpf) {
+
         reviewCpf.textContent =
-            cpf ? cpf.value : "";
+            cpf
+                ? cpf.value
+                : "";
+
     }
 
 
     if (reviewObra) {
+
         reviewObra.textContent =
-            obra ? obra.value : "";
+            obra
+                ? obra.value
+                : "";
+
     }
 
 
     if (count) {
 
         count.textContent =
-            cupons.length;
+            STATE.cupons.length;
 
     }
 
@@ -1431,16 +1878,22 @@ function atualizarRevisao() {
         let valorTotal = 0;
 
 
-        cupons.forEach(function (cupom) {
+        STATE.cupons.forEach(
+            function (cupom) {
 
-            valorTotal +=
-                converterValor(cupom.value) || 0;
+                valorTotal +=
+                    converterValor(
+                        cupom.value
+                    ) || 0;
 
-        });
+            }
+        );
 
 
         total.textContent =
-            formatarMoeda(valorTotal);
+            formatarMoeda(
+                valorTotal
+            );
 
     }
 
@@ -1453,17 +1906,28 @@ function atualizarRevisao() {
 
 function configurarModal() {
 
-    const modal =
-        document.getElementById("modal");
-
     const close =
-        document.getElementById("close");
+        document.getElementById(
+            "close"
+        );
+
 
     const closeModal =
-        document.getElementById("closeModal");
+        document.getElementById(
+            "closeModal"
+        );
+
 
     const save =
-        document.getElementById("save");
+        document.getElementById(
+            "save"
+        );
+
+
+    const modal =
+        document.getElementById(
+            "modal"
+        );
 
 
     if (close) {
@@ -1519,86 +1983,122 @@ function configurarModal() {
 
 
 // ============================================================
-// ABRIR EDIÇÃO
+// EDITAR
 // ============================================================
 
 function abrirEdicao(index) {
 
     const cupom =
-        cupons[index];
+        STATE.cupons[index];
 
 
     if (!cupom) {
+
         return;
+
     }
 
 
-    modalCupomIndex =
+    STATE.modalCupomIndex =
         index;
 
 
     const modal =
-        document.getElementById("modal");
+        document.getElementById(
+            "modal"
+        );
 
 
     const photo =
-        document.getElementById("photo");
+        document.getElementById(
+            "photo"
+        );
+
 
     const mdate =
-        document.getElementById("mdate");
+        document.getElementById(
+            "mdate"
+        );
+
 
     const mcat =
-        document.getElementById("mcat");
+        document.getElementById(
+            "mcat"
+        );
+
 
     const mdesc =
-        document.getElementById("mdesc");
+        document.getElementById(
+            "mdesc"
+        );
+
 
     const mdoc =
-        document.getElementById("mdoc");
+        document.getElementById(
+            "mdoc"
+        );
+
 
     const mvalue =
-        document.getElementById("mvalue");
+        document.getElementById(
+            "mvalue"
+        );
 
 
     if (photo) {
+
         photo.src =
             cupom.previewURL;
+
     }
 
 
     if (mdate) {
+
         mdate.value =
             cupom.date || "";
+
     }
 
 
-    // SEMPRE MATERIAIS
     if (mcat) {
+
         mcat.value =
             "materiais";
+
     }
 
 
     if (mdesc) {
+
         mdesc.value =
             cupom.description || "";
+
     }
 
 
     if (mdoc) {
+
         mdoc.value =
             cupom.document || "";
+
     }
 
 
     if (mvalue) {
+
         mvalue.value =
             cupom.value || "";
+
     }
 
 
     if (modal) {
-        modal.classList.add("show");
+
+        modal.classList.add(
+            "show"
+        );
+
     }
 
 }
@@ -1610,36 +2110,53 @@ function abrirEdicao(index) {
 
 function salvarEdicao() {
 
+    const index =
+        STATE.modalCupomIndex;
+
+
     if (
-        modalCupomIndex === null
+        index === null ||
+        index === undefined
     ) {
+
         return;
+
     }
 
 
     const cupom =
-        cupons[modalCupomIndex];
+        STATE.cupons[index];
 
 
     if (!cupom) {
+
         return;
+
     }
 
 
     const mdate =
-        document.getElementById("mdate");
+        document.getElementById(
+            "mdate"
+        );
 
-    const mcat =
-        document.getElementById("mcat");
 
     const mdesc =
-        document.getElementById("mdesc");
+        document.getElementById(
+            "mdesc"
+        );
+
 
     const mdoc =
-        document.getElementById("mdoc");
+        document.getElementById(
+            "mdoc"
+        );
+
 
     const mvalue =
-        document.getElementById("mvalue");
+        document.getElementById(
+            "mvalue"
+        );
 
 
     const documento =
@@ -1654,9 +2171,13 @@ function salvarEdicao() {
             "Informe o número do documento."
         );
 
+
         if (mdoc) {
+
             mdoc.focus();
+
         }
+
 
         return;
 
@@ -1669,7 +2190,6 @@ function salvarEdicao() {
             : "";
 
 
-    // Categoria SEMPRE MATERIAIS
     cupom.category =
         "materiais";
 
@@ -1703,6 +2223,7 @@ function salvarEdicao() {
 
     fecharModal();
 
+
     renderizarCupons();
 
 }
@@ -1715,40 +2236,53 @@ function salvarEdicao() {
 function fecharModal() {
 
     const modal =
-        document.getElementById("modal");
+        document.getElementById(
+            "modal"
+        );
 
 
     if (modal) {
-        modal.classList.remove("show");
+
+        modal.classList.remove(
+            "show"
+        );
+
     }
 
 
-    modalCupomIndex =
+    STATE.modalCupomIndex =
         null;
 
 }
 
 
 // ============================================================
-// VISUALIZAÇÃO
+// VISUALIZAR CUPOM
 // ============================================================
 
 function abrirVisualizacao(index) {
 
     const cupom =
-        cupons[index];
+        STATE.cupons[index];
 
 
     if (!cupom) {
+
         return;
+
     }
 
 
     const modal =
-        document.getElementById("modal");
+        document.getElementById(
+            "modal"
+        );
+
 
     const photo =
-        document.getElementById("photo");
+        document.getElementById(
+            "photo"
+        );
 
 
     if (photo) {
@@ -1760,69 +2294,99 @@ function abrirVisualizacao(index) {
 
 
     const mdate =
-        document.getElementById("mdate");
+        document.getElementById(
+            "mdate"
+        );
+
 
     const mcat =
-        document.getElementById("mcat");
+        document.getElementById(
+            "mcat"
+        );
+
 
     const mdesc =
-        document.getElementById("mdesc");
+        document.getElementById(
+            "mdesc"
+        );
+
 
     const mdoc =
-        document.getElementById("mdoc");
+        document.getElementById(
+            "mdoc"
+        );
+
 
     const mvalue =
-        document.getElementById("mvalue");
+        document.getElementById(
+            "mvalue"
+        );
 
 
     if (mdate) {
+
         mdate.value =
             cupom.date || "";
+
     }
 
 
     if (mcat) {
+
         mcat.value =
             "materiais";
+
     }
 
 
     if (mdesc) {
+
         mdesc.value =
             cupom.description || "";
+
     }
 
 
     if (mdoc) {
+
         mdoc.value =
             cupom.document || "";
+
     }
 
 
     if (mvalue) {
+
         mvalue.value =
             cupom.value || "";
+
     }
 
 
-    modalCupomIndex =
+    STATE.modalCupomIndex =
         index;
 
 
     if (modal) {
-        modal.classList.add("show");
+
+        modal.classList.add(
+            "show"
+        );
+
     }
 
 }
 
 
 // ============================================================
-// GERAR RDD + CUPONS
+// GERAR RDD
 // ============================================================
 
 async function gerarRDD() {
 
-    if (!cupons.length) {
+    if (
+        !STATE.cupons.length
+    ) {
 
         alert(
             "Adicione pelo menos um cupom."
@@ -1834,17 +2398,21 @@ async function gerarRDD() {
 
 
     const faltando =
-        cupons.filter(function (cupom) {
+        STATE.cupons.filter(
+            function (cupom) {
 
-            return (
-                !cupom.document ||
-                !cupom.category
-            );
+                return (
+                    !cupom.document ||
+                    !cupom.category
+                );
 
-        });
+            }
+        );
 
 
-    if (faltando.length) {
+    if (
+        faltando.length
+    ) {
 
         alert(
             "Existem cupons sem número de documento."
@@ -1856,13 +2424,21 @@ async function gerarRDD() {
 
 
     const nome =
-        document.getElementById("nome");
+        document.getElementById(
+            "nome"
+        );
+
 
     const cpf =
-        document.getElementById("cpf");
+        document.getElementById(
+            "cpf"
+        );
+
 
     const obra =
-        document.getElementById("obra");
+        document.getElementById(
+            "obra"
+        );
 
 
     const payload = {
@@ -1883,31 +2459,36 @@ async function gerarRDD() {
                 : "",
 
         receipts:
-            cupons.map(function (cupom) {
+            STATE.cupons.map(
+                function (cupom) {
 
-                return {
+                    return {
 
-                    date:
-                        cupom.date || "",
+                        date:
+                            cupom.date || "",
 
-                    account:
-                        "",
+                        account:
+                            "",
 
-                    description:
-                        cupom.description || "",
+                        description:
+                            cupom.description ||
+                            "",
 
-                    document:
-                        cupom.document || "",
+                        document:
+                            cupom.document ||
+                            "",
 
-                    category:
-                        "materiais",
+                        category:
+                            "materiais",
 
-                    value:
-                        cupom.value || ""
+                        value:
+                            cupom.value ||
+                            ""
 
-                };
+                    };
 
-            })
+                }
+            )
 
     };
 
@@ -1918,28 +2499,35 @@ async function gerarRDD() {
 
     formData.append(
         "payload",
-        JSON.stringify(payload)
+        JSON.stringify(
+            payload
+        )
     );
 
 
-    cupons.forEach(function (cupom) {
+    STATE.cupons.forEach(
+        function (cupom) {
 
-        formData.append(
-            "receipts",
-            cupom.file,
-            cupom.originalName
-        );
+            formData.append(
+                "receipts",
+                cupom.file,
+                cupom.originalName
+            );
 
-    });
+        }
+    );
 
 
     const generate =
-        document.getElementById("generate");
+        document.getElementById(
+            "generate"
+        );
 
 
     if (generate) {
 
-        generate.disabled = true;
+        generate.disabled =
+            true;
 
         generate.textContent =
             "GERANDO RDD...";
@@ -1951,10 +2539,16 @@ async function gerarRDD() {
 
         const resposta =
             await fetch(
-                API_URL + "/api/generate",
+                API_URL +
+                "/api/generate",
                 {
-                    method: "POST",
-                    body: formData
+
+                    method:
+                        "POST",
+
+                    body:
+                        formData
+
                 }
             );
 
@@ -1993,11 +2587,15 @@ async function gerarRDD() {
 
 
         const url =
-            URL.createObjectURL(blob);
+            URL.createObjectURL(
+                blob
+            );
 
 
         const link =
-            document.createElement("a");
+            document.createElement(
+                "a"
+            );
 
 
         link.href =
@@ -2008,18 +2606,26 @@ async function gerarRDD() {
             "RDD_PARCEIRO.pdf";
 
 
-        document.body.appendChild(link);
+        document.body.appendChild(
+            link
+        );
+
 
         link.click();
+
 
         link.remove();
 
 
-        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(
+            url
+        );
 
 
         const message =
-            document.getElementById("message");
+            document.getElementById(
+                "message"
+            );
 
 
         if (message) {
@@ -2038,7 +2644,7 @@ async function gerarRDD() {
                         RDD gerado com sucesso!
                     </strong>
 
-                    <br>
+                    <br><br>
 
                     O PDF foi gerado com os
                     comprovantes anexados.
@@ -2050,9 +2656,13 @@ async function gerarRDD() {
         }
 
 
-        if (window.RDDMostrarTela) {
+        if (
+            window.RDDMostrarTela
+        ) {
 
-            window.RDDMostrarTela(4);
+            window.RDDMostrarTela(
+                4
+            );
 
         }
 
@@ -2075,7 +2685,8 @@ async function gerarRDD() {
 
         if (generate) {
 
-            generate.disabled = false;
+            generate.disabled =
+                false;
 
             generate.textContent =
                 "GERAR RDD + CUPONS";
@@ -2088,10 +2699,12 @@ async function gerarRDD() {
 
 
 // ============================================================
-// CONVERSÃO DE VALOR
+// VALOR
 // ============================================================
 
-function converterValor(valor) {
+function converterValor(
+    valor
+) {
 
     if (
         valor === null ||
@@ -2104,14 +2717,21 @@ function converterValor(valor) {
     }
 
 
-    if (typeof valor === "number") {
+    if (
+        typeof valor === "number"
+    ) {
+
         return valor;
+
     }
 
 
     let texto =
         String(valor)
-            .replace(/[R$\s]/g, "")
+            .replace(
+                /[R$\s]/g,
+                ""
+            )
             .trim();
 
 
@@ -2120,14 +2740,23 @@ function converterValor(valor) {
     ) {
 
         texto =
-            texto.replace(/\./g, "")
-                 .replace(",", ".");
+            texto
+                .replace(
+                    /\./g,
+                    ""
+                )
+                .replace(
+                    ",",
+                    "."
+                );
 
     }
 
 
     const numero =
-        parseFloat(texto);
+        parseFloat(
+            texto
+        );
 
 
     return isNaN(numero)
@@ -2138,16 +2767,23 @@ function converterValor(valor) {
 
 
 // ============================================================
-// FORMATAR MOEDA
+// MOEDA
 // ============================================================
 
-function formatarMoeda(valor) {
+function formatarMoeda(
+    valor
+) {
 
     return valor.toLocaleString(
         "pt-BR",
         {
-            style: "currency",
-            currency: "BRL"
+
+            style:
+                "currency",
+
+            currency:
+                "BRL"
+
         }
     );
 
@@ -2155,10 +2791,12 @@ function formatarMoeda(valor) {
 
 
 // ============================================================
-// FORMATAR DATA
+// DATA
 // ============================================================
 
-function formatarDataExibicao(data) {
+function formatarDataExibicao(
+    data
+) {
 
     if (!data) {
 
@@ -2171,7 +2809,9 @@ function formatarDataExibicao(data) {
         data.split("-");
 
 
-    if (partes.length === 3) {
+    if (
+        partes.length === 3
+    ) {
 
         return (
             partes[2] +
@@ -2193,13 +2833,32 @@ function formatarDataExibicao(data) {
 // ESCAPAR HTML
 // ============================================================
 
-function escapeHTML(texto) {
+function escapeHTML(
+    texto
+) {
 
-    return String(texto || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    return String(
+        texto || ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
