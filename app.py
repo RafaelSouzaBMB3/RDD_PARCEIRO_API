@@ -1,886 +1,3300 @@
-import os
-import io
-import json
-import sqlite3
-import tempfile
-import subprocess
-import re
-from datetime import date
-from pathlib import Path
+const API_URL = "https://rdd-parceiro-api-1.onrender.com";
 
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
-from openpyxl import load_workbook
-from PIL import Image
-import fitz  # PyMuPDF
 
-BASE_DIR = Path(__file__).resolve().parent
-TEMPLATE = BASE_DIR / "template" / "RDD.PARCEIRO.xlsx"
-DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR / "data")))
-DATA_DIR.mkdir(parents=True, exist_ok=True)
-DB_PATH = DATA_DIR / "rdd.db"
+// ============================================================
+// ESTADO GLOBAL ÃšNICO
+// ============================================================
 
-CATEGORY_COLUMNS = {
-    "Transporte": "F",
-    "Combustível": "G",
-    "Refeições": "H",
-    "Hospedagem": "I",
-    "Materiais": "J",
-    "Diversos": "K",
+if (!window.RDD_PARCEIRO_STATE) {
+
+    window.RDD_PARCEIRO_STATE = {
+
+        cupons: [],
+
+        ocrWorker: null,
+
+        processamentoEmAndamento: false,
+
+        modalCupomIndex: null,
+
+        modoModal: null,
+
+        inicializado: false
+
+    };
+
 }
 
-app = FastAPI(
-    title="RDD Parceiro BMB3 API",
-    version="1.0.0"
-)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["Content-Disposition"],
-)
+const STATE = window.RDD_PARCEIRO_STATE;
 
 
-def db():
-    con = sqlite3.connect(
-        DB_PATH,
-        timeout=30
-    )
+// ============================================================
+// INICIALIZAÃ‡ÃƒO
+// ============================================================
 
-    con.execute(
-        "PRAGMA journal_mode=WAL"
-    )
+document.addEventListener("DOMContentLoaded", function () {
 
-    return con
+    if (STATE.inicializado) {
 
+        console.log(
+            "RDD Parceiro: inicializaÃ§Ã£o duplicada ignorada."
+        );
 
-def init_db():
+        return;
 
-    con = db()
+    }
 
-    con.execute("""
-        CREATE TABLE IF NOT EXISTS counters (
-            id INTEGER PRIMARY KEY CHECK (id = 1),
-            next_number INTEGER NOT NULL
-        )
-    """)
-
-    con.execute(
-        """
-        INSERT OR IGNORE INTO counters
-        (id, next_number)
-        VALUES (1, 210)
-        """
-    )
-
-    con.commit()
-    con.close()
+    STATE.inicializado = true;
 
 
-@app.on_event("startup")
-def startup():
+    console.log(
+        "RDD PARCEIRO BMB3 iniciado."
+    );
 
-    init_db()
+
+    // --------------------------------------------------------
+    // ELEMENTOS
+    // --------------------------------------------------------
+
+    const nome =
+        document.getElementById("nome");
+
+    const cpf =
+        document.getElementById("cpf");
+
+    const obra =
+        document.getElementById("obra");
+
+    const periodo =
+        document.getElementById("periodo");
+
+    const next1 =
+        document.getElementById("next1");
+
+    const back1 =
+        document.getElementById("back1");
+
+    const next2 =
+        document.getElementById("next2");
+
+    const back2 =
+        document.getElementById("back2");
+
+    const generate =
+        document.getElementById("generate");
+
+    const novo =
+        document.getElementById("new");
+
+    const filesInput =
+        document.getElementById("files");
 
 
-@app.get("/")
-def root():
+    // ========================================================
+    // PERÃODO AUTOMÃTICO
+    // ========================================================
 
-    return {
-        "ok": True,
-        "service": "RDD Parceiro BMB3 API"
+    if (periodo) {
+
+        const hoje = new Date();
+
+        const primeiroDia =
+            new Date(
+                hoje.getFullYear(),
+                hoje.getMonth(),
+                1
+            );
+
+        const ultimoDia =
+            new Date(
+                hoje.getFullYear(),
+                hoje.getMonth() + 1,
+                0
+            );
+
+        periodo.value =
+            primeiroDia.toLocaleDateString("pt-BR") +
+            " atÃ© " +
+            ultimoDia.toLocaleDateString("pt-BR");
+
     }
 
 
-@app.get("/health")
-def health():
+    // ========================================================
+    // TELAS
+    // ========================================================
 
-    return {
-        "ok": True,
-        "template": TEMPLATE.exists()
+    const telas = {
+
+        1: document.getElementById("dados"),
+
+        2: document.getElementById("cupons"),
+
+        3: document.getElementById("revisao"),
+
+        4: document.getElementById("final")
+
+    };
+
+
+    const etapas =
+        document.querySelectorAll(
+            ".progress .step"
+        );
+
+
+    function mostrarTela(numero) {
+
+        Object.values(telas)
+            .forEach(function (tela) {
+
+                if (!tela) return;
+
+                tela.classList.remove("on");
+
+                tela.classList.remove("active");
+
+                tela.style.display = "none";
+
+            });
+
+
+        const telaAtual =
+            telas[numero];
+
+
+        if (telaAtual) {
+
+            telaAtual.classList.add("on");
+
+            telaAtual.classList.add("active");
+
+            telaAtual.style.display = "block";
+
+        }
+
+
+        etapas.forEach(
+            function (etapa, index) {
+
+                const numeroEtapa =
+                    index + 1;
+
+                etapa.classList.remove(
+                    "active"
+                );
+
+                etapa.classList.remove(
+                    "done"
+                );
+
+
+                if (
+                    numeroEtapa < numero
+                ) {
+
+                    etapa.classList.add(
+                        "done"
+                    );
+
+                }
+
+
+                if (
+                    numeroEtapa === numero
+                ) {
+
+                    etapa.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+
+        window.scrollTo({
+
+            top: 0,
+
+            behavior: "smooth"
+
+        });
+
     }
 
 
-def parse_date(value):
+    window.RDDMostrarTela =
+        mostrarTela;
 
-    if not value:
-        return None
 
-    s = str(value).strip()
+    // ========================================================
+    // ETAPA 1 â†’ ETAPA 2
+    // ========================================================
 
-    # Aceita YYYY-MM-DD e DD/MM/YYYY
-    for fmt in (
-        "%Y-%m-%d",
-        "%d/%m/%Y"
-    ):
+    if (next1) {
 
-        try:
+        next1.type = "button";
 
-            from datetime import datetime
 
-            return datetime.strptime(
-                s,
-                fmt
-            ).date()
+        next1.addEventListener(
+            "click",
+            function (event) {
 
-        except ValueError:
+                event.preventDefault();
 
-            pass
+                event.stopImmediatePropagation();
 
-    return None
 
+                if (
+                    !nome ||
+                    !nome.value.trim()
+                ) {
 
-def money(value):
+                    alert(
+                        "Informe o nome completo."
+                    );
 
-    if value is None or value == "":
-        return 0.0
+                    if (nome) {
+                        nome.focus();
+                    }
 
-    if isinstance(
-        value,
-        (int, float)
-    ):
+                    return;
 
-        return float(value)
+                }
 
-    s = (
-        str(value)
-        .strip()
-        .replace("R$", "")
-        .replace(" ", "")
-    )
 
-    if "," in s:
-
-        s = (
-            s.replace(".", "")
-            .replace(",", ".")
-        )
-
-    return float(s)
-
-
-def safe_filename(value):
-
-    """
-    Remove caracteres que não podem ser usados
-    em nomes de arquivos no Windows.
-    """
-
-    value = str(value or "").strip()
-
-    value = re.sub(
-        r'[<>:"/\\|?*]',
-        "",
-        value
-    )
-
-    value = re.sub(
-        r"\s+",
-        " ",
-        value
-    )
-
-    value = value.strip(
-        " ."
-    )
-
-    if not value:
-
-        value = "RDD_PARCEIRO"
-
-    return value
-
-
-def get_next_rdd_number():
-
-    con = db()
-
-    try:
-
-        con.execute(
-            "BEGIN IMMEDIATE"
-        )
-
-        row = con.execute(
-            """
-            SELECT next_number
-            FROM counters
-            WHERE id=1
-            """
-        ).fetchone()
-
-        n = int(
-            row[0]
-        )
-
-        con.execute(
-            """
-            UPDATE counters
-            SET next_number=?
-            WHERE id=1
-            """,
-            (
-                n + 1,
-            )
-        )
-
-        con.commit()
-
-        return n
-
-    except Exception:
-
-        con.rollback()
-
-        raise
-
-    finally:
-
-        con.close()
-
-
-def fill_workbook(
-    payload,
-    rdd_number,
-    output_xlsx
-):
-
-    wb = load_workbook(
-        TEMPLATE
-    )
-
-    if "RDD" not in wb.sheetnames:
-
-        raise RuntimeError(
-            "Aba RDD não encontrada no modelo."
-        )
-
-    ws = wb["RDD"]
-
-
-    # ============================================================
-    # CABEÇALHO
-    # ============================================================
-
-    ws["F3"] = (
-        f"RDD-{rdd_number:03d}"
-    )
-
-
-    today = date.today()
-
-    first = today.replace(
-        day=1
-    )
-
-
-    if today.month == 12:
-
-        next_month = today.replace(
-            year=today.year + 1,
-            month=1,
-            day=1
-        )
-
-    else:
-
-        next_month = today.replace(
-            month=today.month + 1,
-            day=1
-        )
-
-
-    last = (
-        next_month.fromordinal(
-            next_month.toordinal() - 1
-        )
-    )
-
-
-    ws["I3"] = first
-    ws["K3"] = last
-
-    ws["I3"].number_format = (
-        "dd/mm/yyyy"
-    )
-
-    ws["K3"].number_format = (
-        "dd/mm/yyyy"
-    )
-
-
-    ws["C5"] = payload.get(
-        "nome",
-        ""
-    )
-
-    ws["K5"] = payload.get(
-        "cpf",
-        ""
-    )
-
-    ws["K6"] = payload.get(
-        "obra",
-        ""
-    )
-
-
-    # ============================================================
-    # LIMPA AS LINHAS DE DESPESAS
-    # ============================================================
-
-    for r in range(
-        9,
-        44
-    ):
-
-        ws[f"B{r}"] = None
-        ws[f"C{r}"] = None
-        ws[f"D{r}"] = None
-        ws[f"E{r}"] = None
-
-        for col in "FGHIJK":
-
-            ws[f"{col}{r}"] = None
-
-        # preserva/recria a fórmula de total
-        ws[f"L{r}"] = (
-            f"=SUM(F{r}:K{r})"
-        )
-
-
-    receipts = payload.get(
-        "receipts",
-        []
-    )
-
-
-    if not isinstance(
-        receipts,
-        list
-    ):
-
-        raise ValueError(
-            "receipts deve ser uma lista."
-        )
-
-
-    if len(receipts) > 35:
-
-        raise ValueError(
-            "O modelo possui 35 linhas de despesas (9 a 43)."
-        )
-
-
-    for idx, item in enumerate(
-        receipts,
-        start=9
-    ):
-
-        d = parse_date(
-            item.get("date")
-        )
-
-
-        if d:
-
-            ws[f"B{idx}"] = d
-
-            ws[
-                f"B{idx}"
-            ].number_format = (
-                "dd/mm/yyyy"
-            )
-
-
-        ws[f"C{idx}"] = (
-            item.get(
-                "account",
-                ""
-            )
-        )
-
-        ws[f"D{idx}"] = (
-            item.get(
-                "description",
-                ""
-            )
-        )
-
-        ws[f"E{idx}"] = (
-            item.get(
-                "document",
-                ""
-            )
-        )
-
-
-        category = str(
-            item.get(
-                "category",
-                ""
-            )
-        ).strip()
-
-
-        if category not in CATEGORY_COLUMNS:
-
-            raise ValueError(
-                f"Categoria inválida: {category}"
-            )
-
-
-        ws[
-            f"{CATEGORY_COLUMNS[category]}{idx}"
-        ] = money(
-            item.get(
-                "value"
-            )
-        )
-
-
-    # Garante área de impressão do modelo
-    ws.print_area = "A1:L49"
-
-
-    wb.save(
-        output_xlsx
-    )
-
-
-def append_images_to_pdf(
-    pdf_path,
-    image_files
-):
-
-    doc = fitz.open(
-        pdf_path
-    )
-
-
-    for img_path in image_files:
-
-        try:
-
-            with Image.open(
-                img_path
-            ) as im:
-
-                im = im.convert(
-                    "RGB"
-                )
-
-
-                # Limita resolução exagerada
-                # sem perder legibilidade.
-                max_side = 2200
-
-
-                if max(im.size) > max_side:
-
-                    ratio = (
-                        max_side /
-                        max(im.size)
-                    )
-
-                    im = im.resize(
-                        (
-                            int(
-                                im.width *
-                                ratio
-                            ),
-                            int(
-                                im.height *
-                                ratio
-                            )
+                const cpfNumeros =
+                    cpf
+                        ? cpf.value.replace(
+                            /\D/g,
+                            ""
                         )
+                        : "";
+
+
+                if (
+                    cpfNumeros.length !== 11
+                ) {
+
+                    alert(
+                        "Informe um CPF vÃ¡lido com 11 nÃºmeros."
+                    );
+
+                    if (cpf) {
+                        cpf.focus();
+                    }
+
+                    return;
+
+                }
+
+
+                if (
+                    !obra ||
+                    !obra.value.trim()
+                ) {
+
+                    alert(
+                        "Informe a obra / projeto."
+                    );
+
+                    if (obra) {
+                        obra.focus();
+                    }
+
+                    return;
+
+                }
+
+
+                mostrarTela(2);
+
+            },
+            true
+        );
+
+    }
+
+
+    // ========================================================
+    // VOLTAR â†’ DADOS
+    // ========================================================
+
+    if (back1) {
+
+        back1.type = "button";
+
+
+        back1.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopImmediatePropagation();
+
+                mostrarTela(1);
+
+            },
+            true
+        );
+
+    }
+
+
+    // ========================================================
+    // ETAPA 2 â†’ ETAPA 3
+    // ========================================================
+
+    if (next2) {
+
+        next2.type = "button";
+
+
+        next2.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopImmediatePropagation();
+
+
+                console.log(
+                    "CONTINUAR pressionado."
+                );
+
+
+                console.log(
+                    "Cupons no estado:",
+                    STATE.cupons.length
+                );
+
+
+                console.log(
+                    "Cupons na tela:",
+                    document.querySelectorAll(
+                        "#list .coupon-card"
+                    ).length
+                );
+
+
+                if (
+                    !STATE.cupons ||
+                    STATE.cupons.length === 0
+                ) {
+
+                    const cards =
+                        document.querySelectorAll(
+                            "#list .coupon-card"
+                        );
+
+
+                    if (
+                        cards.length === 0
+                    ) {
+
+                        alert(
+                            "Adicione pelo menos um cupom antes de continuar."
+                        );
+
+                        return;
+
+                    }
+
+                }
+
+
+                const incompletos =
+                    STATE.cupons.filter(
+                        function (cupom) {
+
+                            return (
+                                !cupom.document ||
+                                !cupom.category
+                            );
+
+                        }
+                    );
+
+
+                if (
+                    incompletos.length > 0
+                ) {
+
+                    alert(
+                        "Existem cupons que precisam ser revisados. " +
+                        "Informe o nÃºmero do documento."
+                    );
+
+                    return;
+
+                }
+
+
+                atualizarRevisao();
+
+                mostrarTela(3);
+
+            },
+            true
+        );
+
+    }
+
+
+    // ========================================================
+    // VOLTAR â†’ CUPONS
+    // ========================================================
+
+    if (back2) {
+
+        back2.type = "button";
+
+
+        back2.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopImmediatePropagation();
+
+                mostrarTela(2);
+
+            },
+            true
+        );
+
+    }
+
+
+    // ========================================================
+    // GERAR
+    // ========================================================
+
+    if (generate) {
+
+        generate.type = "button";
+
+
+        generate.addEventListener(
+            "click",
+            async function (event) {
+
+                event.preventDefault();
+
+                event.stopImmediatePropagation();
+
+                await gerarRDD();
+
+            },
+            true
+        );
+
+    }
+
+
+    // ========================================================
+    // NOVO RDD
+    // ========================================================
+
+    if (novo) {
+
+        novo.type = "button";
+
+
+        novo.addEventListener(
+            "click",
+            function (event) {
+
+                event.preventDefault();
+
+                event.stopImmediatePropagation();
+
+
+                STATE.cupons = [];
+
+
+                if (filesInput) {
+
+                    filesInput.value = "";
+
+                }
+
+
+                renderizarCupons();
+
+                
+
+            if (window.RDD_PROCESSAMENTO) {
+                window.RDD_PROCESSAMENTO.atualizar(
+                    "âœ… Comprovante processado",
+                    "Os dados foram carregados e o cupom estÃ¡ disponÃ­vel para conferÃªncia.",
+                    arquivos.length,
+                    i + 1
+                );
+            }
+
+mostrarTela(1);
+
+            },
+            true
+        );
+
+    }
+
+
+    // ========================================================
+    // ARQUIVOS
+    // ========================================================
+
+    if (filesInput) {
+
+        filesInput.addEventListener(
+            "change",
+            async function () {
+
+                if (
+                    !filesInput.files ||
+                    !filesInput.files.length
+                ) {
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "Arquivos recebidos:",
+                    filesInput.files.length
+                );
+
+
+                await processarArquivos(
+                    Array.from(
+                        filesInput.files
                     )
+                );
+
+            }
+        );
+
+    }
 
 
-                buf = io.BytesIO()
+    // ========================================================
+    // CATEGORIA
+    // ========================================================
+
+    const mcat =
+        document.getElementById("mcat");
 
 
-                im.save(
-                    buf,
-                    format="JPEG",
-                    quality=82,
-                    optimize=True
+    if (mcat) {
+
+        mcat.value =
+            "Materiais";
+
+    }
+
+
+    // ========================================================
+    // MODAL
+    // ========================================================
+
+    configurarModal();
+
+
+    // ========================================================
+    // TELA INICIAL
+    // ========================================================
+
+    mostrarTela(1);
+
+});
+
+
+// ============================================================
+// CARREGAR TESSERACT
+// ============================================================
+
+async function carregarTesseract() {
+
+    if (window.Tesseract) {
+
+        return;
+
+    }
+
+
+    await carregarScript(
+        "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"
+    );
+
+}
+
+
+// ============================================================
+// CARREGAR HEIC
+// ============================================================
+
+async function carregarHeic2Any() {
+
+    if (window.heic2any) {
+
+        return;
+
+    }
+
+
+    await carregarScript(
+        "https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"
+    );
+
+}
+
+
+// ============================================================
+// CARREGAR SCRIPT
+// ============================================================
+
+function carregarScript(src) {
+
+    return new Promise(
+        function (resolve, reject) {
+
+            const script =
+                document.createElement(
+                    "script"
+                );
+
+
+            script.src = src;
+
+
+            script.onload =
+                resolve;
+
+
+            script.onerror =
+                function () {
+
+                    reject(
+                        new Error(
+                            "NÃ£o foi possÃ­vel carregar: " +
+                            src
+                        )
+                    );
+
+                };
+
+
+            document.head.appendChild(
+                script
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// PROCESSAR ARQUIVOS
+// ============================================================
+
+async function processarArquivos(
+    arquivos
+) {
+
+    if (
+        STATE.processamentoEmAndamento
+    ) {
+
+        return;
+
+    }
+
+
+    STATE.processamentoEmAndamento =
+        true;
+
+
+    
+
+    /* TELA REAL DE PROCESSAMENTO */
+    if (window.RDD_PROCESSAMENTO) {
+        window.RDD_PROCESSAMENTO.mostrar(
+            arquivos.length,
+            1
+        );
+    }
+
+const status =
+        document.getElementById(
+            "uploadStatus"
+        );
+
+
+    const statusTitle =
+        document.getElementById(
+            "uploadStatusTitle"
+        );
+
+
+    const statusText =
+        document.getElementById(
+            "uploadStatusText"
+        );
+
+
+    if (status) {
+
+        status.classList.add("show");
+
+    }
+
+
+    if (statusTitle) {
+
+        statusTitle.textContent =
+            "ðŸ”Ž Lendo os comprovantes...";
+
+    }
+
+
+    if (statusText) {
+
+        statusText.textContent =
+            "Aguarde enquanto o sistema identifica os dados dos cupons.";
+
+    }
+
+
+    try {
+
+        await carregarTesseract();
+
+
+        for (
+            let i = 0;
+            i < arquivos.length;
+            i++
+        ) {
+
+            const arquivo =
+                arquivos[i];
+
+
+            const existe =
+                STATE.cupons.some(
+                    function (cupom) {
+
+                        return (
+                            cupom.originalName ===
+                            arquivo.name
+                        );
+
+                    }
+                );
+
+
+            if (existe) {
+
+                continue;
+
+            }
+
+
+            if (statusText) {
+
+                statusText.textContent =
+                    "Processando cupom " +
+                    (i + 1) +
+                    " de " +
+                    arquivos.length +
+                    "...";
+
+            }
+
+            if (window.RDD_PROCESSAMENTO) {
+                window.RDD_PROCESSAMENTO.atualizar(
+                    "ðŸ”Ž Lendo comprovante...",
+                    "O sistema estÃ¡ identificando data, estabelecimento, documento e valor.",
+                    arquivos.length,
+                    i + 1
+                );
+            }
+
+            if (window.RDD_PROCESSAMENTO) {
+                window.RDD_PROCESSAMENTO.atualizar(
+                    "âš™ï¸ Processando imagem...",
+                    "Convertendo e preparando o comprovante para leitura.",
+                    arquivos.length,
+                    i + 1
+                );
+            }
+
+
+
+
+            const cupom =
+                await processarCupom(
+                    arquivo,
+                    STATE.cupons.length + 1
+                );
+
+
+            STATE.cupons.push(
+                cupom
+            );
+
+
+            renderizarCupons();
+
+        }
+
+
+        if (statusTitle) {
+
+            statusTitle.textContent =
+                "âœ… Comprovantes processados";
+
+        }
+
+
+        if (statusText) {
+
+            statusText.textContent =
+                STATE.cupons.length +
+                " cupom(ns) carregado(s). Confira os dados abaixo.";
+
+        }
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro no processamento:",
+            erro
+        );
+
+
+        if (statusTitle) {
+
+            statusTitle.textContent =
+                "âš ï¸ AtenÃ§Ã£o";
+
+        }
+
+
+        if (statusText) {
+
+            statusText.textContent =
+                "NÃ£o foi possÃ­vel processar todos os comprovantes. " +
+                "VocÃª poderÃ¡ revisar manualmente.";
+
+        }
+
+    }
+
+
+    STATE.processamentoEmAndamento =
+        false;
+
+
+    atualizarResumo();
+
+
+
+    if (window.RDD_PROCESSAMENTO) {
+        window.RDD_PROCESSAMENTO.finalizar();
+    }
+
+}
+
+
+// ============================================================
+// PROCESSAR CUPOM
+// ============================================================
+
+async function processarCupom(
+    arquivo,
+    numero
+) {
+
+    let imagemOCR =
+        arquivo;
+
+
+    const extensao =
+        arquivo.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+
+    // --------------------------------------------------------
+    // HEIC / HEIF
+    // --------------------------------------------------------
+
+    if (
+        extensao === "heic" ||
+        extensao === "heif" ||
+        arquivo.type === "image/heic" ||
+        arquivo.type === "image/heif"
+    ) {
+
+        try {
+
+            await carregarHeic2Any();
+
+
+            const convertido =
+                await window.heic2any({
+
+                    blob:
+                        arquivo,
+
+                    toType:
+                        "image/jpeg",
+
+                    quality:
+                        0.9
+
+                });
+
+
+            imagemOCR =
+                Array.isArray(
+                    convertido
                 )
+                    ? convertido[0]
+                    : convertido;
 
 
-                rect = fitz.Rect(
-                    0,
-                    0,
-                    595,
-                    842
+        } catch (erro) {
+
+            console.warn(
+                "Falha na conversÃ£o HEIC:",
+                erro
+            );
+
+        }
+
+    }
+
+
+    const previewURL =
+        URL.createObjectURL(
+            imagemOCR
+        );
+
+
+    let textoOCR = "";
+
+
+    // --------------------------------------------------------
+    // OCR
+    // --------------------------------------------------------
+
+    try {
+
+        if (!STATE.ocrWorker) {
+
+            STATE.ocrWorker =
+                await Tesseract.createWorker(
+                    "por"
+                );
+
+        }
+
+
+        const resultado =
+            await STATE.ocrWorker.recognize(
+                previewURL
+            );
+
+
+        textoOCR =
+            resultado.data.text ||
+            "";
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro OCR:",
+            erro
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // INTERPRETAÃ‡ÃƒO
+    // --------------------------------------------------------
+
+    const dados =
+        interpretarCupom(
+            textoOCR
+        );
+
+
+    // --------------------------------------------------------
+    // CATEGORIA SEMPRE MATERIAIS
+    // --------------------------------------------------------
+
+    return {
+
+        id:
+            Date.now() +
+            Math.random(),
+
+        numero:
+            numero,
+
+        file:
+            arquivo,
+
+        originalName:
+            arquivo.name,
+
+        previewURL:
+            previewURL,
+
+        ocrText:
+            textoOCR,
+
+        date:
+            dados.date ||
+            "",
+
+        description:
+            dados.description ||
+            "",
+
+        document:
+            dados.document ||
+            "",
+
+        category:
+            "Materiais",
+
+        value:
+            dados.value ||
+            "",
+
+        status:
+            (
+                dados.date &&
+                dados.description &&
+                dados.document &&
+                dados.value
+            )
+                ? "ok"
+                : "revisao"
+
+    };
+
+}
+
+
+// ============================================================
+// INTERPRETAR OCR
+// ============================================================
+
+function interpretarCupom(
+    texto
+) {
+
+    const resultado = {
+
+        date: "",
+
+        description: "",
+
+        document: "",
+
+        value: "",
+
+        category:
+            "Materiais"
+
+    };
+
+
+    if (!texto) {
+
+        return resultado;
+
+    }
+
+
+    const linhas =
+        texto
+            .split(/\r?\n/)
+            .map(
+                function (linha) {
+
+                    return linha.trim();
+
+                }
+            )
+            .filter(Boolean);
+
+
+    // --------------------------------------------------------
+    // DATA
+    // --------------------------------------------------------
+
+    const regexData =
+        /\b(0?[1-9]|[12]\d|3[01])[\/\-](0?[1-9]|1[0-2])[\/\-](20\d{2}|\d{2})\b/;
+
+
+    for (
+        const linha of linhas
+    ) {
+
+        const encontrado =
+            linha.match(
+                regexData
+            );
+
+
+        if (encontrado) {
+
+            let data =
+                encontrado[0]
+                    .replace(
+                        /-/g,
+                        "/"
+                    );
+
+
+            const partes =
+                data.split("/");
+
+
+            if (
+                partes[2].length === 2
+            ) {
+
+                partes[2] =
+                    "20" +
+                    partes[2];
+
+            }
+
+
+            resultado.date =
+                partes[2] +
+                "-" +
+                String(
+                    partes[1]
+                ).padStart(
+                    2,
+                    "0"
+                ) +
+                "-" +
+                String(
+                    partes[0]
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+
+            break;
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // VALORES
+    // --------------------------------------------------------
+
+    const regexValor =
+        /(?:R\$?\s*)?(\d{1,3}(?:\.\d{3})*,\d{2})/g;
+
+
+    const valores = [];
+
+
+    let matchValor;
+
+
+    while (
+        (
+            matchValor =
+                regexValor.exec(
+                    texto
                 )
-
-
-                page = doc.new_page(
-                    width=rect.width,
-                    height=rect.height
-                )
-
-
-                # preserva proporção
-                margin = 18
-
-
-                box = fitz.Rect(
-                    margin,
-                    margin,
-                    rect.width - margin,
-                    rect.height - margin
-                )
-
-
-                page.insert_image(
-                    box,
-                    stream=buf.getvalue(),
-                    keep_proportion=True,
-                    overlay=True
-                )
-
-
-        except Exception as exc:
-
-            raise ValueError(
-                f"Não foi possível anexar a imagem "
-                f"{img_path.name}: {exc}"
-            )
-
-
-    doc.save(
-        pdf_path.with_name(
-            pdf_path.stem +
-            "_final.pdf"
-        ),
-        garbage=4,
-        deflate=True
-    )
-
-
-    final = pdf_path.with_name(
-        pdf_path.stem +
-        "_final.pdf"
-    )
-
-
-    doc.close()
-
-
-    return final
-
-
-@app.post("/api/generate")
-async def generate(
-
-    payload: str = Form(...),
-
-    receipts: list[UploadFile] = File(
-        default=[]
-    ),
-
-):
-
-    if not TEMPLATE.exists():
-
-        raise HTTPException(
-            500,
-            "Modelo RDD.PARCEIRO.xlsx não encontrado no servidor."
-        )
-
-
-    try:
-
-        data = json.loads(
-            payload
-        )
-
-    except Exception:
-
-        raise HTTPException(
-            400,
-            "Payload JSON inválido."
-        )
-
-
-    required = [
-        "nome",
-        "cpf",
-        "obra"
-    ]
-
-
-    missing = [
-        x
-        for x in required
-        if not str(
-            data.get(
-                x,
-                ""
-            )
-        ).strip()
-    ]
-
-
-    if missing:
-
-        raise HTTPException(
-            400,
-            "Campos obrigatórios ausentes: "
-            + ", ".join(missing)
-        )
-
-
-    receipt_data = data.get(
-        "receipts",
-        []
-    )
-
-
-    if not receipt_data:
-
-        raise HTTPException(
-            400,
-            "Nenhum cupom informado."
-        )
-
-
-    for i, item in enumerate(
-        receipt_data,
-        1
-    ):
-
-        if not str(
-            item.get(
-                "document",
-                ""
-            )
-        ).strip():
-
-            raise HTTPException(
-                400,
-                f"Cupom {i}: número do documento é obrigatório."
-            )
-
-
-        if not str(
-            item.get(
-                "category",
-                ""
-            )
-        ).strip():
-
-            raise HTTPException(
-                400,
-                f"Cupom {i}: categoria é obrigatória."
-            )
-
-
-    rdd_number = (
-        get_next_rdd_number()
-    )
-
-
-    workdir = Path(
-        tempfile.mkdtemp(
-            prefix="rdd_"
-        )
-    )
-
-
-    xlsx = (
-        workdir /
-        f"RDD-{rdd_number:03d}.xlsx"
-    )
-
-
-    pdf = (
-        workdir /
-        f"RDD-{rdd_number:03d}.pdf"
-    )
-
-
-    try:
-
-        fill_workbook(
-            data,
-            rdd_number,
-            xlsx
-        )
-
-
-        # ========================================================
-        # EXCEL -> PDF
-        # ========================================================
-
-        cmd = [
-
-            "libreoffice",
-            "--headless",
-            "--convert-to",
-            "pdf",
-
-            "--outdir",
-            str(workdir),
-
-            str(xlsx)
-
-        ]
-
-
-        proc = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=90
-        )
+        ) !== null
+    ) {
+
+        const numero =
+            parseFloat(
+                matchValor[1]
+                    .replace(
+                        /\./g,
+                        ""
+                    )
+                    .replace(
+                        ",",
+                        "."
+                    )
+            );
 
 
         if (
-            proc.returncode != 0
-            or not pdf.exists()
-        ):
+            !isNaN(numero)
+        ) {
 
-            raise RuntimeError(
+            valores.push(
+                numero
+            );
 
-                "Falha na conversão "
-                "Excel -> PDF. "
+        }
 
-                + (
-                    proc.stderr
-                    or proc.stdout
-                    or ""
+    }
+
+
+    if (valores.length) {
+
+        const maior =
+            Math.max(
+                ...valores
+            );
+
+
+        resultado.value =
+            maior
+                .toFixed(2)
+                .replace(
+                    ".",
+                    ","
+                );
+
+    }
+
+
+    // --------------------------------------------------------
+    // DOCUMENTO
+    // --------------------------------------------------------
+
+    const padroesDocumento = [
+
+        /NFC[- ]?e[^0-9]{0,20}(\d{4,20})/i,
+
+        /NFC[^0-9]{0,20}(\d{4,20})/i,
+
+        /COO[^0-9]{0,20}(\d{4,20})/i,
+
+        /CUPOM[^0-9]{0,20}(\d{4,20})/i,
+
+        /DOCUMENTO[^0-9]{0,20}(\d{4,20})/i,
+
+        /N[ÂºÂ°.]?\s*[:\-]?\s*(\d{4,20})/i
+
+    ];
+
+
+    for (
+        const regex of padroesDocumento
+    ) {
+
+        const encontrado =
+            texto.match(
+                regex
+            );
+
+
+        if (encontrado) {
+
+            resultado.document =
+                encontrado[1];
+
+            break;
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // ESTABELECIMENTO
+    // --------------------------------------------------------
+
+    const palavrasIgnorar = [
+
+        "CNPJ",
+
+        "CPF",
+
+        "NFC",
+
+        "NFCE",
+
+        "CUPOM",
+
+        "DOCUMENTO",
+
+        "DATA",
+
+        "VALOR",
+
+        "TOTAL",
+
+        "R$",
+
+        "EMISSAO",
+
+        "EMISSÃƒO",
+
+        "CONSUMIDOR",
+
+        "ENDERECO",
+
+        "ENDEREÃ‡O",
+
+        "CHAVE",
+
+        "PROTOCOLO",
+
+        "ITEM",
+
+        "QTD",
+
+        "QUANTIDADE",
+
+        "UN",
+
+        "VALOR UNITARIO",
+
+        "VALOR UNITÃRIO"
+
+    ];
+
+
+    for (
+        const linha of linhas
+    ) {
+
+        const limpa =
+            linha
+                .replace(
+                    /[^\p{L}\p{N}\s&.'-]/gu,
+                    " "
                 )
+                .replace(
+                    /\s+/g,
+                    " "
+                )
+                .trim();
 
+
+        if (
+            limpa.length < 3 ||
+            limpa.length > 70
+        ) {
+
+            continue;
+
+        }
+
+
+        const maiuscula =
+            limpa.toUpperCase();
+
+
+        if (
+            palavrasIgnorar.some(
+                function (palavra) {
+
+                    return maiuscula
+                        .startsWith(
+                            palavra
+                        );
+
+                }
             )
+        ) {
+
+            continue;
+
+        }
 
 
-        # ========================================================
-        # SALVA OS UPLOADS
-        # ========================================================
+        if (
+            /\d{2,}/.test(limpa) &&
+            !/[A-Za-zÃ€-Ã¿]{4,}/.test(limpa)
+        ) {
 
-        image_paths = []
+            continue;
 
-
-        for i, upload in enumerate(
-            receipts
-        ):
-
-            suffix = (
-                Path(
-                    upload.filename or ""
-                ).suffix.lower()
-                or ".jpg"
-            )
+        }
 
 
-            p = (
-                workdir /
-                f"cupom_{i+1}{suffix}"
-            )
+        resultado.description =
+            limpa;
+
+        break;
+
+    }
 
 
-            content = await upload.read()
+    return resultado;
+
+}
 
 
-            if not content:
+// ============================================================
+// RENDERIZAR CUPONS
+// ============================================================
 
-                continue
+function renderizarCupons() {
 
-
-            p.write_bytes(
-                content
-            )
-
-
-            image_paths.append(
-                p
-            )
+    const lista =
+        document.getElementById(
+            "list"
+        );
 
 
-        # ========================================================
-        # ACRESCENTA OS CUPONS AO PDF
-        # ========================================================
+    if (!lista) {
 
-        final_pdf = (
+        return;
 
-            append_images_to_pdf(
-                pdf,
-                image_paths
-            )
+    }
 
-            if image_paths
 
-            else pdf
+    lista.innerHTML = "";
 
+
+    STATE.cupons.forEach(
+        function (cupom, index) {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "coupon-card";
+
+
+            const statusOK =
+                cupom.status ===
+                "ok";
+
+
+            const statusHTML =
+                statusOK
+
+                    ? `
+                        <span style="
+                            color:#0b6b45;
+                            font-weight:bold;
+                        ">
+                            âœ“ Dados identificados
+                        </span>
+                    `
+
+                    : `
+                        <span style="
+                            color:#b42318;
+                            font-weight:bold;
+                        ">
+                            âš ï¸ RevisÃ£o necessÃ¡ria
+                        </span>
+                    `;
+
+
+            const valor =
+                cupom.value
+                    ? "R$ " +
+                      cupom.value
+                    : "NÃ£o identificado";
+
+
+            card.innerHTML = `
+
+                <div style="
+                    display:flex;
+                    gap:15px;
+                    align-items:flex-start;
+                ">
+
+                    <img
+                        src="${cupom.previewURL}"
+                        alt="Cupom ${index + 1}"
+                        style="
+                            width:90px;
+                            height:110px;
+                            object-fit:cover;
+                            border-radius:10px;
+                            border:1px solid #ddd;
+                            cursor:pointer;
+                        "
+                        data-zoom="${index}"
+                    >
+
+                    <div style="
+                        flex:1;
+                        min-width:0;
+                    ">
+
+                        <div style="
+                            display:flex;
+                            justify-content:space-between;
+                            gap:10px;
+                            align-items:center;
+                            margin-bottom:8px;
+                        ">
+
+                            <strong>
+                                ðŸ§¾ Cupom ${index + 1}
+                            </strong>
+
+                            ${statusHTML}
+
+                        </div>
+
+
+                        <div style="
+                            font-size:13px;
+                            line-height:1.7;
+                        ">
+
+                            <div>
+                                <strong>Data:</strong>
+                                ${formatarDataExibicao(
+                                    cupom.date
+                                )}
+                            </div>
+
+
+                            <div>
+                                <strong>
+                                    Estabelecimento:
+                                </strong>
+
+                                ${escapeHTML(
+                                    cupom.description ||
+                                    "NÃ£o identificado"
+                                )}
+                            </div>
+
+
+                            <div>
+                                <strong>
+                                    Documento:
+                                </strong>
+
+                                ${escapeHTML(
+                                    cupom.document ||
+                                    "NÃ£o identificado"
+                                )}
+                            </div>
+
+
+                            <div>
+                                <strong>
+                                    Categoria:
+                                </strong>
+
+                                <span style="
+                                    font-weight:bold;
+                                    color:#071b33;
+                                ">
+                                    MATERIAIS
+                                </span>
+                            </div>
+
+
+                            <div>
+                                <strong>
+                                    Valor:
+                                </strong>
+
+                                ${escapeHTML(
+                                    valor
+                                )}
+                            </div>
+
+                        </div>
+
+
+                        <div style="
+                            display:flex;
+                            gap:8px;
+                            flex-wrap:wrap;
+                            margin-top:12px;
+                        ">
+
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-zoom="${index}"
+                                style="
+                                    min-height:38px;
+                                    padding:0 12px;
+                                "
+                            >
+                                ðŸ” Ver cupom
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                data-edit="${index}"
+                                style="
+                                    min-height:38px;
+                                    padding:0 12px;
+                                "
+                            >
+                                âœï¸ Editar
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            lista.appendChild(
+                card
+            );
+
+        }
+    );
+
+
+    // --------------------------------------------------------
+    // BOTÃƒO EDITAR
+    // --------------------------------------------------------
+
+    lista
+        .querySelectorAll(
+            "[data-edit]"
         )
+        .forEach(
+            function (botao) {
+
+                botao.addEventListener(
+                    "click",
+                    function () {
+
+                        const index =
+                            Number(
+                                botao.dataset.edit
+                            );
 
 
-        # ========================================================
-        # NOME FINAL DO PDF
-        # ========================================================
+                        abrirEdicao(
+                            index
+                        );
 
-        nome_responsavel = safe_filename(
-            data.get(
-                "nome",
+                    }
+                );
+
+            }
+        );
+
+
+    // --------------------------------------------------------
+    // BOTÃƒO VER
+    // --------------------------------------------------------
+
+    lista
+        .querySelectorAll(
+            "[data-zoom]"
+        )
+        .forEach(
+            function (elemento) {
+
+                elemento.addEventListener(
+                    "click",
+                    function () {
+
+                        const index =
+                            Number(
+                                elemento.dataset.zoom
+                            );
+
+
+                        abrirVisualizacao(
+                            index
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    atualizarResumo();
+
+}
+
+
+// ============================================================
+// RESUMO
+// ============================================================
+
+function atualizarResumo() {
+
+    const count =
+        document.getElementById(
+            "count"
+        );
+
+
+    const sum =
+        document.getElementById(
+            "sum"
+        );
+
+
+    if (count) {
+
+        count.textContent =
+            STATE.cupons.length;
+
+    }
+
+
+    let total = 0;
+
+
+    STATE.cupons.forEach(
+        function (cupom) {
+
+            const valor =
+                converterValor(
+                    cupom.value
+                );
+
+
+            if (!isNaN(valor)) {
+
+                total += valor;
+
+            }
+
+        }
+    );
+
+
+    if (sum) {
+
+        sum.textContent =
+            formatarMoeda(
+                total
+            );
+
+    }
+
+}
+
+
+// ============================================================
+// REVISÃƒO
+// ============================================================
+
+function atualizarRevisao() {
+
+    const nome =
+        document.getElementById(
+            "nome"
+        );
+
+
+    const cpf =
+        document.getElementById(
+            "cpf"
+        );
+
+
+    const obra =
+        document.getElementById(
+            "obra"
+        );
+
+
+    const count =
+        document.getElementById(
+            "reviewCount"
+        );
+
+
+    const total =
+        document.getElementById(
+            "reviewTotal"
+        );
+
+
+    const reviewNome =
+        document.getElementById(
+            "reviewNome"
+        );
+
+
+    const reviewCpf =
+        document.getElementById(
+            "reviewCpf"
+        );
+
+
+    const reviewObra =
+        document.getElementById(
+            "reviewObra"
+        );
+
+
+    if (reviewNome) {
+
+        reviewNome.textContent =
+            nome
+                ? nome.value
+                : "";
+
+    }
+
+
+    if (reviewCpf) {
+
+        reviewCpf.textContent =
+            cpf
+                ? cpf.value
+                : "";
+
+    }
+
+
+    if (reviewObra) {
+
+        reviewObra.textContent =
+            obra
+                ? obra.value
+                : "";
+
+    }
+
+
+    if (count) {
+
+        count.textContent =
+            STATE.cupons.length;
+
+    }
+
+
+    if (total) {
+
+        let valorTotal = 0;
+
+
+        STATE.cupons.forEach(
+            function (cupom) {
+
+                valorTotal +=
+                    converterValor(
+                        cupom.value
+                    ) || 0;
+
+            }
+        );
+
+
+        total.textContent =
+            formatarMoeda(
+                valorTotal
+            );
+
+    }
+
+}
+
+
+// ============================================================
+// CONFIGURAR MODAL
+// ============================================================
+
+function configurarModal() {
+
+    const close =
+        document.getElementById(
+            "close"
+        );
+
+
+    const closeModal =
+        document.getElementById(
+            "closeModal"
+        );
+
+
+    const save =
+        document.getElementById(
+            "save"
+        );
+
+
+    const modal =
+        document.getElementById(
+            "modal"
+        );
+
+
+    if (close) {
+
+        close.addEventListener(
+            "click",
+            fecharModal
+        );
+
+    }
+
+
+    if (closeModal) {
+
+        closeModal.addEventListener(
+            "click",
+            fecharModal
+        );
+
+    }
+
+
+    if (modal) {
+
+        modal.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target === modal
+                ) {
+
+                    fecharModal();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    if (save) {
+
+        save.addEventListener(
+            "click",
+            salvarEdicao
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// EDITAR CUPOM
+// ============================================================
+
+function abrirEdicao(index) {
+
+    const cupom =
+        STATE.cupons[index];
+
+
+    if (!cupom) {
+
+        return;
+
+    }
+
+
+    STATE.modalCupomIndex =
+        index;
+
+
+    STATE.modoModal =
+        "editar";
+
+
+    const modal =
+        document.getElementById(
+            "modal"
+        );
+
+
+    const photo =
+        document.getElementById(
+            "photo"
+        );
+
+
+    const mdate =
+        document.getElementById(
+            "mdate"
+        );
+
+
+    const mcat =
+        document.getElementById(
+            "mcat"
+        );
+
+
+    const mdesc =
+        document.getElementById(
+            "mdesc"
+        );
+
+
+    const mdoc =
+        document.getElementById(
+            "mdoc"
+        );
+
+
+    const mvalue =
+        document.getElementById(
+            "mvalue"
+        );
+
+
+    // --------------------------------------------------------
+    // IMAGEM GRANDE DO CUPOM
+    // --------------------------------------------------------
+
+    if (photo) {
+
+        photo.src =
+            cupom.previewURL;
+
+
+        photo.style.display =
+            "block";
+
+
+        photo.style.maxWidth =
+            "100%";
+
+
+        photo.style.maxHeight =
+            "65vh";
+
+
+        photo.style.objectFit =
+            "contain";
+
+
+        photo.style.cursor =
+            "zoom-in";
+
+    }
+
+
+    // --------------------------------------------------------
+    // PREENCHER CAMPOS COM OCR
+    // --------------------------------------------------------
+
+    if (mdate) {
+
+        mdate.value =
+            cupom.date || "";
+
+    }
+
+
+    if (mcat) {
+
+        mcat.value =
+            "Materiais";
+
+        mcat.disabled =
+            true;
+
+    }
+
+
+    if (mdesc) {
+
+        mdesc.value =
+            cupom.description || "";
+
+    }
+
+
+    if (mdoc) {
+
+        mdoc.value =
+            cupom.document || "";
+
+    }
+
+
+    if (mvalue) {
+
+        mvalue.value =
+            cupom.value || "";
+
+    }
+
+
+    // --------------------------------------------------------
+    // BOTÃƒO SALVAR
+    // --------------------------------------------------------
+
+    const save =
+        document.getElementById(
+            "save"
+        );
+
+
+    if (save) {
+
+        save.style.display =
+            "";
+
+        save.disabled =
+            false;
+
+        save.textContent =
+            "ðŸ’¾ Salvar alteraÃ§Ãµes";
+
+    }
+
+
+    // --------------------------------------------------------
+    // TÃTULO
+    // --------------------------------------------------------
+
+    const titulo =
+        document.querySelector(
+            "#modal h2, #modal h3, #modal .modal-title"
+        );
+
+
+    if (titulo) {
+
+        titulo.textContent =
+            "âœï¸ Editar cupom";
+
+    }
+
+
+    // --------------------------------------------------------
+    // ABRIR
+    // --------------------------------------------------------
+
+    if (modal) {
+
+        modal.classList.add(
+            "show"
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// VISUALIZAR CUPOM
+// ============================================================
+
+function abrirVisualizacao(index) {
+
+    const cupom =
+        STATE.cupons[index];
+
+
+    if (!cupom) {
+
+        return;
+
+    }
+
+
+    STATE.modalCupomIndex =
+        index;
+
+
+    STATE.modoModal =
+        "visualizar";
+
+
+    const modal =
+        document.getElementById(
+            "modal"
+        );
+
+
+    const photo =
+        document.getElementById(
+            "photo"
+        );
+
+
+    const mdate =
+        document.getElementById(
+            "mdate"
+        );
+
+
+    const mcat =
+        document.getElementById(
+            "mcat"
+        );
+
+
+    const mdesc =
+        document.getElementById(
+            "mdesc"
+        );
+
+
+    const mdoc =
+        document.getElementById(
+            "mdoc"
+        );
+
+
+    const mvalue =
+        document.getElementById(
+            "mvalue"
+        );
+
+
+    if (photo) {
+
+        photo.src =
+            cupom.previewURL;
+
+
+        photo.style.display =
+            "block";
+
+
+        photo.style.maxWidth =
+            "100%";
+
+
+        photo.style.maxHeight =
+            "75vh";
+
+
+        photo.style.objectFit =
+            "contain";
+
+
+        photo.style.cursor =
+            "zoom-in";
+
+    }
+
+
+    if (mdate) {
+
+        mdate.value =
+            cupom.date || "";
+
+        mdate.disabled =
+            true;
+
+    }
+
+
+    if (mcat) {
+
+        mcat.value =
+            "Materiais";
+
+        mcat.disabled =
+            true;
+
+    }
+
+
+    if (mdesc) {
+
+        mdesc.value =
+            cupom.description || "";
+
+        mdesc.disabled =
+            true;
+
+    }
+
+
+    if (mdoc) {
+
+        mdoc.value =
+            cupom.document || "";
+
+        mdoc.disabled =
+            true;
+
+    }
+
+
+    if (mvalue) {
+
+        mvalue.value =
+            cupom.value || "";
+
+        mvalue.disabled =
+            true;
+
+    }
+
+
+    const save =
+        document.getElementById(
+            "save"
+        );
+
+
+    if (save) {
+
+        save.style.display =
+            "none";
+
+    }
+
+
+    const titulo =
+        document.querySelector(
+            "#modal h2, #modal h3, #modal .modal-title"
+        );
+
+
+    if (titulo) {
+
+        titulo.textContent =
+            "ðŸ” Visualizar cupom";
+
+    }
+
+
+    if (modal) {
+
+        modal.classList.add(
+            "show"
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// SALVAR EDIÃ‡ÃƒO
+// ============================================================
+
+function salvarEdicao() {
+
+    if (
+        STATE.modoModal !==
+        "editar"
+    ) {
+
+        return;
+
+    }
+
+
+    const index =
+        STATE.modalCupomIndex;
+
+
+    if (
+        index === null ||
+        index === undefined
+    ) {
+
+        return;
+
+    }
+
+
+    const cupom =
+        STATE.cupons[index];
+
+
+    if (!cupom) {
+
+        return;
+
+    }
+
+
+    const mdate =
+        document.getElementById(
+            "mdate"
+        );
+
+
+    const mdesc =
+        document.getElementById(
+            "mdesc"
+        );
+
+
+    const mdoc =
+        document.getElementById(
+            "mdoc"
+        );
+
+
+    const mvalue =
+        document.getElementById(
+            "mvalue"
+        );
+
+
+    const documento =
+        mdoc
+            ? mdoc.value.trim()
+            : "";
+
+
+    // --------------------------------------------------------
+    // DOCUMENTO Ã‰ OBRIGATÃ“RIO
+    // --------------------------------------------------------
+
+    if (!documento) {
+
+        alert(
+            "Informe o nÃºmero do documento."
+        );
+
+
+        if (mdoc) {
+
+            mdoc.focus();
+
+        }
+
+
+        return;
+
+    }
+
+
+    cupom.date =
+        mdate
+            ? mdate.value
+            : "";
+
+
+    cupom.category =
+        "Materiais";
+
+
+    cupom.description =
+        mdesc
+            ? mdesc.value.trim()
+            : "";
+
+
+    cupom.document =
+        documento;
+
+
+    cupom.value =
+        mvalue
+            ? mvalue.value.trim()
+            : "";
+
+
+    cupom.status =
+        (
+            cupom.date &&
+            cupom.description &&
+            cupom.document &&
+            cupom.value
+        )
+            ? "ok"
+            : "revisao";
+
+
+    fecharModal();
+
+
+    renderizarCupons();
+
+}
+
+
+// ============================================================
+// FECHAR MODAL
+// ============================================================
+
+function fecharModal() {
+
+    const modal =
+        document.getElementById(
+            "modal"
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            "show"
+        );
+
+    }
+
+
+    // Reabilita os campos para a prÃ³xima ediÃ§Ã£o
+
+    const campos = [
+
+        "mdate",
+
+        "mcat",
+
+        "mdesc",
+
+        "mdoc",
+
+        "mvalue"
+
+    ];
+
+
+    campos.forEach(
+        function (id) {
+
+            const campo =
+                document.getElementById(
+                    id
+                );
+
+
+            if (campo) {
+
+                campo.disabled =
+                    false;
+
+            }
+
+        }
+    );
+
+
+    const save =
+        document.getElementById(
+            "save"
+        );
+
+
+    if (save) {
+
+        save.style.display =
+            "";
+
+    }
+
+
+    STATE.modalCupomIndex =
+        null;
+
+
+    STATE.modoModal =
+        null;
+
+}
+
+
+// ============================================================
+// ZOOM NA IMAGEM
+// ============================================================
+
+function ativarZoomImagem() {
+
+    const photo =
+        document.getElementById(
+            "photo"
+        );
+
+
+    if (!photo) {
+
+        return;
+
+    }
+
+
+    photo.onclick =
+        function () {
+
+            if (
+                !photo.src
+            ) {
+
+                return;
+
+            }
+
+
+            const overlay =
+                document.createElement(
+                    "div"
+                );
+
+
+            overlay.style.position =
+                "fixed";
+
+
+            overlay.style.inset =
+                "0";
+
+
+            overlay.style.background =
+                "rgba(0,0,0,.92)";
+
+
+            overlay.style.zIndex =
+                "99999";
+
+
+            overlay.style.display =
+                "flex";
+
+
+            overlay.style.alignItems =
+                "center";
+
+
+            overlay.style.justifyContent =
+                "center";
+
+
+            overlay.style.padding =
+                "20px";
+
+
+            overlay.style.cursor =
+                "zoom-out";
+
+
+            const imagem =
+                document.createElement(
+                    "img"
+                );
+
+
+            imagem.src =
+                photo.src;
+
+
+            imagem.style.maxWidth =
+                "100%";
+
+
+            imagem.style.maxHeight =
+                "100%";
+
+
+            imagem.style.objectFit =
+                "contain";
+
+
+            overlay.appendChild(
+                imagem
+            );
+
+
+            overlay.addEventListener(
+                "click",
+                function () {
+
+                    overlay.remove();
+
+                }
+            );
+
+
+            document.body.appendChild(
+                overlay
+            );
+
+        };
+
+}
+
+
+// ============================================================
+// NOME DO ARQUIVO PDF
+// ============================================================
+
+function obterNomeArquivoResposta(resposta) {
+
+    const contentDisposition =
+        resposta.headers.get("Content-Disposition") || "";
+
+    const utf8Match =
+        contentDisposition.match(
+            /filename\*=UTF-8''([^;]+)/i
+        );
+
+    if (utf8Match && utf8Match[1]) {
+        try {
+            return decodeURIComponent(
+                utf8Match[1]
+            ).trim();
+        } catch (erro) {
+            console.warn(
+                "NÃ£o foi possÃ­vel decodificar o nome do arquivo:",
+                erro
+            );
+        }
+    }
+
+    const quotedMatch =
+        contentDisposition.match(
+            /filename="([^"]+)"/i
+        );
+
+    if (quotedMatch && quotedMatch[1]) {
+        return quotedMatch[1].trim();
+    }
+
+    const simpleMatch =
+        contentDisposition.match(
+            /filename=([^;]+)/i
+        );
+
+    if (simpleMatch && simpleMatch[1]) {
+        return simpleMatch[1]
+            .trim()
+            .replace(/^['"]|['"]$/g, "");
+    }
+
+    return "RDD_PARCEIRO.pdf";
+}
+
+
+// ============================================================
+// GERAR RDD
+// ============================================================
+
+async function gerarRDD() {
+
+    if (
+        !STATE.cupons.length
+    ) {
+
+        alert(
+            "Adicione pelo menos um cupom."
+        );
+
+        return;
+
+    }
+
+
+    const faltando =
+        STATE.cupons.filter(
+            function (cupom) {
+
+                return (
+                    !cupom.document ||
+                    !cupom.category
+                );
+
+            }
+        );
+
+
+    if (
+        faltando.length
+    ) {
+
+        alert(
+            "Existem cupons sem nÃºmero de documento."
+        );
+
+        return;
+
+    }
+
+
+    const nome =
+        document.getElementById(
+            "nome"
+        );
+
+
+    const cpf =
+        document.getElementById(
+            "cpf"
+        );
+
+
+    const obra =
+        document.getElementById(
+            "obra"
+        );
+
+
+    const payload = {
+
+        nome:
+            nome
+                ? nome.value.trim()
+                : "",
+
+        cpf:
+            cpf
+                ? cpf.value.trim()
+                : "",
+
+        obra:
+            obra
+                ? obra.value.trim()
+                : "",
+
+        receipts:
+            STATE.cupons.map(
+                function (cupom) {
+
+                    return {
+
+                        date:
+                            cupom.date || "",
+
+                        account:
+                            "",
+
+                        description:
+                            cupom.description ||
+                            "",
+
+                        document:
+                            cupom.document ||
+                            "",
+
+                        category:
+                            "Materiais",
+
+                        value:
+                            cupom.value ||
+                            ""
+
+                    };
+
+                }
+            )
+
+    };
+
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "payload",
+        JSON.stringify(
+            payload
+        )
+    );
+
+
+    STATE.cupons.forEach(
+        function (cupom) {
+
+            formData.append(
+                "receipts",
+                cupom.file,
+                cupom.originalName
+            );
+
+        }
+    );
+
+
+    const generate =
+        document.getElementById(
+            "generate"
+        );
+
+
+    if (generate) {
+
+        generate.disabled =
+            true;
+
+        generate.textContent =
+            "GERANDO RDD...";
+
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                API_URL +
+                "/api/generate",
+                {
+
+                    method:
+                        "POST",
+
+                    body:
+                        formData
+
+                }
+            );
+
+
+        if (!resposta.ok) {
+
+            let mensagem =
+                "Erro ao gerar o RDD.";
+
+
+            try {
+
+                const erro =
+                    await resposta.json();
+
+
+                if (erro.detail) {
+
+                    mensagem =
+                        erro.detail;
+
+                }
+
+            } catch (e) {}
+
+
+            throw new Error(
+                mensagem
+            );
+
+        }
+
+
+        const nomeArquivo =
+            obterNomeArquivoResposta(
+                resposta
+            );
+
+
+        const blob =
+            await resposta.blob();
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+
+        link.href =
+            url;
+
+
+        link.download =
+            nomeArquivo;
+
+
+        document.body.appendChild(
+            link
+        );
+
+
+        link.click();
+
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        if (message) {
+
+            message.innerHTML = `
+
+                <div style="
+                    background:#f0fdf4;
+                    border:1px solid #bbf7d0;
+                    color:#166534;
+                    padding:15px;
+                    border-radius:10px;
+                ">
+
+                    <strong>
+                        RDD gerado com sucesso!
+                    </strong>
+
+                    <br><br>
+
+                    O PDF foi gerado com os
+                    comprovantes anexados.
+
+                </div>
+
+            `;
+
+        }
+
+
+        if (
+            window.RDDMostrarTela
+        ) {
+
+            window.RDDMostrarTela(
+                4
+            );
+
+        }
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao gerar RDD:",
+            erro
+        );
+
+
+        alert(
+            "NÃ£o foi possÃ­vel gerar o RDD.\n\n" +
+            erro.message
+        );
+
+
+    } finally {
+
+        if (generate) {
+
+            generate.disabled =
+                false;
+
+            generate.textContent =
+                "GERAR RDD + CUPONS";
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// VALOR
+// ============================================================
+
+function converterValor(
+    valor
+) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+
+        return 0;
+
+    }
+
+
+    if (
+        typeof valor === "number"
+    ) {
+
+        return valor;
+
+    }
+
+
+    let texto =
+        String(valor)
+            .replace(
+                /[R$\s]/g,
                 ""
             )
-        )
+            .trim();
 
 
-        final_filename = (
-            f"{nome_responsavel} - "
-            f"RDD-{rdd_number:03d}.pdf"
-        )
+    if (
+        texto.includes(",")
+    ) {
+
+        texto =
+            texto
+                .replace(
+                    /\./g,
+                    ""
+                )
+                .replace(
+                    ",",
+                    "."
+                );
+
+    }
 
 
-        # ========================================================
-        # RETORNA PDF
-        # ========================================================
-
-        return FileResponse(
-
-            final_pdf,
-
-            media_type="application/pdf",
-
-            filename=final_filename,
-
-            background=None,
-
-        )
+    const numero =
+        parseFloat(
+            texto
+        );
 
 
-    except HTTPException:
+    return isNaN(numero)
+        ? 0
+        : numero;
 
-        raise
-
-
-    except Exception as exc:
-
-        raise HTTPException(
-            500,
-            f"Erro ao gerar RDD: {exc}"
-        )
+}
 
 
-if __name__ == "__main__":
+// ============================================================
+// MOEDA
+// ============================================================
 
-    import uvicorn
+function formatarMoeda(
+    valor
+) {
 
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=int(
-            os.getenv(
-                "PORT",
-                "8000"
-            )
-        )
+    return valor.toLocaleString(
+        "pt-BR",
+        {
+
+            style:
+                "currency",
+
+            currency:
+                "BRL"
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// DATA
+// ============================================================
+
+function formatarDataExibicao(
+    data
+) {
+
+    if (!data) {
+
+        return "NÃ£o identificada";
+
+    }
+
+
+    const partes =
+        data.split("-");
+
+
+    if (
+        partes.length === 3
+    ) {
+
+        return (
+            partes[2] +
+            "/" +
+            partes[1] +
+            "/" +
+            partes[0]
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+// ============================================================
+// ESCAPAR HTML
+// ============================================================
+
+function escapeHTML(
+    texto
+) {
+
+    return String(
+        texto || ""
     )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ============================================================
+// ATIVAR ZOOM
+// ============================================================
+
+setTimeout(
+    function () {
+
+        ativarZoomImagem();
+
+    },
+    500
+);
