@@ -1,1 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 100">
+  <rect width="300" height="100" rx="16" fill="#06284A"/>
 
+  <circle cx="52" cy="50" r="32" fill="#D6A84F"/>
+
+  <path
+    d="M35 52
+       C35 38 45 28 58 28
+       C70 28 78 36 78 48
+       C78 61 69 71 56 72
+       C44 72 35 64 35 52Z"
+    fill="#06284A"
+  />
+
+  <path
+    d="M45 49
+       L52 41
+       L60 49
+       L67 41
+       L67 59
+       L60 66
+       L52 58
+       L45 66Z"
+    fill="#FFFFFF"
+  />
+
+  <text
+    x="96"
+    y="63"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="42"
+    font-weight="700"
+    fill="#FFFFFF"
+  >
+    BMB3
+  </text>
+</svg>
