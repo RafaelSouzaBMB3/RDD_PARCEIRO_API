@@ -570,6 +570,24 @@
         }
 
         /* =====================================================
+           PROCESSAMENTO / OCR
+        ===================================================== */
+        .processing-overlay {
+            position: fixed; inset: 0; background: rgba(7,27,51,.82);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            z-index: 20000; display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .processing-overlay.show { display: flex; }
+        .processing-box { width:100%; max-width:430px; background:white; border-radius:20px; padding:32px 24px; text-align:center; box-shadow:0 15px 45px rgba(0,0,0,.28); }
+        .processing-spinner { width:58px; height:58px; margin:0 auto 20px; border:5px solid #e7ebf0; border-top-color:#c9a227; border-radius:50%; animation:rddSpin .9s linear infinite; }
+        @keyframes rddSpin { to { transform:rotate(360deg); } }
+        .processing-box h3 { margin:0 0 8px; color:#071b33; font-size:20px; }
+        .processing-box p { margin:0; color:#667085; font-size:14px; line-height:1.5; }
+        .processing-progress { margin-top:18px; height:7px; background:#e9edf2; border-radius:99px; overflow:hidden; }
+        .processing-progress-bar { height:100%; width:15%; background:#c9a227; border-radius:99px; transition:width .3s ease; }
+        .processing-counter { display:block; margin-top:10px; color:#071b33; font-size:13px; font-weight:bold; }
+
+        /* =====================================================
            RESPONSIVO
         ===================================================== */
 
@@ -661,6 +679,16 @@
 </head>
 
 <body>
+
+<div id="processingOverlay" class="processing-overlay" aria-hidden="true">
+    <div class="processing-box">
+        <div class="processing-spinner"></div>
+        <h3 id="processingTitle">Processando comprovante...</h3>
+        <p id="processingText">Estamos lendo a imagem e identificando os dados. Aguarde.</p>
+        <div class="processing-progress"><div id="processingProgressBar" class="processing-progress-bar"></div></div>
+        <span id="processingCounter" class="processing-counter">Preparando...</span>
+    </div>
+</div>
 
 <!-- =========================================================
      TOPO
@@ -1463,7 +1491,7 @@
      APP.JS
 ========================================================= -->
 
-<script src="app.js"></script>
+<script src="app.js?v=20261005-1835"></script>
 
 
 <!-- =========================================================
@@ -1473,6 +1501,28 @@
 <script>
 
 document.addEventListener("DOMContentLoaded", function () {
+
+    const processingOverlay = document.getElementById("processingOverlay");
+    const processingTitle = document.getElementById("processingTitle");
+    const processingText = document.getElementById("processingText");
+    const processingCounter = document.getElementById("processingCounter");
+    const processingProgressBar = document.getElementById("processingProgressBar");
+
+    function mostrarProcessamento(total, atual) {
+        if (!processingOverlay) return;
+        const quantidade=Math.max(Number(total)||1,1); const numero=Math.min(Math.max(Number(atual)||1,1),quantidade);
+        processingOverlay.classList.add("show"); processingOverlay.setAttribute("aria-hidden","false");
+        if(processingTitle) processingTitle.textContent="🔎 Lendo comprovante...";
+        if(processingText) processingText.textContent="Estamos processando a imagem e identificando os dados. Aguarde.";
+        if(processingCounter) processingCounter.textContent="Comprovante "+numero+" de "+quantidade;
+        if(processingProgressBar) processingProgressBar.style.width=Math.max(8,Math.round(numero/quantidade*100))+"%";
+    }
+    function esconderProcessamento() {
+        if(!processingOverlay) return; processingOverlay.classList.remove("show"); processingOverlay.setAttribute("aria-hidden","true");
+        if(processingProgressBar) processingProgressBar.style.width="15%";
+    }
+    window.RDD_PROCESSAMENTO={mostrar:mostrarProcessamento,esconder:esconderProcessamento};
+
 
     const telas = {
         1: document.getElementById("dados"),
@@ -1844,84 +1894,41 @@ document.addEventListener("DOMContentLoaded", function () {
        TRANSFERÊNCIA PARA INPUT PRINCIPAL
     ===================================================== */
 
-    function transferirArquivos(inputOrigem) {
+    async function transferirArquivos(inputOrigem) {
+        const inputPrincipal=document.getElementById("files");
+        if(!inputPrincipal || !inputOrigem.files.length) return;
+        const dt=new DataTransfer();
+        Array.from(inputPrincipal.files).forEach(a=>dt.items.add(a));
+        Array.from(inputOrigem.files).forEach(a=>dt.items.add(a));
+        inputPrincipal.files=dt.files;
 
-        const inputPrincipal =
-            document.getElementById("files");
+        const status=document.getElementById("uploadStatus");
+        const statusTitle=document.getElementById("uploadStatusTitle");
+        const statusText=document.getElementById("uploadStatusText");
+        const summary=document.getElementById("selectedFilesSummary");
+        if(status) status.classList.add("show");
+        if(statusTitle) statusTitle.textContent="Processando comprovantes...";
+        if(statusText) statusText.textContent=dt.files.length+" arquivo(s) recebido(s). Aguarde a leitura.";
+        if(summary) summary.textContent=Array.from(dt.files).map(f=>f.name).join(", ");
+        if(window.RDD_PROCESSAMENTO) window.RDD_PROCESSAMENTO.mostrar(dt.files.length,1);
 
-        if (!inputPrincipal || !inputOrigem.files.length) {
-            return;
+        try {
+            if(typeof processarArquivos === "function") {
+                await processarArquivos(Array.from(dt.files));
+            } else {
+                inputPrincipal.dispatchEvent(new Event("change",{bubbles:true}));
+            }
+            if(statusTitle) statusTitle.textContent="Comprovantes processados";
+            if(statusText) statusText.textContent=dt.files.length+" arquivo(s) processado(s).";
+        } catch(erro) {
+            console.error("Erro ao processar comprovantes:",erro);
+            if(statusTitle) statusTitle.textContent="Erro ao processar comprovante";
+            if(statusText) statusText.textContent="Não foi possível ler um ou mais comprovantes. Verifique os dados manualmente.";
+        } finally {
+            setTimeout(()=>{ if(window.RDD_PROCESSAMENTO) window.RDD_PROCESSAMENTO.esconder(); },450);
+            inputOrigem.value="";
         }
-
-
-        const dt = new DataTransfer();
-
-
-        Array.from(inputPrincipal.files)
-            .forEach(function (arquivo) {
-
-                dt.items.add(arquivo);
-
-            });
-
-
-        Array.from(inputOrigem.files)
-            .forEach(function (arquivo) {
-
-                dt.items.add(arquivo);
-
-            });
-
-
-        inputPrincipal.files = dt.files;
-
-
-        const status =
-            document.getElementById("uploadStatus");
-
-        const statusTitle =
-            document.getElementById("uploadStatusTitle");
-
-        const statusText =
-            document.getElementById("uploadStatusText");
-
-        const summary =
-            document.getElementById("selectedFilesSummary");
-
-
-        if (status) {
-            status.classList.add("show");
-        }
-
-        if (statusTitle) {
-            statusTitle.textContent =
-                "Comprovantes selecionados";
-        }
-
-        if (statusText) {
-            statusText.textContent =
-                dt.files.length +
-                " arquivo(s) pronto(s) para processamento.";
-        }
-
-        if (summary) {
-            summary.textContent =
-                Array.from(dt.files)
-                    .map(file => file.name)
-                    .join(", ");
-        }
-
-
-        /* Dispara evento para o app.js */
-
-        inputPrincipal.dispatchEvent(
-            new Event("change", {
-                bubbles: true
-            })
-        );
-
     }
-
 
     if (cameraInput) {
 
