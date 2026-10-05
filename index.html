@@ -1,316 +1,257 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     >
 
-    <meta
-        name="theme-color"
-        content="#06284A"
-    >
+    <title>RDD - Parceiro BMB3</title>
 
-    <title>RDD - Parceiro | BMB3</title>
+    <link rel="icon" href="data:,">
 
-    <link
-        rel="stylesheet"
-        href="./styles.css"
-    >
-
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 
 <body>
 
-<div class="app">
+<div class="app-shell">
 
-
-    <!-- =====================================================
-         CABEÇALHO
-         ===================================================== -->
-
+    <!-- =========================================================
+         HEADER
+    ========================================================== -->
     <header class="topbar">
 
         <div class="brand">
 
             <img
-                src="./assets/logo-bmb3.svg"
+                src="assets/logo-bmb3.svg"
                 alt="BMB3"
             >
 
-            <div>
-
+            <div class="brand-text">
                 <h1>RDD - Parceiro</h1>
-
-                <p>
-                    Reembolso de Pagamentos e Despesa
-                </p>
-
+                <span>Reembolso de Pagamentos e Despesa</span>
             </div>
 
         </div>
 
-
-        <span class="portal">
-            ● Portal do Parceiro
-        </span>
+        <div class="portal-label">
+            Portal do Parceiro
+        </div>
 
     </header>
 
 
+    <!-- =========================================================
+         PROGRESSO
+    ========================================================== -->
+    <div class="progress-wrapper">
 
-    <!-- =====================================================
-         CONTEÚDO
-         ===================================================== -->
-
-    <main>
-
-
-        <!-- =================================================
-             PROGRESSO
-             ================================================= -->
-
-        <div class="progress">
-
-            <div class="step active">
-
-                <b>1</b>
-
-                <span>
-                    Dados
-                </span>
-
-            </div>
-
-
-            <i></i>
-
-
-            <div class="step">
-
-                <b>2</b>
-
-                <span>
-                    Cupons
-                </span>
-
-            </div>
-
-
-            <i></i>
-
-
-            <div class="step">
-
-                <b>3</b>
-
-                <span>
-                    Revisão
-                </span>
-
-            </div>
-
-
-            <i></i>
-
-
-            <div class="step">
-
-                <b>4</b>
-
-                <span>
-                    Finalizar
-                </span>
-
-            </div>
-
+        <div class="progress-step active">
+            <div class="progress-number">1</div>
+            <span>Dados</span>
         </div>
 
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+            <div class="progress-number">2</div>
+            <span>Cupons</span>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+            <div class="progress-number">3</div>
+            <span>Revisão</span>
+        </div>
+
+        <div class="progress-line"></div>
+
+        <div class="progress-step">
+            <div class="progress-number">4</div>
+            <span>Finalizar</span>
+        </div>
+
+    </div>
 
 
-        <!-- =================================================
+    <!-- =========================================================
+         CONTEÚDO
+    ========================================================== -->
+    <main class="main-content">
+
+
+        <!-- =====================================================
              ETAPA 1 - DADOS
-             ================================================= -->
-
+        ====================================================== -->
         <section
-            id="dados"
-            class="screen on"
+            id="step1"
+            class="step-section active"
         >
 
             <div class="card">
 
+                <div class="section-header">
 
-                <div class="title">
-
-                    <strong>
-                        👤
-                    </strong>
-
+                    <div class="section-icon">
+                        📋
+                    </div>
 
                     <div>
+                        <h2>Dados do responsável</h2>
+                        <p>Preencha os dados para gerar o RDD</p>
+                    </div>
 
-                        <h2>
-                            Dados do responsável
-                        </h2>
+                </div>
 
-                        <p>
-                            Preencha suas informações para iniciar o RDD
-                        </p>
+
+                <div class="form-grid">
+
+
+                    <div class="field full">
+
+                        <label for="finalidade">
+                            Finalidade
+                        </label>
+
+                        <input
+                            type="text"
+                            id="finalidade"
+                            value="Reembolso de Pagamentos e Despesa"
+                            readonly
+                        >
 
                     </div>
 
 
-                    <aside>
+                    <div class="field">
 
-                        <small>
-                            Nº do Demonstrativo
-                        </small>
-
-                        <b>
-                            RDD-210
-                        </b>
-
-                    </aside>
-
-                </div>
-
-
-
-                <div class="grid">
-
-
-                    <label class="full">
-
-                        Finalidade
+                        <label for="nome">
+                            Nome *
+                        </label>
 
                         <input
-                            id="finalidade"
-                            value="Reembolso de Pagamentos e Despesa"
-                            disabled
-                        >
-
-                    </label>
-
-
-
-                    <label>
-
-                        Nome *
-
-                        <input
+                            type="text"
                             id="nome"
-                            type="text"
+                            placeholder="Digite seu nome"
                             autocomplete="name"
-                            placeholder="Digite seu nome completo"
                         >
 
-                    </label>
+                    </div>
 
 
+                    <div class="field">
 
-                    <label>
-
-                        CPF *
+                        <label for="cpf">
+                            CPF *
+                        </label>
 
                         <input
-                            id="cpf"
                             type="text"
-                            inputmode="numeric"
-                            autocomplete="off"
-                            maxlength="14"
+                            id="cpf"
                             placeholder="000.000.000-00"
+                            maxlength="14"
+                            inputmode="numeric"
                         >
 
-                    </label>
+                    </div>
 
 
+                    <div class="field">
 
-                    <label>
-
-                        Departamento
+                        <label for="departamento">
+                            Departamento
+                        </label>
 
                         <input
+                            type="text"
                             id="departamento"
                             value="Projetos"
-                            disabled
+                            readonly
                         >
 
-                    </label>
+                    </div>
 
 
+                    <div class="field">
 
-                    <label>
-
-                        Obra *
+                        <label for="obra">
+                            Obra *
+                        </label>
 
                         <input
-                            id="obra"
                             type="text"
-                            autocomplete="off"
-                            placeholder="Digite a obra / projeto"
+                            id="obra"
+                            placeholder="Informe a obra"
                         >
 
-                    </label>
+                    </div>
 
 
+                    <div class="field">
 
-                    <label>
-
-                        Período de pagamento
+                        <label for="periodo">
+                            Período de pagamento
+                        </label>
 
                         <input
+                            type="text"
                             id="periodo"
-                            disabled
+                            readonly
                         >
 
-                    </label>
+                    </div>
 
 
+                    <div class="field">
 
-                    <label>
-
-                        Cargo
+                        <label for="cargo">
+                            Cargo
+                        </label>
 
                         <input
+                            type="text"
                             id="cargo"
                             value="Prestador de Serviços"
-                            disabled
+                            readonly
                         >
 
-                    </label>
+                    </div>
 
 
+                    <div class="field">
 
-                    <label>
-
-                        Gerente
+                        <label for="gerente">
+                            Gerente
+                        </label>
 
                         <input
+                            type="text"
                             id="gerente"
                             value="Roberto Almeida Blanco"
-                            disabled
+                            readonly
                         >
 
-                    </label>
-
+                    </div>
 
                 </div>
 
 
+                <div class="actions">
 
-                <button
-                    type="button"
-                    class="primary"
-                    id="next1"
-                >
-                    Avançar →
-                </button>
+                    <button
+                        type="button"
+                        id="next1"
+                        class="btn-primary"
+                    >
+                        Continuar para cupons →
+                    </button>
 
+                </div>
 
             </div>
 
@@ -318,335 +259,180 @@
 
 
 
-        <!-- =================================================
+        <!-- =====================================================
              ETAPA 2 - CUPONS
-             ================================================= -->
-
+        ====================================================== -->
         <section
-            id="cupons"
-            class="screen"
+            id="step2"
+            class="step-section"
         >
 
             <div class="card">
 
+                <div class="section-header">
 
-                <!-- CABEÇALHO -->
-
-                <div class="title">
-
-                    <strong>
+                    <div class="section-icon">
                         🧾
-                    </strong>
-
+                    </div>
 
                     <div>
-
-                        <h2>
-                            Adicionar cupons
-                        </h2>
-
-                        <p>
-                            Fotografe ou selecione seus comprovantes
-                        </p>
-
+                        <h2>Adicionar cupons</h2>
+                        <p>Fotografe ou selecione seus comprovantes</p>
                     </div>
 
                 </div>
 
 
-
                 <!-- =================================================
-                     INPUT PRINCIPAL DO APP.JS
-                     ================================================= -->
+                     INPUTS DE ARQUIVO
+                ================================================== -->
 
                 <input
-                    id="files"
                     type="file"
-                    accept="image/*,.heic,.heif"
-                    multiple
-                    hidden
-                >
-
-
-
-                <!-- =================================================
-                     CÂMERA
-                     ================================================= -->
-
-                <input
                     id="cameraInput"
-                    type="file"
                     accept="image/*,.heic,.heif"
                     capture="environment"
                     hidden
                 >
 
-
-
-                <!-- =================================================
-                     GALERIA / ARQUIVOS
-                     ================================================= -->
-
                 <input
-                    id="galleryInput"
                     type="file"
+                    id="galleryInput"
+                    accept="image/*,.heic,.heif"
+                    multiple
+                    hidden
+                >
+
+                <!--
+                    Input utilizado pelo app.js.
+                    Mantido para compatibilidade.
+                -->
+                <input
+                    type="file"
+                    id="files"
                     accept="image/*,.heic,.heif"
                     multiple
                     hidden
                 >
 
 
-
-                <!-- COMPATIBILIDADE COM APP.JS -->
-
-                <button
-                    id="pick"
-                    type="button"
-                    hidden
-                >
-                    Adicionar foto
-                </button>
-
-
-
                 <!-- =================================================
                      BOTÕES
-                     ================================================= -->
+                ================================================== -->
 
-                <div class="upload">
+                <div class="upload-options">
 
-                    <div
-                        style="
-                            display:grid;
-                            grid-template-columns:repeat(2,minmax(0,1fr));
-                            gap:14px;
-                            width:100%;
-                        "
+                    <button
+                        type="button"
+                        id="takePhoto"
+                        class="upload-option"
                     >
 
+                        <span class="upload-option-icon">
+                            📷
+                        </span>
 
-                        <!-- TIRAR FOTO -->
+                        <strong>
+                            Tirar foto
+                        </strong>
 
-                        <button
-                            id="takePhoto"
-                            type="button"
-                            style="
-                                min-height:145px;
-                                padding:20px;
-                                border:2px dashed #C7D1DA;
-                                border-radius:14px;
-                                background:linear-gradient(180deg,#FAFCFD,#F4F7F9);
-                                color:#06284A;
-                                display:flex;
-                                flex-direction:column;
-                                align-items:center;
-                                justify-content:center;
-                                gap:7px;
-                                cursor:pointer;
-                            "
-                        >
+                        <small>
+                            Usar a câmera
+                        </small>
 
-                            <span
-                                style="
-                                    font-size:38px;
-                                    line-height:1;
-                                "
-                            >
-                                📷
-                            </span>
+                    </button>
 
 
-                            <b>
-                                Tirar foto
-                            </b>
+                    <button
+                        type="button"
+                        id="selectPhoto"
+                        class="upload-option"
+                    >
 
+                        <span class="upload-option-icon">
+                            🖼️
+                        </span>
 
-                            <small>
-                                Usar a câmera
-                            </small>
+                        <strong>
+                            Selecionar foto
+                        </strong>
 
-                        </button>
+                        <small>
+                            Galeria ou arquivos
+                        </small>
 
-
-
-                        <!-- SELECIONAR FOTO -->
-
-                        <button
-                            id="selectPhoto"
-                            type="button"
-                            style="
-                                min-height:145px;
-                                padding:20px;
-                                border:2px dashed #C7D1DA;
-                                border-radius:14px;
-                                background:linear-gradient(180deg,#FAFCFD,#F4F7F9);
-                                color:#06284A;
-                                display:flex;
-                                flex-direction:column;
-                                align-items:center;
-                                justify-content:center;
-                                gap:7px;
-                                cursor:pointer;
-                            "
-                        >
-
-                            <span
-                                style="
-                                    font-size:38px;
-                                    line-height:1;
-                                "
-                            >
-                                🖼️
-                            </span>
-
-
-                            <b>
-                                Selecionar foto
-                            </b>
-
-
-                            <small>
-                                Galeria ou arquivos
-                            </small>
-
-                        </button>
-
-
-                    </div>
+                    </button>
 
                 </div>
 
 
 
                 <!-- =================================================
-                     CONFIRMAÇÃO DE UPLOAD
-                     ================================================= -->
+                     ÁREA DE CONFIRMAÇÃO
+                     É EXATAMENTE A ÁREA MARCADA EM VERMELHO
+                ================================================== -->
 
                 <div
-                    id="uploadSummary"
-                    style="
-                        display:none;
-                        margin-top:18px;
-                        padding:16px;
-                        border-radius:14px;
-                        background:#EAF7EE;
-                        border:1px solid #B9DFC2;
-                    "
+                    id="uploadStatus"
+                    class="upload-status"
                 >
 
-                    <div
-                        style="
-                            display:flex;
-                            align-items:center;
-                            gap:12px;
-                        "
-                    >
-
-                        <div
-                            style="
-                                width:46px;
-                                height:46px;
-                                min-width:46px;
-                                border-radius:50%;
-                                background:#2E8B57;
-                                color:white;
-                                display:flex;
-                                align-items:center;
-                                justify-content:center;
-                                font-size:24px;
-                                font-weight:bold;
-                            "
-                        >
-                            ✓
-                        </div>
-
-
-                        <div>
-
-                            <strong
-                                id="uploadSummaryTitle"
-                                style="
-                                    display:block;
-                                    color:#176B37;
-                                    font-size:17px;
-                                "
-                            >
-                                Arquivos carregados
-                            </strong>
-
-
-                            <span
-                                id="uploadSummaryText"
-                                style="
-                                    display:block;
-                                    margin-top:4px;
-                                    color:#427052;
-                                    font-size:13px;
-                                "
-                            >
-                                Os comprovantes foram carregados.
-                            </span>
-
-                        </div>
-
+                    <div class="upload-status-icon">
+                        📎
                     </div>
 
+                    <div class="upload-status-content">
 
+                        <strong id="uploadStatusTitle">
+                            Nenhum cupom carregado
+                        </strong>
 
-                    <!-- LISTA DOS ARQUIVOS -->
+                        <span id="uploadStatusText">
+                            Selecione ou fotografe um comprovante para começar.
+                        </span>
 
-                    <div
-                        id="selectedFilesSummary"
-                        style="
-                            margin-top:12px;
-                            padding-top:12px;
-                            border-top:1px solid #C9E2D0;
-                        "
-                    ></div>
+                        <div
+                            id="selectedFilesSummary"
+                            class="selected-files-summary"
+                        ></div>
+
+                    </div>
 
                 </div>
 
 
 
                 <!-- =================================================
-                     LISTA DOS CUPONS
-                     ================================================= -->
+                     LISTA DE CUPONS
+                ================================================== -->
 
                 <div
                     id="list"
-                    style="
-                        margin-top:16px;
-                    "
+                    class="coupons-list"
                 ></div>
 
 
 
                 <!-- =================================================
-                     TOTAL
-                     ================================================= -->
+                     TOTAIS
+                ================================================== -->
 
-                <div class="total">
+                <div class="totals-box">
 
-                    <span>
-
+                    <div>
                         Cupons adicionados:
+                        <strong id="count">0</strong>
+                    </div>
 
-                        <b id="count">
-                            0
-                        </b>
-
-                    </span>
-
-
-                    <b>
-
+                    <div>
                         Total:
-
-                        <em id="sum">
+                        <strong
+                            id="sum"
+                            class="total-value"
+                        >
                             R$ 0,00
-                        </em>
-
-                    </b>
+                        </strong>
+                    </div>
 
                 </div>
 
@@ -654,31 +440,27 @@
 
                 <!-- =================================================
                      AÇÕES
-                     ================================================= -->
+                ================================================== -->
 
-                <div class="actions">
-
+                <div class="actions actions-between">
 
                     <button
                         type="button"
-                        class="secondary"
                         id="back1"
+                        class="btn-secondary"
                     >
                         ← Voltar
                     </button>
 
-
                     <button
                         type="button"
-                        class="primary"
                         id="next2"
+                        class="btn-primary"
                     >
                         Avançar para revisão →
                     </button>
 
-
                 </div>
-
 
             </div>
 
@@ -686,71 +468,53 @@
 
 
 
-        <!-- =================================================
+        <!-- =====================================================
              ETAPA 3 - REVISÃO
-             ================================================= -->
+        ====================================================== -->
 
         <section
-            id="revisao"
-            class="screen"
+            id="step3"
+            class="step-section"
         >
 
             <div class="card">
 
+                <div class="section-header">
 
-                <div class="title">
-
-                    <strong>
-                        ✓
-                    </strong>
-
+                    <div class="section-icon">
+                        🔎
+                    </div>
 
                     <div>
-
-                        <h2>
-                            Revisão do RDD
-                        </h2>
-
-                        <p>
-                            Confira os dados antes de gerar
-                        </p>
-
+                        <h2>Revisão</h2>
+                        <p>Confira os dados antes de gerar o RDD</p>
                     </div>
 
                 </div>
 
 
-
-                <div
-                    id="review"
-                    class="review"
-                ></div>
+                <div id="review"></div>
 
 
-
-                <div class="actions">
-
+                <div class="actions actions-between">
 
                     <button
                         type="button"
-                        class="secondary"
                         id="back2"
+                        class="btn-secondary"
                     >
                         ← Voltar
                     </button>
 
-
                     <button
                         type="button"
-                        class="primary"
                         id="generate"
+                        class="btn-primary"
                     >
-                        GERAR RDD + CUPONS →
+                        GERAR RDD + CUPONS
                     </button>
 
-
                 </div>
-
 
             </div>
 
@@ -758,578 +522,393 @@
 
 
 
-        <!-- =================================================
-             ETAPA 4
-             ================================================= -->
+        <!-- =====================================================
+             ETAPA 4 - FINALIZAR
+        ====================================================== -->
 
         <section
-            id="final"
-            class="screen"
+            id="step4"
+            class="step-section"
         >
 
-            <div class="card done">
+            <div class="card final-card">
 
-
-                <div>
+                <div class="final-icon">
                     ✓
                 </div>
 
+                <h2>RDD gerado com sucesso!</h2>
 
-                <h2>
-                    RDD pronto!
-                </h2>
-
-
-                <p id="message"></p>
-
+                <p>
+                    O RDD e os respectivos comprovantes foram
+                    processados.
+                </p>
 
                 <button
                     type="button"
-                    class="primary"
                     id="new"
+                    class="btn-primary"
                 >
-                    Criar novo RDD
+                    Novo RDD
                 </button>
-
 
             </div>
 
         </section>
-
 
     </main>
 
 
 
-    <!-- =====================================================
-         MENU INFERIOR
-         ===================================================== -->
+    <!-- =========================================================
+         MODAL DE EDIÇÃO DO CUPOM
+    ========================================================== -->
 
-    <nav>
+    <div
+        id="modal"
+        class="modal"
+    >
 
-        <span class="active">
-            ⌂
-        </span>
+        <div class="modal-content">
 
-        <span>
-            🧾
-        </span>
+            <div class="modal-header">
 
-        <span>
-            ✓
-        </span>
+                <h3>Editar cupom</h3>
 
-        <span>
-            ✓
-        </span>
-
-    </nav>
-
-
-</div>
-
-
-
-<!-- =========================================================
-     MODAL DE EDIÇÃO
-     ========================================================= -->
-
-<div
-    id="modal"
-    class="modal"
->
-
-    <div class="modal-content">
-
-
-        <div class="modal-header">
-
-
-            <div>
-
-                <h3>
-                    Editar cupom
-                </h3>
-
-                <p>
-                    Confira e corrija os dados identificados.
-                </p>
+                <button
+                    type="button"
+                    id="close"
+                    class="modal-close"
+                >
+                    ×
+                </button>
 
             </div>
 
 
-            <button
-                type="button"
-                id="close"
-                class="modal-close"
-            >
-                ×
-            </button>
+            <div class="modal-photo-wrapper">
 
+                <img
+                    id="photo"
+                    src=""
+                    alt="Cupom"
+                >
+
+            </div>
+
+
+            <div class="form-grid modal-form">
+
+                <div class="field">
+
+                    <label for="mdate">
+                        Data *
+                    </label>
+
+                    <input
+                        type="date"
+                        id="mdate"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="mcat">
+                        Categoria *
+                    </label>
+
+                    <select id="mcat">
+
+                        <option value="">
+                            Selecione
+                        </option>
+
+                        <option value="transporte">
+                            Transporte
+                        </option>
+
+                        <option value="combustivel">
+                            Combustível
+                        </option>
+
+                        <option value="refeicoes">
+                            Refeições
+                        </option>
+
+                        <option value="hospedagem">
+                            Hospedagem
+                        </option>
+
+                        <option value="materiais">
+                            Materiais
+                        </option>
+
+                        <option value="diversos">
+                            Diversos
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label for="mdesc">
+                        Estabelecimento / Descrição
+                    </label>
+
+                    <input
+                        type="text"
+                        id="mdesc"
+                        placeholder="Nome do estabelecimento"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="mdoc">
+                        Número do documento *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="mdoc"
+                        placeholder="NFC-e / NF / cupom"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="mvalue">
+                        Valor
+                    </label>
+
+                    <input
+                        type="number"
+                        id="mvalue"
+                        min="0"
+                        step="0.01"
+                        placeholder="0,00"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    id="closeModal"
+                    class="btn-secondary"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    id="save"
+                    class="btn-primary"
+                >
+                    Salvar
+                </button>
+
+            </div>
 
         </div>
-
-
-
-        <div
-            id="photo"
-            class="photo-preview"
-        ></div>
-
-
-
-        <label>
-
-            Data
-
-            <input
-                id="mdate"
-                type="date"
-            >
-
-        </label>
-
-
-
-        <label>
-
-            Categoria *
-
-            <select id="mcat">
-
-                <option value="">
-                    Selecione...
-                </option>
-
-                <option value="transporte">
-                    Transporte
-                </option>
-
-                <option value="combustivel">
-                    Combustível
-                </option>
-
-                <option value="refeicoes">
-                    Refeições
-                </option>
-
-                <option value="hospedagem">
-                    Hospedagem
-                </option>
-
-                <option value="materiais">
-                    Materiais
-                </option>
-
-                <option value="diversos">
-                    Diversos
-                </option>
-
-            </select>
-
-        </label>
-
-
-
-        <label>
-
-            Estabelecimento / descrição
-
-            <input
-                id="mdesc"
-                type="text"
-                placeholder="Nome do estabelecimento"
-            >
-
-        </label>
-
-
-
-        <label>
-
-            Número do documento *
-
-            <input
-                id="mdoc"
-                type="text"
-                placeholder="NFC-e, NF-e, cupom etc."
-            >
-
-        </label>
-
-
-
-        <label>
-
-            Valor
-
-            <input
-                id="mvalue"
-                type="text"
-                inputmode="decimal"
-                placeholder="R$ 0,00"
-            >
-
-        </label>
-
-
-
-        <div class="actions">
-
-
-            <button
-                type="button"
-                class="secondary"
-                id="closeModal"
-            >
-                Cancelar
-            </button>
-
-
-            <button
-                type="button"
-                class="primary"
-                id="save"
-            >
-                Salvar cupom
-            </button>
-
-
-        </div>
-
 
     </div>
 
-</div>
+
+
+    <!-- =========================================================
+         JAVASCRIPT PRINCIPAL
+    ========================================================== -->
+
+    <script src="app.js"></script>
 
 
 
-<!-- =========================================================
-     APP.JS
-     ========================================================= -->
+    <!-- =========================================================
+         CONTROLE DIRETO DOS BOTÕES DE FOTO
+         NÃO DEPENDE DO APP.JS PARA MOSTRAR A CONFIRMAÇÃO
+    ========================================================== -->
 
-<script src="./app.js"></script>
+    <script>
 
-
-
-<!-- =========================================================
-     CONTROLE DOS BOTÕES DE FOTO
-     ========================================================= -->
-
-<script>
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+        console.log("RDD INDEX NOVO - CONTROLE DE UPLOAD ATIVO");
 
 
         const cameraInput =
-            document.getElementById(
-                "cameraInput"
-            );
-
+            document.getElementById("cameraInput");
 
         const galleryInput =
-            document.getElementById(
-                "galleryInput"
-            );
-
+            document.getElementById("galleryInput");
 
         const filesInput =
-            document.getElementById(
-                "files"
-            );
-
+            document.getElementById("files");
 
         const takePhoto =
-            document.getElementById(
-                "takePhoto"
-            );
-
+            document.getElementById("takePhoto");
 
         const selectPhoto =
-            document.getElementById(
-                "selectPhoto"
-            );
+            document.getElementById("selectPhoto");
 
 
-        const uploadSummary =
-            document.getElementById(
-                "uploadSummary"
-            );
+        const uploadStatus =
+            document.getElementById("uploadStatus");
 
+        const uploadStatusTitle =
+            document.getElementById("uploadStatusTitle");
 
-        const uploadSummaryTitle =
-            document.getElementById(
-                "uploadSummaryTitle"
-            );
-
-
-        const uploadSummaryText =
-            document.getElementById(
-                "uploadSummaryText"
-            );
-
+        const uploadStatusText =
+            document.getElementById("uploadStatusText");
 
         const selectedFilesSummary =
-            document.getElementById(
-                "selectedFilesSummary"
-            );
+            document.getElementById("selectedFilesSummary");
 
 
 
-        /*
-         * =====================================================
-         * MOSTRA A CONFIRMAÇÃO DIRETAMENTE NA TELA
-         *
-         * IMPORTANTE:
-         * Esta função NÃO depende do #count do app.js.
-         * =====================================================
-         */
+        /* =========================================================
+           MOSTRAR CONFIRMAÇÃO NA ÁREA MARCADA
+        ========================================================== */
 
-        function mostrarConfirmacao(
-            arquivos
-        ) {
+        function mostrarStatusUpload(arquivos) {
 
+            if (!arquivos || arquivos.length === 0) {
 
-            if (
-                !arquivos ||
-                arquivos.length === 0
-            ) {
+                uploadStatusTitle.textContent =
+                    "Nenhum cupom carregado";
+
+                uploadStatusText.textContent =
+                    "Selecione ou fotografe um comprovante para começar.";
+
+                selectedFilesSummary.innerHTML = "";
+
+                uploadStatus.classList.remove("success");
 
                 return;
-
             }
-
 
 
             const quantidade =
                 arquivos.length;
 
 
-
-            /*
-             * Torna o painel visível
-             */
-
-            uploadSummary.style.display =
-                "block";
+            uploadStatus.classList.add("success");
 
 
-
-            /*
-             * TÍTULO
-             */
-
-            if (quantidade === 1) {
-
-                uploadSummaryTitle.textContent =
-                    "🟢 1 cupom carregado";
-
-            } else {
-
-                uploadSummaryTitle.textContent =
-                    "🟢 " +
-                    quantidade +
-                    " cupons carregados";
-
-            }
+            uploadStatusTitle.textContent =
+                "🟢 " + quantidade +
+                (quantidade === 1
+                    ? " cupom carregado"
+                    : " cupons carregados");
 
 
-
-            /*
-             * MENSAGEM
-             */
-
-            if (quantidade === 1) {
-
-                uploadSummaryText.textContent =
-                    "✓ 1 imagem adicionada com sucesso e pronta para conferência.";
-
-            } else {
-
-                uploadSummaryText.textContent =
-                    "✓ " +
-                    quantidade +
-                    " imagens adicionadas com sucesso e prontas para conferência.";
-
-            }
+            uploadStatusText.textContent =
+                "✓ " +
+                quantidade +
+                (quantidade === 1
+                    ? " imagem adicionada com sucesso e pronta para conferência."
+                    : " imagens adicionadas com sucesso e prontas para conferência.");
 
 
-
-            /*
-             * LISTA DOS NOMES
-             */
-
-            selectedFilesSummary.innerHTML =
-                "";
+            selectedFilesSummary.innerHTML = "";
 
 
-            Array.from(
-                arquivos
-            ).forEach(
-                function (
-                    arquivo,
-                    indice
-                ) {
+            Array.from(arquivos).forEach(
+                function(file, index) {
 
+                    const item =
+                        document.createElement("div");
 
-                    const linha =
-                        document.createElement(
-                            "div"
-                        );
+                    item.className =
+                        "selected-file-item";
 
+                    item.textContent =
+                        "📄 " + file.name;
 
-                    linha.style.cssText = `
-                        display:flex;
-                        align-items:center;
-                        gap:8px;
-                        padding:5px 0;
-                        color:#365344;
-                        font-size:13px;
-                    `;
-
-
-                    linha.innerHTML =
-                        `
-                            <span
-                                style="
-                                    color:#2E8B57;
-                                    font-weight:bold;
-                                "
-                            >
-                                ✓
-                            </span>
-
-                            <span>
-                                Cupom
-                                ${String(indice + 1).padStart(2, "0")}
-                                —
-                                ${arquivo.name}
-                            </span>
-                        `;
-
-
-                    selectedFilesSummary.appendChild(
-                        linha
-                    );
-
+                    selectedFilesSummary.appendChild(item);
 
                 }
             );
-
-
-            /*
-             * Rola suavemente até a confirmação.
-             */
-
-            setTimeout(
-                function () {
-
-                    uploadSummary.scrollIntoView({
-                        behavior: "smooth",
-                        block: "nearest"
-                    });
-
-                },
-                100
-            );
-
 
         }
 
 
 
-        /*
-         * =====================================================
-         * ENVIA OS ARQUIVOS PARA O APP.JS
-         * =====================================================
-         */
+        /* =========================================================
+           PASSAR OS ARQUIVOS PARA O APP.JS
+        ========================================================== */
 
-        function enviarParaAppJS(
-            arquivos
-        ) {
+        function enviarArquivosParaAppJS(arquivos) {
 
-
-            if (
-                !arquivos ||
-                arquivos.length === 0
-            ) {
-
+            if (!arquivos || arquivos.length === 0) {
                 return;
-
             }
-
 
 
             /*
              * PRIMEIRO:
-             * mostramos a confirmação.
-             *
-             * Assim ela aparece mesmo se o app.js
-             * tiver qualquer problema posteriormente.
+             * mostra imediatamente a confirmação visual.
              */
 
-            mostrarConfirmacao(
-                arquivos
-            );
-
+            mostrarStatusUpload(arquivos);
 
 
             /*
              * DEPOIS:
-             * entregamos os arquivos para o app.js.
+             * entrega os arquivos para o app.js original.
              */
 
             try {
-
 
                 const dataTransfer =
                     new DataTransfer();
 
 
+                Array.from(arquivos).forEach(
+                    function(file) {
 
-                Array.from(
-                    arquivos
-                ).forEach(
-                    function (
-                        arquivo
-                    ) {
-
-                        dataTransfer.items.add(
-                            arquivo
-                        );
+                        dataTransfer.items.add(file);
 
                     }
                 );
-
 
 
                 filesInput.files =
                     dataTransfer.files;
 
 
+                /*
+                 * Dispara o mesmo evento que o
+                 * app.js já espera.
+                 */
 
                 filesInput.dispatchEvent(
                     new Event(
                         "change",
                         {
-                            bubbles:true
+                            bubbles: true
                         }
                     )
                 );
 
 
-            } catch (
-                erro
-            ) {
-
+            } catch (erro) {
 
                 console.error(
-                    "Erro ao transferir imagens:",
+                    "Erro ao enviar arquivos para o app.js:",
                     erro
                 );
-
 
             }
 
@@ -1337,130 +916,294 @@ document.addEventListener(
 
 
 
-        /*
-         * =====================================================
-         * BOTÃO TIRAR FOTO
-         * =====================================================
-         */
+        /* =========================================================
+           BOTÃO TIRAR FOTO
+        ========================================================== */
 
-        if (
-            takePhoto &&
-            cameraInput
-        ) {
+        takePhoto.addEventListener(
+            "click",
+            function(event) {
 
+                event.preventDefault();
+                event.stopPropagation();
 
-            takePhoto.addEventListener(
-                "click",
-                function () {
+                cameraInput.click();
 
-                    cameraInput.click();
-
-                }
-            );
-
-
-        }
+            }
+        );
 
 
 
-        /*
-         * =====================================================
-         * RESULTADO DA CÂMERA
-         * =====================================================
-         */
+        /* =========================================================
+           BOTÃO SELECIONAR FOTO
+        ========================================================== */
 
-        if (
-            cameraInput
-        ) {
+        selectPhoto.addEventListener(
+            "click",
+            function(event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                galleryInput.click();
+
+            }
+        );
 
 
-            cameraInput.addEventListener(
-                "change",
-                function () {
+
+        /* =========================================================
+           FOTO DA CÂMERA
+        ========================================================== */
+
+        cameraInput.addEventListener(
+            "change",
+            function(event) {
+
+                const arquivos =
+                    event.target.files;
+
+                console.log(
+                    "Fotos da câmera:",
+                    arquivos.length
+                );
 
 
-                    enviarParaAppJS(
-                        cameraInput.files
+                if (arquivos && arquivos.length > 0) {
+
+                    enviarArquivosParaAppJS(
+                        arquivos
                     );
 
-
-                    cameraInput.value =
-                        "";
-
-
                 }
-            );
 
 
-        }
+                /*
+                 * Permite tirar outra foto
+                 * depois.
+                 */
 
+                event.target.value = "";
 
-
-        /*
-         * =====================================================
-         * BOTÃO SELECIONAR FOTO
-         * =====================================================
-         */
-
-        if (
-            selectPhoto &&
-            galleryInput
-        ) {
-
-
-            selectPhoto.addEventListener(
-                "click",
-                function () {
-
-                    galleryInput.click();
-
-                }
-            );
-
-
-        }
+            }
+        );
 
 
 
-        /*
-         * =====================================================
-         * RESULTADO DA GALERIA
-         * =====================================================
-         */
+        /* =========================================================
+           GALERIA / ARQUIVOS
+        ========================================================== */
 
-        if (
-            galleryInput
-        ) {
+        galleryInput.addEventListener(
+            "change",
+            function(event) {
+
+                const arquivos =
+                    event.target.files;
+
+                console.log(
+                    "Fotos selecionadas:",
+                    arquivos.length
+                );
+
+                console.log(
+                    arquivos
+                );
 
 
-            galleryInput.addEventListener(
-                "change",
-                function () {
+                if (arquivos && arquivos.length > 0) {
 
-
-                    enviarParaAppJS(
-                        galleryInput.files
+                    enviarArquivosParaAppJS(
+                        arquivos
                     );
 
+                }
 
-                    galleryInput.value =
-                        "";
 
+                /*
+                 * Permite selecionar os mesmos
+                 * arquivos novamente depois.
+                 */
+
+                event.target.value = "";
+
+            }
+        );
+
+
+
+        /* =========================================================
+           ESTILO EXTRA DA CONFIRMAÇÃO
+        ========================================================== */
+
+        const style =
+            document.createElement("style");
+
+
+        style.textContent = `
+
+            .upload-status {
+
+                display: flex;
+
+                align-items: flex-start;
+
+                gap: 14px;
+
+                margin-top: 14px;
+
+                margin-bottom: 14px;
+
+                padding: 14px 16px;
+
+                border: 1px solid #d9e2ea;
+
+                border-radius: 12px;
+
+                background: #f5f8fa;
+
+                min-height: 58px;
+
+                box-sizing: border-box;
+
+            }
+
+
+            .upload-status.success {
+
+                background: #eef9f1;
+
+                border-color: #9bd4aa;
+
+            }
+
+
+            .upload-status-icon {
+
+                width: 36px;
+
+                height: 36px;
+
+                min-width: 36px;
+
+                border-radius: 50%;
+
+                display: flex;
+
+                align-items: center;
+
+                justify-content: center;
+
+                background: #e8eef3;
+
+                font-size: 18px;
+
+            }
+
+
+            .upload-status.success
+            .upload-status-icon {
+
+                background: #d9f2df;
+
+            }
+
+
+            .upload-status-content {
+
+                display: flex;
+
+                flex-direction: column;
+
+                gap: 3px;
+
+                min-width: 0;
+
+            }
+
+
+            #uploadStatusTitle {
+
+                color: #062f55;
+
+                font-size: 15px;
+
+            }
+
+
+            #uploadStatusText {
+
+                color: #526777;
+
+                font-size: 13px;
+
+                line-height: 1.4;
+
+            }
+
+
+            .selected-files-summary {
+
+                display: flex;
+
+                flex-direction: column;
+
+                gap: 2px;
+
+                margin-top: 6px;
+
+                max-height: 100px;
+
+                overflow-y: auto;
+
+            }
+
+
+            .selected-file-item {
+
+                color: #35566f;
+
+                font-size: 12px;
+
+                white-space: nowrap;
+
+                overflow: hidden;
+
+                text-overflow: ellipsis;
+
+            }
+
+
+            @media (max-width: 600px) {
+
+                .upload-status {
+
+                    padding: 12px;
 
                 }
-            );
+
+                #uploadStatusTitle {
+
+                    font-size: 14px;
+
+                }
+
+                #uploadStatusText {
+
+                    font-size: 12px;
+
+                }
+
+            }
+
+        `;
 
 
-        }
+        document.head.appendChild(style);
 
+    </script>
 
-    }
-);
-
-</script>
-
-
+</div>
 
 </body>
-
 </html>
