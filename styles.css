@@ -1607,3 +1607,41 @@ select:focus-visible {
     }
 
 }
+/* =========================================================
+   AJUSTE FINAL DO LOGO BMB3
+   ========================================================= */
+
+.brand img {
+    width: 120px !important;
+    height: 58px !important;
+
+    object-fit: contain !important;
+
+    background: transparent !important;
+
+    border-radius: 0 !important;
+
+    padding: 0 !important;
+
+    display: block !important;
+}
+
+
+/* Celular */
+
+@media (max-width: 600px) {
+
+    .brand img {
+        width: 105px !important;
+        height: 43px !important;
+
+        object-fit: contain !important;
+
+        background: transparent !important;
+
+        border-radius: 0 !important;
+
+        padding: 0 !important;
+    }
+
+}
