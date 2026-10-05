@@ -176,11 +176,28 @@ def fill_workbook(payload, rdd_number, output_xlsx):
         ws[f"D{idx}"] = item.get("description", "")
         ws[f"E{idx}"] = item.get("document", "")
 
-        category = str(item.get("category", "")).strip()
-        if category not in CATEGORY_COLUMNS:
-            raise ValueError(f"Categoria inválida: {category}")
+       category = str(item.get("category", "")).strip()
 
-        ws[f"{CATEGORY_COLUMNS[category]}{idx}"] = money(item.get("value"))
+# Aceita maiúsculas/minúsculas sem alterar a categoria
+category_normalizada = category.casefold()
+
+CATEGORY_COLUMNS_NORMALIZED = {
+    chave.casefold(): coluna
+    for chave, coluna in CATEGORY_COLUMNS.items()
+}
+
+if category_normalizada not in CATEGORY_COLUMNS_NORMALIZED:
+    raise ValueError(
+        f"Categoria inválida: {category}"
+    )
+
+coluna_categoria = CATEGORY_COLUMNS_NORMALIZED[
+    category_normalizada
+]
+
+ws[f"{coluna_categoria}{idx}"] = money(
+    item.get("value")
+)
 
     # Garante área de impressão do modelo
     ws.print_area = "A1:L49"
