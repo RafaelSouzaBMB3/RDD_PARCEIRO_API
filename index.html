@@ -1,139 +1,693 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Teste RDD Parceiro</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#06284A">
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    max-width: 700px;
-    margin: 30px auto;
-    padding: 20px;
-}
+  <title>RDD - Parceiro | BMB3</title>
 
-input, button {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    box-sizing: border-box;
-}
-
-button {
-    cursor: pointer;
-    font-weight: bold;
-}
-
-#status {
-    margin-top: 20px;
-    padding: 15px;
-    background: #eee;
-    white-space: pre-wrap;
-}
-</style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
-<h2>Teste RDD Parceiro</h2>
+  <div class="app">
 
-<p>Este teste verifica a comunicação com a API do Render.</p>
+    <!-- CABEÇALHO -->
+    <header class="topbar">
 
-<input id="nome" placeholder="Nome" value="Teste Parceiro">
+      <div class="brand">
 
-<input id="cpf" placeholder="CPF" value="00000000000">
+        <img
+          src="assets/logo-bmb3.svg"
+          alt="BMB3"
+        >
 
-<input id="obra" placeholder="Obra" value="Obra Teste">
+        <div>
+          <h1>RDD - Parceiro</h1>
+          <p>Reembolso de Pagamentos e Despesa</p>
+        </div>
 
-<input id="documento" placeholder="Número do documento" value="TESTE001">
+      </div>
 
-<input id="valor" placeholder="Valor" value="20,00">
+      <span class="portal">
+        ● Portal do Parceiro
+      </span>
 
-<button onclick="gerarRDD()">GERAR RDD + CUPOM</button>
+    </header>
 
-<div id="status">Aguardando teste...</div>
 
-<script>
+    <main>
 
-async function gerarRDD() {
+      <!-- ETAPAS -->
+      <div class="progress">
 
-    const status = document.getElementById("status");
+        <div class="step active">
+          <b>1</b>
+          <span>Dados</span>
+        </div>
 
-    status.textContent = "⏳ Enviando dados para o Render...";
+        <i></i>
 
-    const payload = {
-        nome: document.getElementById("nome").value,
-        cpf: document.getElementById("cpf").value,
-        obra: document.getElementById("obra").value,
+        <div class="step">
+          <b>2</b>
+          <span>Cupons</span>
+        </div>
 
-        receipts: [
-            {
-                date: new Date().toISOString().slice(0, 10),
-                account: "",
-                description: "TESTE DE COMUNICAÇÃO",
-                document: document.getElementById("documento").value,
-                category: "Materiais",
-                value: document.getElementById("valor").value
-            }
-        ]
-    };
+        <i></i>
 
-    const formData = new FormData();
+        <div class="step">
+          <b>3</b>
+          <span>Revisão</span>
+        </div>
 
-    formData.append("payload", JSON.stringify(payload));
+        <i></i>
 
-    try {
+        <div class="step">
+          <b>4</b>
+          <span>Finalizar</span>
+        </div>
 
-        const response = await fetch(
-            "https://rdd-parceiro-api-1.onrender.com/api/generate",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
+      </div>
 
-        if (!response.ok) {
 
-            const erro = await response.text();
+      <!-- =========================================
+           ETAPA 1 - DADOS
+      ========================================== -->
 
-            throw new Error(
-                "HTTP " + response.status + "\n\n" + erro
-            );
-        }
+      <section
+        id="dados"
+        class="screen on"
+      >
 
-        const blob = await response.blob();
+        <div class="card">
 
-        const url = URL.createObjectURL(blob);
+          <div class="title">
 
-        const link = document.createElement("a");
+            <strong>👤</strong>
 
-        link.href = url;
-        link.download = "RDD-teste.pdf";
+            <div>
 
-        document.body.appendChild(link);
+              <h2>Dados do responsável</h2>
 
-        link.click();
+              <p>
+                Preencha suas informações para iniciar o RDD
+              </p>
 
-        link.remove();
+            </div>
 
-        URL.revokeObjectURL(url);
 
-        status.textContent =
-            "✅ SUCESSO!\n\n" +
-            "A API recebeu os dados e devolveu o PDF.";
+            <aside>
 
-    } catch (erro) {
+              <small>
+                Nº do Demonstrativo
+              </small>
 
-        console.error(erro);
+              <b>
+                RDD-210
+              </b>
 
-        status.textContent =
-            "❌ ERRO AO COMUNICAR COM O RENDER\n\n" +
-            erro.message;
-    }
-}
+            </aside>
 
-</script>
+          </div>
+
+
+          <div class="grid">
+
+
+            <!-- FINALIDADE -->
+
+            <label class="full">
+
+              Finalidade
+
+              <input
+                value="Reembolso de Pagamentos e Despesa"
+                disabled
+              >
+
+            </label>
+
+
+            <!-- NOME -->
+
+            <label>
+
+              Nome *
+
+              <input
+                id="nome"
+                placeholder="Digite seu nome completo"
+              >
+
+            </label>
+
+
+            <!-- CPF -->
+
+            <label>
+
+              CPF *
+
+              <input
+                id="cpf"
+                inputmode="numeric"
+                placeholder="000.000.000-00"
+              >
+
+            </label>
+
+
+            <!-- DEPARTAMENTO -->
+
+            <label>
+
+              Departamento
+
+              <input
+                value="Projetos"
+                disabled
+              >
+
+            </label>
+
+
+            <!-- OBRA -->
+
+            <label>
+
+              Obra *
+
+              <input
+                id="obra"
+                placeholder="Digite a obra / projeto"
+              >
+
+            </label>
+
+
+            <!-- PERÍODO -->
+
+            <label>
+
+              Período de pagamento
+
+              <input
+                id="periodo"
+                disabled
+              >
+
+            </label>
+
+
+            <!-- CARGO -->
+
+            <label>
+
+              Cargo
+
+              <input
+                value="Prestador de Serviços"
+                disabled
+              >
+
+            </label>
+
+
+            <!-- GERENTE -->
+
+            <label>
+
+              Gerente
+
+              <input
+                value="Roberto Almeida Blanco"
+                disabled
+              >
+
+            </label>
+
+
+            <!-- VNC -->
+
+            <label>
+
+              VNC
+
+              <input
+                value="5229 >> Mastercard Black"
+                disabled
+              >
+
+            </label>
+
+          </div>
+
+
+          <button
+            class="primary"
+            id="next1"
+          >
+
+            Avançar →
+
+          </button>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =========================================
+           ETAPA 2 - CUPONS
+      ========================================== -->
+
+      <section
+        id="cupons"
+        class="screen"
+      >
+
+        <div class="card">
+
+
+          <div class="title">
+
+            <strong>🧾</strong>
+
+            <div>
+
+              <h2>
+                Adicionar cupom
+              </h2>
+
+              <p>
+                Fotografe ou selecione o comprovante
+              </p>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- ÁREA DE UPLOAD -->
+
+          <div class="upload">
+
+            <input
+              id="files"
+              type="file"
+              accept="image/*,.heic,.heif"
+              capture="environment"
+              multiple
+              hidden
+            >
+
+
+            <button id="pick">
+
+              <span>📷</span>
+
+              <b>
+                Adicionar foto do cupom
+              </b>
+
+              <small>
+                JPG, PNG, HEIC/HEIF • vários cupons
+              </small>
+
+            </button>
+
+          </div>
+
+
+
+          <!-- LISTA DE CUPONS -->
+
+          <div id="list"></div>
+
+
+
+          <!-- TOTAL -->
+
+          <div class="total">
+
+            <span>
+
+              Cupons adicionados:
+
+              <b id="count">
+                0
+              </b>
+
+            </span>
+
+
+            <b>
+
+              Total:
+
+              <em id="sum">
+                R$ 0,00
+              </em>
+
+            </b>
+
+          </div>
+
+
+
+          <!-- BOTÕES -->
+
+          <div class="actions">
+
+            <button
+              class="secondary"
+              id="back1"
+            >
+
+              ← Voltar
+
+            </button>
+
+
+            <button
+              class="primary"
+              id="next2"
+            >
+
+              Avançar para revisão →
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =========================================
+           ETAPA 3 - REVISÃO
+      ========================================== -->
+
+      <section
+        id="revisao"
+        class="screen"
+      >
+
+        <div class="card">
+
+
+          <div class="title">
+
+            <strong>✓</strong>
+
+            <div>
+
+              <h2>
+                Revisão do RDD
+              </h2>
+
+              <p>
+                Confira os dados antes de gerar
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div
+            id="review"
+            class="review"
+          ></div>
+
+
+          <div class="actions">
+
+            <button
+              class="secondary"
+              id="back2"
+            >
+
+              ← Voltar
+
+            </button>
+
+
+            <button
+              class="primary"
+              id="generate"
+            >
+
+              GERAR RDD + CUPONS →
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+
+      <!-- =========================================
+           ETAPA 4 - FINALIZAÇÃO
+      ========================================== -->
+
+      <section
+        id="final"
+        class="screen"
+      >
+
+        <div class="card done">
+
+          <div>
+            ✓
+          </div>
+
+          <h2>
+            RDD pronto!
+          </h2>
+
+          <p id="message"></p>
+
+
+          <button
+            class="primary"
+            id="new"
+          >
+
+            Criar novo RDD
+
+          </button>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+
+    <!-- =========================================
+         MENU INFERIOR CELULAR
+    ========================================== -->
+
+    <nav>
+
+      <span class="active">
+
+        ⌂
+
+        <small>
+          Início
+        </small>
+
+      </span>
+
+
+      <span>
+
+        ▤
+
+        <small>
+          Meus RDDs
+        </small>
+
+      </span>
+
+
+      <span>
+
+        ?
+
+        <small>
+          Ajuda
+        </small>
+
+      </span>
+
+    </nav>
+
+
+
+    <!-- =========================================
+         MODAL DE EDIÇÃO DO CUPOM
+    ========================================== -->
+
+    <div
+      id="modal"
+      class="modal"
+    >
+
+      <div class="modalbox">
+
+
+        <button
+          id="close"
+        >
+          ×
+        </button>
+
+
+        <h3>
+          Editar cupom
+        </h3>
+
+
+        <div id="photo"></div>
+
+
+        <div class="grid">
+
+
+          <!-- DATA -->
+
+          <label>
+
+            Data *
+
+            <input
+              id="mdate"
+              type="date"
+            >
+
+          </label>
+
+
+          <!-- CATEGORIA -->
+
+          <label>
+
+            Categoria *
+
+            <select id="mcat">
+
+              <option value="">
+                Selecione
+              </option>
+
+              <option>
+                Transporte
+              </option>
+
+              <option>
+                Combustível
+              </option>
+
+              <option>
+                Refeições
+              </option>
+
+              <option>
+                Hospedagem
+              </option>
+
+              <option>
+                Materiais
+              </option>
+
+              <option>
+                Diversos
+              </option>
+
+            </select>
+
+          </label>
+
+
+          <!-- DESCRIÇÃO -->
+
+          <label class="full">
+
+            Descrição *
+
+            <input
+              id="mdesc"
+              placeholder="Ex.: abastecimento, refeição..."
+            >
+
+          </label>
+
+
+          <!-- DOCUMENTO -->
+
+          <label>
+
+            Nº do documento *
+
+            <input
+              id="mdoc"
+              placeholder="NF / NFC-e / Cupom"
+            >
+
+          </label>
+
+
+          <!-- VALOR -->
+
+          <label>
+
+            Valor (R$) *
+
+            <input
+              id="mvalue"
+              inputmode="decimal"
+              placeholder="0,00"
+            >
+
+          </label>
+
+
+        </div>
+
+
+        <button
+          class="primary"
+          id="save"
+        >
+
+          Salvar cupom
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- JAVASCRIPT -->
+
+  <script src="app.js"></script>
 
 </body>
+
 </html>
