@@ -64,6 +64,10 @@
 
 
 
+    <!-- =====================================================
+         CONTEÚDO PRINCIPAL
+         ===================================================== -->
+
     <main>
 
 
@@ -74,29 +78,55 @@
         <div class="progress">
 
             <div class="step active">
+
                 <b>1</b>
-                <span>Dados</span>
+
+                <span>
+                    Dados
+                </span>
+
             </div>
+
 
             <i></i>
 
+
             <div class="step">
+
                 <b>2</b>
-                <span>Cupons</span>
+
+                <span>
+                    Cupons
+                </span>
+
             </div>
+
 
             <i></i>
 
+
             <div class="step">
+
                 <b>3</b>
-                <span>Revisão</span>
+
+                <span>
+                    Revisão
+                </span>
+
             </div>
+
 
             <i></i>
 
+
             <div class="step">
+
                 <b>4</b>
-                <span>Finalizar</span>
+
+                <span>
+                    Finalizar
+                </span>
+
             </div>
 
         </div>
@@ -104,7 +134,7 @@
 
 
         <!-- =================================================
-             ETAPA 1 - DADOS
+             ETAPA 1
              ================================================= -->
 
         <section
@@ -117,7 +147,10 @@
 
                 <div class="title">
 
-                    <strong>👤</strong>
+                    <strong>
+                        👤
+                    </strong>
+
 
                     <div>
 
@@ -313,9 +346,14 @@
             <div class="card">
 
 
+                <!-- CABEÇALHO DA ETAPA -->
+
                 <div class="title">
 
-                    <strong>🧾</strong>
+                    <strong>
+                        🧾
+                    </strong>
+
 
                     <div>
 
@@ -334,7 +372,8 @@
 
 
                 <!-- =================================================
-                     INPUT PRINCIPAL USADO PELO APP.JS
+                     INPUT PRINCIPAL
+                     O APP.JS ATUAL USA ESTE INPUT
                      ================================================= -->
 
                 <input
@@ -362,7 +401,7 @@
 
 
                 <!-- =================================================
-                     INPUT GALERIA / ARQUIVOS
+                     INPUT DA GALERIA
                      ================================================= -->
 
                 <input
@@ -376,7 +415,8 @@
 
 
                 <!-- =================================================
-                     BOTÃO ANTIGO - MANTIDO PARA COMPATIBILIDADE
+                     BOTÃO ORIGINAL DO APP.JS
+                     FICA OCULTO, MAS É MANTIDO
                      ================================================= -->
 
                 <button
@@ -390,7 +430,7 @@
 
 
                 <!-- =================================================
-                     ÁREA DE UPLOAD
+                     BOTÕES DE FOTO
                      ================================================= -->
 
                 <div class="upload">
@@ -406,7 +446,9 @@
                     >
 
 
-                        <!-- TIRAR FOTO -->
+                        <!-- ================================
+                             TIRAR FOTO
+                             ================================ -->
 
                         <button
                             id="takePhoto"
@@ -436,9 +478,11 @@
                                 📷
                             </span>
 
+
                             <b>
                                 Tirar foto
                             </b>
+
 
                             <small>
                                 Usar a câmera
@@ -448,7 +492,9 @@
 
 
 
-                        <!-- SELECIONAR FOTO -->
+                        <!-- ================================
+                             SELECIONAR FOTO
+                             ================================ -->
 
                         <button
                             id="selectPhoto"
@@ -478,9 +524,11 @@
                                 🖼️
                             </span>
 
+
                             <b>
                                 Selecionar foto
                             </b>
+
 
                             <small>
                                 Galeria ou arquivos
@@ -491,6 +539,82 @@
 
                     </div>
 
+                </div>
+
+
+
+                <!-- =================================================
+                     CONFIRMAÇÃO VISUAL DOS ARQUIVOS
+                     ================================================= -->
+
+                <div
+                    id="uploadSummary"
+                    style="
+                        display:none;
+                        margin-top:18px;
+                        padding:15px 17px;
+                        border-radius:14px;
+                        background:#EAF7EE;
+                        border:1px solid #B9DFC2;
+                    "
+                >
+
+                    <div
+                        style="
+                            display:flex;
+                            align-items:center;
+                            gap:12px;
+                        "
+                    >
+
+                        <div
+                            style="
+                                width:44px;
+                                height:44px;
+                                min-width:44px;
+                                border-radius:50%;
+                                background:#2E8B57;
+                                color:#FFFFFF;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                                font-size:22px;
+                                font-weight:bold;
+                            "
+                        >
+                            ✓
+                        </div>
+
+
+                        <div>
+
+                            <strong
+                                id="uploadSummaryTitle"
+                                style="
+                                    display:block;
+                                    color:#176B37;
+                                    font-size:16px;
+                                "
+                            >
+                                0 cupons carregados
+                            </strong>
+
+
+                            <span
+                                id="uploadSummaryText"
+                                style="
+                                    display:block;
+                                    margin-top:4px;
+                                    color:#427052;
+                                    font-size:13px;
+                                "
+                            >
+                                Nenhuma imagem adicionada.
+                            </span>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
@@ -498,9 +622,15 @@
 
                 <!-- =================================================
                      LISTA DOS CUPONS
+                     O APP.JS PREENCHE ESTE LOCAL
                      ================================================= -->
 
-                <div id="list"></div>
+                <div
+                    id="list"
+                    style="
+                        margin-top:16px;
+                    "
+                ></div>
 
 
 
@@ -541,6 +671,7 @@
 
                 <div class="actions">
 
+
                     <button
                         type="button"
                         class="secondary"
@@ -557,6 +688,7 @@
                     >
                         Avançar para revisão →
                     </button>
+
 
                 </div>
 
@@ -581,7 +713,10 @@
 
                 <div class="title">
 
-                    <strong>✓</strong>
+                    <strong>
+                        ✓
+                    </strong>
+
 
                     <div>
 
@@ -608,6 +743,7 @@
 
                 <div class="actions">
 
+
                     <button
                         type="button"
                         class="secondary"
@@ -625,6 +761,7 @@
                         GERAR RDD + CUPONS →
                     </button>
 
+
                 </div>
 
 
@@ -635,7 +772,7 @@
 
 
         <!-- =================================================
-             ETAPA 4 - FINAL
+             ETAPA 4 - FINALIZAÇÃO
              ================================================= -->
 
         <section
@@ -645,15 +782,19 @@
 
             <div class="card done">
 
+
                 <div>
                     ✓
                 </div>
+
 
                 <h2>
                     RDD pronto!
                 </h2>
 
+
                 <p id="message"></p>
+
 
                 <button
                     type="button"
@@ -662,6 +803,7 @@
                 >
                     Criar novo RDD
                 </button>
+
 
             </div>
 
@@ -682,13 +824,16 @@
             ⌂
         </span>
 
+
         <span>
             🧾
         </span>
 
+
         <span>
             ✓
         </span>
+
 
         <span>
             ✓
@@ -697,15 +842,12 @@
     </nav>
 
 
-
 </div>
 
 
 
 <!-- =========================================================
      MODAL DE EDIÇÃO DO CUPOM
-
-     O app.js atual utiliza estes elementos.
      ========================================================= -->
 
 <div
@@ -716,13 +858,17 @@
     <div class="modal-content">
 
 
+        <!-- CABEÇALHO -->
+
         <div class="modal-header">
+
 
             <div>
 
                 <h3>
                     Editar cupom
                 </h3>
+
 
                 <p>
                     Confira e corrija os dados identificados.
@@ -738,6 +884,7 @@
             >
                 ×
             </button>
+
 
         </div>
 
@@ -779,25 +926,31 @@
                     Selecione...
                 </option>
 
+
                 <option value="transporte">
                     Transporte
                 </option>
+
 
                 <option value="combustivel">
                     Combustível
                 </option>
 
+
                 <option value="refeicoes">
                     Refeições
                 </option>
+
 
                 <option value="hospedagem">
                     Hospedagem
                 </option>
 
+
                 <option value="materiais">
                     Materiais
                 </option>
+
 
                 <option value="diversos">
                     Diversos
@@ -862,6 +1015,7 @@
 
         <div class="actions">
 
+
             <button
                 type="button"
                 class="secondary"
@@ -878,6 +1032,7 @@
             >
                 Salvar cupom
             </button>
+
 
         </div>
 
@@ -897,254 +1052,385 @@
 
 
 <!-- =========================================================
-     CONTROLE DOS DOIS BOTÕES DE FOTO
+     CONTROLE DOS BOTÕES DE FOTO
+     + CONFIRMAÇÃO VISUAL
      ========================================================= -->
 
 <script>
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
 
-    const cameraInput =
-        document.getElementById("cameraInput");
+        const cameraInput =
+            document.getElementById(
+                "cameraInput"
+            );
 
 
-    const galleryInput =
-        document.getElementById("galleryInput");
+        const galleryInput =
+            document.getElementById(
+                "galleryInput"
+            );
 
 
-    const filesInput =
-        document.getElementById("files");
+        const filesInput =
+            document.getElementById(
+                "files"
+            );
 
 
-    const takePhoto =
-        document.getElementById("takePhoto");
+        const takePhoto =
+            document.getElementById(
+                "takePhoto"
+            );
 
 
-    const selectPhoto =
-        document.getElementById("selectPhoto");
+        const selectPhoto =
+            document.getElementById(
+                "selectPhoto"
+            );
 
 
-    const closeModal =
-        document.getElementById("closeModal");
+        const uploadSummary =
+            document.getElementById(
+                "uploadSummary"
+            );
 
 
-    const modal =
-        document.getElementById("modal");
+        const uploadSummaryTitle =
+            document.getElementById(
+                "uploadSummaryTitle"
+            );
 
 
-    const close =
-        document.getElementById("close");
+        const uploadSummaryText =
+            document.getElementById(
+                "uploadSummaryText"
+            );
+
+
+        const count =
+            document.getElementById(
+                "count"
+            );
 
 
 
-    /* =====================================================
-       FUNÇÃO CENTRAL
+        /* =====================================================
+           ATUALIZA A CONFIRMAÇÃO VISUAL
+           COM BASE NO CONTADOR REAL DO APP.JS
+           ===================================================== */
 
-       Pega os arquivos escolhidos pela câmera/galeria
-       e entrega para o input "files", que é justamente
-       o input que o app.js atual já monitora.
-       ===================================================== */
-
-    function enviarParaAppJS(arquivos) {
+        function atualizarConfirmacao() {
 
 
-        if (!arquivos || arquivos.length === 0) {
+            if (!count) {
+                return;
+            }
 
-            return;
+
+            const total =
+                parseInt(
+                    count.textContent || "0",
+                    10
+                );
+
+
+            if (
+                isNaN(total) ||
+                total <= 0
+            ) {
+
+                if (uploadSummary) {
+
+                    uploadSummary.style.display =
+                        "none";
+
+                }
+
+                return;
+
+            }
+
+
+
+            if (uploadSummary) {
+
+                uploadSummary.style.display =
+                    "block";
+
+            }
+
+
+
+            if (uploadSummaryTitle) {
+
+                uploadSummaryTitle.textContent =
+                    total === 1
+                        ? "1 cupom carregado"
+                        : total +
+                          " cupons carregados";
+
+            }
+
+
+
+            if (uploadSummaryText) {
+
+                uploadSummaryText.textContent =
+                    total === 1
+                        ? "✓ 1 imagem adicionada com sucesso e pronta para conferência."
+                        : "✓ " +
+                          total +
+                          " imagens adicionadas com sucesso e prontas para conferência.";
+
+            }
 
         }
 
 
-        try {
 
-            const dataTransfer =
-                new DataTransfer();
+        /* =====================================================
+           OBSERVA O CONTADOR DO APP.JS
 
+           Quando o app.js mudar:
+           0 → 1
+           1 → 2
+           2 → 3
 
-            Array.from(arquivos).forEach(function (arquivo) {
+           a confirmação da tela acompanha automaticamente.
+           ===================================================== */
 
-                dataTransfer.items.add(arquivo);
-
-            });
-
-
-            filesInput.files =
-                dataTransfer.files;
+        if (count) {
 
 
-            /*
-             * Dispara o mesmo evento que aconteceria
-             * se o usuário tivesse escolhido diretamente
-             * pelo input original.
-             */
+            const observer =
+                new MutationObserver(
+                    function () {
 
-            filesInput.dispatchEvent(
-                new Event("change", {
-                    bubbles: true
-                })
+                        atualizarConfirmacao();
+
+                    }
+                );
+
+
+            observer.observe(
+                count,
+                {
+                    childList: true,
+                    characterData: true,
+                    subtree: true
+                }
             );
 
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao transferir imagens:",
-                erro
-            );
 
         }
 
-    }
 
 
+        /* =====================================================
+           ENVIA OS ARQUIVOS PARA O INPUT "FILES"
+           ===================================================== */
 
-    /* =====================================================
-       TIRAR FOTO
-       ===================================================== */
+        function enviarParaAppJS(
+            arquivos
+        ) {
 
-    if (takePhoto && cameraInput) {
 
-        takePhoto.addEventListener(
-            "click",
-            function () {
+            if (
+                !arquivos ||
+                arquivos.length === 0
+            ) {
 
-                cameraInput.click();
+                return;
 
             }
-        );
-
-    }
 
 
 
-    /* =====================================================
-       FOTO CAPTURADA
-       ===================================================== */
+            try {
 
-    if (cameraInput) {
 
-        cameraInput.addEventListener(
-            "change",
-            function () {
+                const dataTransfer =
+                    new DataTransfer();
 
-                enviarParaAppJS(
-                    cameraInput.files
+
+
+                Array.from(
+                    arquivos
+                ).forEach(
+                    function (arquivo) {
+
+                        dataTransfer.items.add(
+                            arquivo
+                        );
+
+                    }
                 );
 
-                cameraInput.value = "";
-
-            }
-        );
-
-    }
 
 
+                /*
+                 * Entrega os arquivos para o
+                 * input que o app.js monitora.
+                 */
 
-    /* =====================================================
-       SELECIONAR FOTO
-       ===================================================== */
-
-    if (selectPhoto && galleryInput) {
-
-        selectPhoto.addEventListener(
-            "click",
-            function () {
-
-                galleryInput.click();
-
-            }
-        );
-
-    }
+                filesInput.files =
+                    dataTransfer.files;
 
 
 
-    /* =====================================================
-       FOTOS DA GALERIA
-       ===================================================== */
+                /*
+                 * Dispara o evento change.
+                 */
 
-    if (galleryInput) {
-
-        galleryInput.addEventListener(
-            "change",
-            function () {
-
-                enviarParaAppJS(
-                    galleryInput.files
+                filesInput.dispatchEvent(
+                    new Event(
+                        "change",
+                        {
+                            bubbles: true
+                        }
+                    )
                 );
 
-                galleryInput.value = "";
+
+
+            } catch (erro) {
+
+
+                console.error(
+                    "Erro ao transferir imagens:",
+                    erro
+                );
+
 
             }
-        );
 
-    }
-
+        }
 
 
-    /* =====================================================
-       FECHAR MODAL
-       ===================================================== */
 
-    if (closeModal) {
+        /* =====================================================
+           BOTÃO TIRAR FOTO
+           ===================================================== */
 
-        closeModal.addEventListener(
-            "click",
-            function () {
+        if (
+            takePhoto &&
+            cameraInput
+        ) {
 
-                if (modal) {
 
-                    modal.classList.remove("open");
+            takePhoto.addEventListener(
+                "click",
+                function () {
+
+                    cameraInput.click();
 
                 }
-
-            }
-        );
-
-    }
+            );
 
 
-    if (close) {
+        }
 
-        close.addEventListener(
-            "click",
-            function () {
 
-                if (modal) {
 
-                    modal.classList.remove("open");
+        /* =====================================================
+           FOTO DA CÂMERA
+           ===================================================== */
+
+        if (cameraInput) {
+
+
+            cameraInput.addEventListener(
+                "change",
+                function () {
+
+
+                    enviarParaAppJS(
+                        cameraInput.files
+                    );
+
+
+                    cameraInput.value =
+                        "";
+
 
                 }
-
-            }
-        );
-
-    }
+            );
 
 
+        }
 
-    if (modal) {
 
-        modal.addEventListener(
-            "click",
-            function (event) {
 
-                if (event.target === modal) {
+        /* =====================================================
+           BOTÃO SELECIONAR FOTO
+           ===================================================== */
 
-                    modal.classList.remove("open");
+        if (
+            selectPhoto &&
+            galleryInput
+        ) {
+
+
+            selectPhoto.addEventListener(
+                "click",
+                function () {
+
+                    galleryInput.click();
 
                 }
+            );
 
-            }
-        );
+
+        }
+
+
+
+        /* =====================================================
+           FOTOS DA GALERIA
+           ===================================================== */
+
+        if (galleryInput) {
+
+
+            galleryInput.addEventListener(
+                "change",
+                function () {
+
+
+                    enviarParaAppJS(
+                        galleryInput.files
+                    );
+
+
+                    galleryInput.value =
+                        "";
+
+
+                }
+            );
+
+
+        }
+
+
+
+        /* =====================================================
+           ATUALIZAÇÃO INICIAL
+           ===================================================== */
+
+        atualizarConfirmacao();
+
 
     }
 
-
-});
+);
 
 </script>
+
 
 
 </body>
