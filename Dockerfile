@@ -10,7 +10,11 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+
+# Instala todas as dependências, incluindo suporte a HEIC/HEIF
+RUN python -m pip install --upgrade pip \
+    && python -m pip install --no-cache-dir -r requirements.txt \
+    && python -m pip install --no-cache-dir pillow-heif
 
 COPY app.py .
 COPY template ./template
