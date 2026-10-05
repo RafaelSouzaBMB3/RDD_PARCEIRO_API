@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -12,16 +14,839 @@
 
     <link rel="icon" href="data:,">
 
-    <link rel="stylesheet" href="styles.css">
+    <style>
+
+        /* =========================================================
+           BASE
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f3f6f9;
+            color: #092f52;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+
+        /* =========================================================
+           REGRA PRINCIPAL DAS ETAPAS
+        ========================================================= */
+
+        .step-section {
+            display: none !important;
+        }
+
+        .step-section.active {
+            display: block !important;
+        }
+
+
+        /* =========================================================
+           TOPO
+        ========================================================= */
+
+        .topbar {
+            width: 100%;
+            min-height: 82px;
+            background: #062f55;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 32px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.15);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .brand img {
+            width: 120px !important;
+            height: 58px !important;
+            object-fit: contain !important;
+            background: transparent !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            display: block;
+        }
+
+        .brand-text h1 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .brand-text span {
+            display: block;
+            margin-top: 4px;
+            color: #d9e5ef;
+            font-size: 13px;
+        }
+
+        .portal-label {
+            color: #f1bd32;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+
+        /* =========================================================
+           CONFIGURAÇÕES
+        ========================================================= */
+
+        .settings-button {
+            border: 1px solid rgba(255,255,255,.25);
+            background: rgba(255,255,255,.08);
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 14px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .settings-button:hover {
+            background: rgba(255,255,255,.15);
+        }
+
+
+        /* =========================================================
+           PROGRESSO
+        ========================================================= */
+
+        .progress-wrapper {
+            max-width: 980px;
+            margin: 22px auto 0;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8293a3;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .progress-number {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #e1e8ee;
+            color: #607789;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .progress-step.active {
+            color: #062f55;
+        }
+
+        .progress-step.active .progress-number {
+            background: #f1bd32;
+            color: #062f55;
+        }
+
+        .progress-step.completed .progress-number {
+            background: #0b6b4b;
+            color: #fff;
+        }
+
+        .progress-line {
+            height: 2px;
+            width: 55px;
+            background: #d4dde5;
+        }
+
+
+        /* =========================================================
+           CONTEÚDO
+        ========================================================= */
+
+        .main-content {
+            max-width: 980px;
+            margin: 20px auto 50px;
+            padding: 0 20px;
+        }
+
+
+        /* =========================================================
+           CARD
+        ========================================================= */
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #d8e1e9;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 8px 25px rgba(0,47,85,.08);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 20px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid #e3e9ee;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 13px;
+            background: #fff5df;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #062f55;
+            font-size: 22px;
+        }
+
+        .section-header p {
+            margin: 5px 0 0;
+            color: #718394;
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           FORMULÁRIO
+        ========================================================= */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 17px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field label {
+            color: #173f60;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            min-height: 44px;
+            padding: 11px 13px;
+            border: 1px solid #ccd8e2;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #183c59;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: #f1bd32;
+            box-shadow: 0 0 0 3px rgba(241,189,50,.15);
+        }
+
+        .field input[readonly] {
+            background: #f4f7f9;
+            color: #526a7c;
+        }
+
+
+        /* =========================================================
+           BOTÕES
+        ========================================================= */
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .actions-between {
+            justify-content: space-between;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            min-height: 46px;
+            padding: 0 22px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .2s ease;
+        }
+
+        .btn-primary {
+            background: #062f55;
+            border: 1px solid #062f55;
+            color: #ffffff;
+            box-shadow: 0 5px 12px rgba(6,47,85,.18);
+        }
+
+        .btn-primary:hover {
+            background: #0a416f;
+        }
+
+        .btn-secondary {
+            background: #edf2f6;
+            border: 1px solid #d2dde6;
+            color: #173f60;
+        }
+
+        .btn-secondary:hover {
+            background: #e3eaf0;
+        }
+
+
+        /* =========================================================
+           CUPONS
+        ========================================================= */
+
+        .upload-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 15px;
+        }
+
+        .upload-option {
+            min-height: 140px;
+            border: 2px dashed #c6d4df;
+            border-radius: 14px;
+            background: #f9fbfc;
+            color: #062f55;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: .2s ease;
+        }
+
+        .upload-option:hover {
+            border-color: #f1bd32;
+            background: #fffdf7;
+        }
+
+        .upload-option-icon {
+            font-size: 34px;
+            margin-bottom: 3px;
+        }
+
+        .upload-option strong {
+            font-size: 15px;
+        }
+
+        .upload-option small {
+            color: #708392;
+            font-size: 12px;
+        }
+
+
+        /* =========================================================
+           STATUS DO UPLOAD
+        ========================================================= */
+
+        .upload-status {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-top: 16px;
+            margin-bottom: 16px;
+            padding: 14px 16px;
+            border: 1px solid #d9e2ea;
+            border-radius: 12px;
+            background: #f5f8fa;
+            min-height: 62px;
+        }
+
+        .upload-status.success {
+            background: #eef9f1;
+            border-color: #9bd4aa;
+        }
+
+        .upload-status-icon {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e8eef3;
+            font-size: 18px;
+        }
+
+        .upload-status.success .upload-status-icon {
+            background: #d9f2df;
+        }
+
+        .upload-status-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+
+        #uploadStatusTitle {
+            color: #062f55;
+            font-size: 15px;
+        }
+
+        #uploadStatusText {
+            color: #526777;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .selected-files-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            margin-top: 6px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .selected-file-item {
+            color: #35566f;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        /* =========================================================
+           LISTA DE CUPONS
+        ========================================================= */
+
+        .coupons-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .coupon {
+            display: grid;
+            grid-template-columns: 90px 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 14px;
+            border: 1px solid #d8e1e9;
+            border-radius: 13px;
+            background: #fff;
+        }
+
+        .coupon img {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 9px;
+            border: 1px solid #d7e0e7;
+            cursor: pointer;
+        }
+
+        .coupon-info {
+            min-width: 0;
+        }
+
+        .coupon-info strong {
+            display: block;
+            color: #062f55;
+            margin-bottom: 5px;
+        }
+
+        .coupon-info span {
+            display: block;
+            color: #607687;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .coupon-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .coupon-actions button {
+            border: 1px solid #d1dce5;
+            background: #f5f8fa;
+            color: #173f60;
+            border-radius: 8px;
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+
+
+        /* =========================================================
+           TOTAIS
+        ========================================================= */
+
+        .totals-box {
+            margin-top: 18px;
+            padding: 16px 18px;
+            border: 1px solid #d7e1e9;
+            border-radius: 12px;
+            background: #f1f6f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #173f60;
+            font-size: 14px;
+        }
+
+        .total-value {
+            color: #008b63;
+            font-size: 17px;
+        }
+
+
+        /* =========================================================
+           REVISÃO
+        ========================================================= */
+
+        #review {
+            min-height: 100px;
+        }
+
+        .review-summary {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 12px;
+        }
+
+        .review-item {
+            padding: 15px;
+            border: 1px solid #d9e2e9;
+            border-radius: 11px;
+            background: #f7f9fb;
+        }
+
+        .review-label {
+            display: block;
+            color: #738595;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .review-item strong {
+            color: #062f55;
+            font-size: 14px;
+        }
+
+
+        /* =========================================================
+           FINAL
+        ========================================================= */
+
+        .final-card {
+            text-align: center;
+            padding: 55px 30px;
+        }
+
+        .final-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #dff3e7;
+            color: #08734d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            font-weight: 700;
+        }
+
+        .final-card h2 {
+            margin: 0;
+            color: #062f55;
+        }
+
+        .final-card p {
+            color: #708392;
+            margin: 10px 0 25px;
+        }
+
+
+        /* =========================================================
+           MODAL
+        ========================================================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(3,24,42,.72);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-content {
+            width: min(720px, 100%);
+            max-height: 92vh;
+            overflow-y: auto;
+            background: #fff;
+            border-radius: 17px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.3);
+            padding: 22px;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #062f55;
+        }
+
+        .modal-close {
+            border: 0;
+            background: transparent;
+            color: #526777;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .modal-photo-wrapper {
+            width: 100%;
+            background: #f1f4f6;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        #photo {
+            max-width: 100%;
+            max-height: 320px;
+            object-fit: contain;
+            border-radius: 7px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+
+        /* =========================================================
+           CONFIGURAÇÕES
+        ========================================================= */
+
+        .settings-modal-box {
+            width: min(500px, 100%);
+        }
+
+        .settings-title {
+            color: #062f55;
+            margin: 0;
+        }
+
+        .category-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px;
+            border: 1px solid #d9e2e9;
+            border-radius: 10px;
+            margin-bottom: 9px;
+            background: #f8fafb;
+        }
+
+        .category-option.disabled {
+            opacity: .48;
+        }
+
+        .category-option label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #173f60;
+        }
+
+
+        /* =========================================================
+           RESPONSIVO
+        ========================================================= */
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                padding: 10px 15px;
+                min-height: 70px;
+            }
+
+            .brand {
+                gap: 10px;
+            }
+
+            .brand img {
+                width: 95px !important;
+                height: 42px !important;
+            }
+
+            .brand-text h1 {
+                font-size: 18px;
+            }
+
+            .brand-text span {
+                font-size: 10px;
+            }
+
+            .portal-label {
+                display: none;
+            }
+
+            .progress-wrapper {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding: 0 12px;
+                margin-top: 15px;
+            }
+
+            .progress-line {
+                width: 25px;
+                min-width: 25px;
+            }
+
+            .progress-step {
+                font-size: 11px;
+            }
+
+            .progress-number {
+                width: 30px;
+                height: 30px;
+                min-width: 30px;
+            }
+
+            .main-content {
+                padding: 0 10px;
+                margin-top: 14px;
+            }
+
+            .card {
+                padding: 18px;
+                border-radius: 14px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            .upload-options {
+                grid-template-columns: 1fr;
+            }
+
+            .upload-option {
+                min-height: 110px;
+            }
+
+            .coupon {
+                grid-template-columns: 70px 1fr;
+            }
+
+            .coupon img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .coupon-actions {
+                grid-column: 1 / -1;
+            }
+
+            .totals-box {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 7px;
+            }
+
+            .review-summary {
+                grid-template-columns: 1fr;
+            }
+
+            .actions,
+            .actions-between {
+                flex-direction: column-reverse;
+            }
+
+            .actions button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-<div class="app-shell">
 
     <!-- =========================================================
-         HEADER
+         TOPO
     ========================================================== -->
+
     <header class="topbar">
 
         <div class="brand">
@@ -32,62 +857,127 @@
             >
 
             <div class="brand-text">
+
                 <h1>RDD - Parceiro</h1>
-                <span>Reembolso de Pagamentos e Despesa</span>
+
+                <span>
+                    Reembolso de Pagamentos e Despesa
+                </span>
+
             </div>
 
         </div>
 
-        <div class="portal-label">
-            Portal do Parceiro
+
+        <div style="display:flex;align-items:center;gap:10px;">
+
+            <button
+                type="button"
+                id="settingsButton"
+                class="settings-button"
+            >
+                ⚙️ Configurações
+            </button>
+
+            <div class="portal-label">
+                Portal do Parceiro
+            </div>
+
         </div>
 
     </header>
 
 
+
     <!-- =========================================================
          PROGRESSO
     ========================================================== -->
+
     <div class="progress-wrapper">
 
-        <div class="progress-step active">
-            <div class="progress-number">1</div>
-            <span>Dados</span>
+        <div
+            class="progress-step active"
+            id="progress1"
+        >
+
+            <div class="progress-number">
+                1
+            </div>
+
+            <span>
+                Dados
+            </span>
+
         </div>
+
 
         <div class="progress-line"></div>
 
-        <div class="progress-step">
-            <div class="progress-number">2</div>
-            <span>Cupons</span>
+
+        <div
+            class="progress-step"
+            id="progress2"
+        >
+
+            <div class="progress-number">
+                2
+            </div>
+
+            <span>
+                Cupons
+            </span>
+
         </div>
+
 
         <div class="progress-line"></div>
 
-        <div class="progress-step">
-            <div class="progress-number">3</div>
-            <span>Revisão</span>
+
+        <div
+            class="progress-step"
+            id="progress3"
+        >
+
+            <div class="progress-number">
+                3
+            </div>
+
+            <span>
+                Revisão
+            </span>
+
         </div>
+
 
         <div class="progress-line"></div>
 
-        <div class="progress-step">
-            <div class="progress-number">4</div>
-            <span>Finalizar</span>
+
+        <div
+            class="progress-step"
+            id="progress4"
+        >
+
+            <div class="progress-number">
+                4
+            </div>
+
+            <span>
+                Finalizar
+            </span>
+
         </div>
 
     </div>
 
 
-    <!-- =========================================================
-         CONTEÚDO
-    ========================================================== -->
+
     <main class="main-content">
 
 
         <!-- =====================================================
-             ETAPA 1 - DADOS
+             ETAPA 1
         ====================================================== -->
+
         <section
             id="step1"
             class="step-section active"
@@ -102,8 +992,15 @@
                     </div>
 
                     <div>
-                        <h2>Dados do responsável</h2>
-                        <p>Preencha os dados para gerar o RDD</p>
+
+                        <h2>
+                            Dados do responsável
+                        </h2>
+
+                        <p>
+                            Preencha os dados para gerar o RDD
+                        </p>
+
                     </div>
 
                 </div>
@@ -260,8 +1157,9 @@
 
 
         <!-- =====================================================
-             ETAPA 2 - CUPONS
+             ETAPA 2
         ====================================================== -->
+
         <section
             id="step2"
             class="step-section"
@@ -276,16 +1174,19 @@
                     </div>
 
                     <div>
-                        <h2>Adicionar cupons</h2>
-                        <p>Fotografe ou selecione seus comprovantes</p>
+
+                        <h2>
+                            Adicionar cupons
+                        </h2>
+
+                        <p>
+                            Fotografe ou selecione seus comprovantes
+                        </p>
+
                     </div>
 
                 </div>
 
-
-                <!-- =================================================
-                     INPUTS DE ARQUIVO
-                ================================================== -->
 
                 <input
                     type="file"
@@ -295,6 +1196,7 @@
                     hidden
                 >
 
+
                 <input
                     type="file"
                     id="galleryInput"
@@ -303,10 +1205,7 @@
                     hidden
                 >
 
-                <!--
-                    Input utilizado pelo app.js.
-                    Mantido para compatibilidade.
-                -->
+
                 <input
                     type="file"
                     id="files"
@@ -316,11 +1215,8 @@
                 >
 
 
-                <!-- =================================================
-                     BOTÕES
-                ================================================== -->
-
                 <div class="upload-options">
+
 
                     <button
                         type="button"
@@ -366,12 +1262,6 @@
                 </div>
 
 
-
-                <!-- =================================================
-                     ÁREA DE CONFIRMAÇÃO
-                     É EXATAMENTE A ÁREA MARCADA EM VERMELHO
-                ================================================== -->
-
                 <div
                     id="uploadStatus"
                     class="upload-status"
@@ -401,46 +1291,40 @@
                 </div>
 
 
-
-                <!-- =================================================
-                     LISTA DE CUPONS
-                ================================================== -->
-
                 <div
                     id="list"
                     class="coupons-list"
                 ></div>
 
 
-
-                <!-- =================================================
-                     TOTAIS
-                ================================================== -->
-
                 <div class="totals-box">
 
                     <div>
+
                         Cupons adicionados:
-                        <strong id="count">0</strong>
+
+                        <strong id="count">
+                            0
+                        </strong>
+
                     </div>
 
+
                     <div>
+
                         Total:
+
                         <strong
                             id="sum"
                             class="total-value"
                         >
                             R$ 0,00
                         </strong>
+
                     </div>
 
                 </div>
 
-
-
-                <!-- =================================================
-                     AÇÕES
-                ================================================== -->
 
                 <div class="actions actions-between">
 
@@ -451,6 +1335,7 @@
                     >
                         ← Voltar
                     </button>
+
 
                     <button
                         type="button"
@@ -469,7 +1354,7 @@
 
 
         <!-- =====================================================
-             ETAPA 3 - REVISÃO
+             ETAPA 3
         ====================================================== -->
 
         <section
@@ -486,8 +1371,15 @@
                     </div>
 
                     <div>
-                        <h2>Revisão</h2>
-                        <p>Confira os dados antes de gerar o RDD</p>
+
+                        <h2>
+                            Revisão
+                        </h2>
+
+                        <p>
+                            Confira os dados antes de gerar o RDD
+                        </p>
+
                     </div>
 
                 </div>
@@ -506,6 +1398,7 @@
                         ← Voltar
                     </button>
 
+
                     <button
                         type="button"
                         id="generate"
@@ -523,7 +1416,7 @@
 
 
         <!-- =====================================================
-             ETAPA 4 - FINALIZAR
+             ETAPA 4
         ====================================================== -->
 
         <section
@@ -537,11 +1430,12 @@
                     ✓
                 </div>
 
-                <h2>RDD gerado com sucesso!</h2>
+                <h2>
+                    RDD gerado com sucesso!
+                </h2>
 
                 <p>
-                    O RDD e os respectivos comprovantes foram
-                    processados.
+                    O RDD e os respectivos comprovantes foram processados.
                 </p>
 
                 <button
@@ -561,7 +1455,7 @@
 
 
     <!-- =========================================================
-         MODAL DE EDIÇÃO DO CUPOM
+         MODAL EDITAR CUPOM
     ========================================================== -->
 
     <div
@@ -573,7 +1467,9 @@
 
             <div class="modal-header">
 
-                <h3>Editar cupom</h3>
+                <h3>
+                    Editar cupom
+                </h3>
 
                 <button
                     type="button"
@@ -597,7 +1493,8 @@
             </div>
 
 
-            <div class="form-grid modal-form">
+            <div class="form-grid">
+
 
                 <div class="field">
 
@@ -621,8 +1518,8 @@
 
                     <select id="mcat">
 
-                        <option value="">
-                            Selecione
+                        <option value="materiais">
+                            Materiais
                         </option>
 
                         <option value="transporte">
@@ -639,10 +1536,6 @@
 
                         <option value="hospedagem">
                             Hospedagem
-                        </option>
-
-                        <option value="materiais">
-                            Materiais
                         </option>
 
                         <option value="diversos">
@@ -713,6 +1606,7 @@
                     Cancelar
                 </button>
 
+
                 <button
                     type="button"
                     id="save"
@@ -730,7 +1624,187 @@
 
 
     <!-- =========================================================
-         JAVASCRIPT PRINCIPAL
+         MODAL CONFIGURAÇÕES
+    ========================================================== -->
+
+    <div
+        id="settingsModal"
+        class="modal"
+    >
+
+        <div class="modal-content settings-modal-box">
+
+            <div class="modal-header">
+
+                <h3 class="settings-title">
+                    ⚙️ Configurações do RDD Parceiro
+                </h3>
+
+                <button
+                    type="button"
+                    id="closeSettings"
+                    class="modal-close"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <p style="color:#667b8b;font-size:13px;">
+                Categorias disponíveis para os cupons do RDD Parceiro.
+            </p>
+
+
+            <div class="category-option">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        id="catMateriais"
+                        checked
+                    >
+
+                    Materiais
+
+                </label>
+
+                <strong style="color:#0b7650;">
+                    ATIVO
+                </strong>
+
+            </div>
+
+
+            <div class="category-option disabled">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        disabled
+                    >
+
+                    Transporte
+
+                </label>
+
+                <span>
+                    🔒
+                </span>
+
+            </div>
+
+
+            <div class="category-option disabled">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        disabled
+                    >
+
+                    Combustível
+
+                </label>
+
+                <span>
+                    🔒
+                </span>
+
+            </div>
+
+
+            <div class="category-option disabled">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        disabled
+                    >
+
+                    Refeições
+
+                </label>
+
+                <span>
+                    🔒
+                </span>
+
+            </div>
+
+
+            <div class="category-option disabled">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        disabled
+                    >
+
+                    Hospedagem
+
+                </label>
+
+                <span>
+                    🔒
+                </span>
+
+            </div>
+
+
+            <div class="category-option disabled">
+
+                <label>
+
+                    <input
+                        type="checkbox"
+                        disabled
+                    >
+
+                    Diversos
+
+                </label>
+
+                <span>
+                    🔒
+                </span>
+
+            </div>
+
+
+            <div
+                style="
+                    margin-top:18px;
+                    padding:13px;
+                    border-radius:10px;
+                    background:#fff7df;
+                    border:1px solid #f0d486;
+                    color:#765a10;
+                    font-size:13px;
+                "
+            >
+
+                <strong>
+                    Categoria padrão:
+                </strong>
+
+                Materiais
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================================
+         APP.JS
     ========================================================== -->
 
     <script src="app.js"></script>
@@ -738,105 +1812,306 @@
 
 
     <!-- =========================================================
-         CONTROLE DIRETO DOS BOTÕES DE FOTO
-         NÃO DEPENDE DO APP.JS PARA MOSTRAR A CONFIRMAÇÃO
+         CONTROLE DA INTERFACE
     ========================================================== -->
 
     <script>
 
-        console.log("RDD INDEX NOVO - CONTROLE DE UPLOAD ATIVO");
+        console.log(
+            "RDD PARCEIRO - INTERFACE POR ETAPAS ATIVA"
+        );
 
 
-        const cameraInput =
-            document.getElementById("cameraInput");
+        /* =====================================================
+           REFERÊNCIAS
+        ===================================================== */
 
-        const galleryInput =
-            document.getElementById("galleryInput");
-
-        const filesInput =
-            document.getElementById("files");
-
-        const takePhoto =
-            document.getElementById("takePhoto");
-
-        const selectPhoto =
-            document.getElementById("selectPhoto");
+        const steps = [
+            document.getElementById("step1"),
+            document.getElementById("step2"),
+            document.getElementById("step3"),
+            document.getElementById("step4")
+        ];
 
 
-        const uploadStatus =
-            document.getElementById("uploadStatus");
-
-        const uploadStatusTitle =
-            document.getElementById("uploadStatusTitle");
-
-        const uploadStatusText =
-            document.getElementById("uploadStatusText");
-
-        const selectedFilesSummary =
-            document.getElementById("selectedFilesSummary");
+        const progressSteps = [
+            document.getElementById("progress1"),
+            document.getElementById("progress2"),
+            document.getElementById("progress3"),
+            document.getElementById("progress4")
+        ];
 
 
 
-        /* =========================================================
-           MOSTRAR CONFIRMAÇÃO NA ÁREA MARCADA
-        ========================================================== */
+        /* =====================================================
+           MOSTRAR UMA ÚNICA ETAPA
+        ===================================================== */
 
-        function mostrarStatusUpload(arquivos) {
+        function mostrarEtapa(numero) {
 
-            if (!arquivos || arquivos.length === 0) {
-
-                uploadStatusTitle.textContent =
-                    "Nenhum cupom carregado";
-
-                uploadStatusText.textContent =
-                    "Selecione ou fotografe um comprovante para começar.";
-
-                selectedFilesSummary.innerHTML = "";
-
-                uploadStatus.classList.remove("success");
-
-                return;
-            }
+            const indice =
+                numero - 1;
 
 
-            const quantidade =
-                arquivos.length;
+            steps.forEach(
+                function(step, i) {
+
+                    if (i === indice) {
+
+                        step.classList.add("active");
+
+                    } else {
+
+                        step.classList.remove("active");
+
+                    }
+
+                }
+            );
 
 
-            uploadStatus.classList.add("success");
+            progressSteps.forEach(
+                function(progress, i) {
+
+                    progress.classList.remove(
+                        "active"
+                    );
+
+                    progress.classList.remove(
+                        "completed"
+                    );
 
 
-            uploadStatusTitle.textContent =
-                "🟢 " + quantidade +
-                (quantidade === 1
-                    ? " cupom carregado"
-                    : " cupons carregados");
+                    if (i < indice) {
+
+                        progress.classList.add(
+                            "completed"
+                        );
+
+                    }
 
 
-            uploadStatusText.textContent =
-                "✓ " +
-                quantidade +
-                (quantidade === 1
-                    ? " imagem adicionada com sucesso e pronta para conferência."
-                    : " imagens adicionadas com sucesso e prontas para conferência.");
+                    if (i === indice) {
+
+                        progress.classList.add(
+                            "active"
+                        );
+
+                    }
+
+                }
+            );
 
 
-            selectedFilesSummary.innerHTML = "";
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
 
 
-            Array.from(arquivos).forEach(
-                function(file, index) {
 
-                    const item =
-                        document.createElement("div");
+        /* =====================================================
+           DADOS → CUPONS
+        ===================================================== */
 
-                    item.className =
-                        "selected-file-item";
+        const next1 =
+            document.getElementById("next1");
 
-                    item.textContent =
-                        "📄 " + file.name;
 
-                    selectedFilesSummary.appendChild(item);
+        if (next1) {
+
+            next1.addEventListener(
+                "click",
+                function(event) {
+
+                    event.preventDefault();
+
+                    mostrarEtapa(2);
+
+                },
+                true
+            );
+
+        }
+
+
+
+        /* =====================================================
+           CUPONS → REVISÃO
+        ===================================================== */
+
+        const next2 =
+            document.getElementById("next2");
+
+
+        if (next2) {
+
+            next2.addEventListener(
+                "click",
+                function(event) {
+
+                    event.preventDefault();
+
+                    mostrarEtapa(3);
+
+                },
+                true
+            );
+
+        }
+
+
+
+        /* =====================================================
+           CUPONS → VOLTAR
+        ===================================================== */
+
+        const back1 =
+            document.getElementById("back1");
+
+
+        if (back1) {
+
+            back1.addEventListener(
+                "click",
+                function(event) {
+
+                    event.preventDefault();
+
+                    mostrarEtapa(1);
+
+                },
+                true
+            );
+
+        }
+
+
+
+        /* =====================================================
+           REVISÃO → CUPONS
+        ===================================================== */
+
+        const back2 =
+            document.getElementById("back2");
+
+
+        if (back2) {
+
+            back2.addEventListener(
+                "click",
+                function(event) {
+
+                    event.preventDefault();
+
+                    mostrarEtapa(2);
+
+                },
+                true
+            );
+
+        }
+
+
+
+        /* =====================================================
+           FINALIZAR → NOVO RDD
+        ===================================================== */
+
+        const novoRDD =
+            document.getElementById("new");
+
+
+        if (novoRDD) {
+
+            novoRDD.addEventListener(
+                "click",
+                function(event) {
+
+                    event.preventDefault();
+
+                    location.reload();
+
+                },
+                true
+            );
+
+        }
+
+
+
+        /* =====================================================
+           CONFIGURAÇÕES
+        ===================================================== */
+
+        const settingsButton =
+            document.getElementById(
+                "settingsButton"
+            );
+
+
+        const settingsModal =
+            document.getElementById(
+                "settingsModal"
+            );
+
+
+        const closeSettings =
+            document.getElementById(
+                "closeSettings"
+            );
+
+
+        if (settingsButton) {
+
+            settingsButton.addEventListener(
+                "click",
+                function() {
+
+                    settingsModal.classList.add(
+                        "open"
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (closeSettings) {
+
+            closeSettings.addEventListener(
+                "click",
+                function() {
+
+                    settingsModal.classList.remove(
+                        "open"
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (settingsModal) {
+
+            settingsModal.addEventListener(
+                "click",
+                function(event) {
+
+                    if (
+                        event.target ===
+                        settingsModal
+                    ) {
+
+                        settingsModal.classList.remove(
+                            "open"
+                        );
+
+                    }
 
                 }
             );
@@ -845,29 +2120,152 @@
 
 
 
-        /* =========================================================
-           PASSAR OS ARQUIVOS PARA O APP.JS
-        ========================================================== */
+        /* =====================================================
+           UPLOAD — CONFIRMAÇÃO VISUAL
+        ===================================================== */
 
-        function enviarArquivosParaAppJS(arquivos) {
+        const cameraInput =
+            document.getElementById(
+                "cameraInput"
+            );
 
-            if (!arquivos || arquivos.length === 0) {
+
+        const galleryInput =
+            document.getElementById(
+                "galleryInput"
+            );
+
+
+        const filesInput =
+            document.getElementById(
+                "files"
+            );
+
+
+        const takePhoto =
+            document.getElementById(
+                "takePhoto"
+            );
+
+
+        const selectPhoto =
+            document.getElementById(
+                "selectPhoto"
+            );
+
+
+        const uploadStatus =
+            document.getElementById(
+                "uploadStatus"
+            );
+
+
+        const uploadStatusTitle =
+            document.getElementById(
+                "uploadStatusTitle"
+            );
+
+
+        const uploadStatusText =
+            document.getElementById(
+                "uploadStatusText"
+            );
+
+
+        const selectedFilesSummary =
+            document.getElementById(
+                "selectedFilesSummary"
+            );
+
+
+
+        function mostrarStatusUpload(
+            arquivos
+        ) {
+
+            if (
+                !arquivos ||
+                arquivos.length === 0
+            ) {
+
                 return;
+
             }
 
 
-            /*
-             * PRIMEIRO:
-             * mostra imediatamente a confirmação visual.
-             */
-
-            mostrarStatusUpload(arquivos);
+            uploadStatus.classList.add(
+                "success"
+            );
 
 
-            /*
-             * DEPOIS:
-             * entrega os arquivos para o app.js original.
-             */
+            uploadStatusTitle.textContent =
+                "🟢 " +
+                arquivos.length +
+                (
+                    arquivos.length === 1
+                        ? " cupom carregado"
+                        : " cupons carregados"
+                );
+
+
+            uploadStatusText.textContent =
+                "✓ " +
+                arquivos.length +
+                (
+                    arquivos.length === 1
+                        ? " imagem adicionada com sucesso e pronta para conferência."
+                        : " imagens adicionadas com sucesso e prontas para conferência."
+                );
+
+
+            selectedFilesSummary.innerHTML =
+                "";
+
+
+            Array.from(arquivos).forEach(
+                function(file) {
+
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
+
+                    item.className =
+                        "selected-file-item";
+
+                    item.textContent =
+                        "📄 " +
+                        file.name;
+
+                    selectedFilesSummary.appendChild(
+                        item
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        function enviarArquivosParaAppJS(
+            arquivos
+        ) {
+
+            if (
+                !arquivos ||
+                arquivos.length === 0
+            ) {
+
+                return;
+
+            }
+
+
+            mostrarStatusUpload(
+                arquivos
+            );
+
 
             try {
 
@@ -878,7 +2276,9 @@
                 Array.from(arquivos).forEach(
                     function(file) {
 
-                        dataTransfer.items.add(file);
+                        dataTransfer.items.add(
+                            file
+                        );
 
                     }
                 );
@@ -887,11 +2287,6 @@
                 filesInput.files =
                     dataTransfer.files;
 
-
-                /*
-                 * Dispara o mesmo evento que o
-                 * app.js já espera.
-                 */
 
                 filesInput.dispatchEvent(
                     new Event(
@@ -902,11 +2297,10 @@
                     )
                 );
 
-
             } catch (erro) {
 
                 console.error(
-                    "Erro ao enviar arquivos para o app.js:",
+                    "Erro ao enviar arquivos:",
                     erro
                 );
 
@@ -916,294 +2310,106 @@
 
 
 
-        /* =========================================================
-           BOTÃO TIRAR FOTO
-        ========================================================== */
+        if (takePhoto) {
 
-        takePhoto.addEventListener(
-            "click",
-            function(event) {
+            takePhoto.addEventListener(
+                "click",
+                function(event) {
 
-                event.preventDefault();
-                event.stopPropagation();
+                    event.preventDefault();
 
-                cameraInput.click();
+                    cameraInput.click();
 
-            }
-        );
+                }
+            );
 
-
-
-        /* =========================================================
-           BOTÃO SELECIONAR FOTO
-        ========================================================== */
-
-        selectPhoto.addEventListener(
-            "click",
-            function(event) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                galleryInput.click();
-
-            }
-        );
+        }
 
 
 
-        /* =========================================================
-           FOTO DA CÂMERA
-        ========================================================== */
+        if (selectPhoto) {
 
-        cameraInput.addEventListener(
-            "change",
-            function(event) {
+            selectPhoto.addEventListener(
+                "click",
+                function(event) {
 
-                const arquivos =
-                    event.target.files;
+                    event.preventDefault();
 
-                console.log(
-                    "Fotos da câmera:",
-                    arquivos.length
-                );
+                    galleryInput.click();
+
+                }
+            );
+
+        }
 
 
-                if (arquivos && arquivos.length > 0) {
+
+        if (cameraInput) {
+
+            cameraInput.addEventListener(
+                "change",
+                function(event) {
 
                     enviarArquivosParaAppJS(
-                        arquivos
+                        event.target.files
                     );
 
+                    event.target.value = "";
+
                 }
+            );
 
-
-                /*
-                 * Permite tirar outra foto
-                 * depois.
-                 */
-
-                event.target.value = "";
-
-            }
-        );
+        }
 
 
 
-        /* =========================================================
-           GALERIA / ARQUIVOS
-        ========================================================== */
+        if (galleryInput) {
 
-        galleryInput.addEventListener(
-            "change",
-            function(event) {
-
-                const arquivos =
-                    event.target.files;
-
-                console.log(
-                    "Fotos selecionadas:",
-                    arquivos.length
-                );
-
-                console.log(
-                    arquivos
-                );
-
-
-                if (arquivos && arquivos.length > 0) {
+            galleryInput.addEventListener(
+                "change",
+                function(event) {
 
                     enviarArquivosParaAppJS(
-                        arquivos
+                        event.target.files
                     );
 
-                }
-
-
-                /*
-                 * Permite selecionar os mesmos
-                 * arquivos novamente depois.
-                 */
-
-                event.target.value = "";
-
-            }
-        );
-
-
-
-        /* =========================================================
-           ESTILO EXTRA DA CONFIRMAÇÃO
-        ========================================================== */
-
-        const style =
-            document.createElement("style");
-
-
-        style.textContent = `
-
-            .upload-status {
-
-                display: flex;
-
-                align-items: flex-start;
-
-                gap: 14px;
-
-                margin-top: 14px;
-
-                margin-bottom: 14px;
-
-                padding: 14px 16px;
-
-                border: 1px solid #d9e2ea;
-
-                border-radius: 12px;
-
-                background: #f5f8fa;
-
-                min-height: 58px;
-
-                box-sizing: border-box;
-
-            }
-
-
-            .upload-status.success {
-
-                background: #eef9f1;
-
-                border-color: #9bd4aa;
-
-            }
-
-
-            .upload-status-icon {
-
-                width: 36px;
-
-                height: 36px;
-
-                min-width: 36px;
-
-                border-radius: 50%;
-
-                display: flex;
-
-                align-items: center;
-
-                justify-content: center;
-
-                background: #e8eef3;
-
-                font-size: 18px;
-
-            }
-
-
-            .upload-status.success
-            .upload-status-icon {
-
-                background: #d9f2df;
-
-            }
-
-
-            .upload-status-content {
-
-                display: flex;
-
-                flex-direction: column;
-
-                gap: 3px;
-
-                min-width: 0;
-
-            }
-
-
-            #uploadStatusTitle {
-
-                color: #062f55;
-
-                font-size: 15px;
-
-            }
-
-
-            #uploadStatusText {
-
-                color: #526777;
-
-                font-size: 13px;
-
-                line-height: 1.4;
-
-            }
-
-
-            .selected-files-summary {
-
-                display: flex;
-
-                flex-direction: column;
-
-                gap: 2px;
-
-                margin-top: 6px;
-
-                max-height: 100px;
-
-                overflow-y: auto;
-
-            }
-
-
-            .selected-file-item {
-
-                color: #35566f;
-
-                font-size: 12px;
-
-                white-space: nowrap;
-
-                overflow: hidden;
-
-                text-overflow: ellipsis;
-
-            }
-
-
-            @media (max-width: 600px) {
-
-                .upload-status {
-
-                    padding: 12px;
+                    event.target.value = "";
 
                 }
+            );
 
-                #uploadStatusTitle {
-
-                    font-size: 14px;
-
-                }
-
-                #uploadStatusText {
-
-                    font-size: 12px;
-
-                }
-
-            }
-
-        `;
+        }
 
 
-        document.head.appendChild(style);
+
+        /* =====================================================
+           CATEGORIA PADRÃO
+        ===================================================== */
+
+        const categoria =
+            document.getElementById(
+                "mcat"
+            );
+
+
+        if (categoria) {
+
+            categoria.value =
+                "materiais";
+
+        }
+
+
+
+        /* =====================================================
+           GARANTIA INICIAL
+        ===================================================== */
+
+        mostrarEtapa(1);
 
     </script>
 
-</div>
 
 </body>
+
 </html>
