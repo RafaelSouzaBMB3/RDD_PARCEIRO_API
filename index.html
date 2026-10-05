@@ -1,64 +1,846 @@
-<div class="upload">
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-    <input
-        id="cameraInput"
-        type="file"
-        accept="image/*,.heic,.heif"
-        capture="environment"
-        hidden
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
-    <input
-        id="galleryInput"
-        type="file"
-        accept="image/*,.heic,.heif"
-        multiple
-        hidden
+    <meta
+        name="theme-color"
+        content="#06284A"
     >
 
-    <div class="upload-title">
-        <span>🧾</span>
-        <div>
-            <strong>Adicionar cupom</strong>
-            <small>Escolha uma das opções abaixo</small>
+    <title>RDD - Parceiro | BMB3</title>
+
+    <link
+        rel="stylesheet"
+        href="./styles.css"
+    >
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         CABEÇALHO
+         ===================================================== -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <img
+                src="./assets/logo-bmb3.svg"
+                alt="BMB3"
+            >
+
+            <div>
+
+                <h1>RDD - Parceiro</h1>
+
+                <p>
+                    Reembolso de Pagamentos e Despesa
+                </p>
+
+            </div>
+
         </div>
-    </div>
 
-    <div class="upload-options">
 
-        <button
-            type="button"
-            id="takePhoto"
-            class="upload-option"
+        <span class="portal">
+            ● Portal do Parceiro
+        </span>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CONTEÚDO
+         ===================================================== -->
+
+    <main>
+
+
+        <!-- =================================================
+             ETAPAS
+             ================================================= -->
+
+        <div class="progress">
+
+            <div class="step active">
+                <b>1</b>
+                <span>Dados</span>
+            </div>
+
+            <i></i>
+
+            <div class="step">
+                <b>2</b>
+                <span>Cupons</span>
+            </div>
+
+            <i></i>
+
+            <div class="step">
+                <b>3</b>
+                <span>Revisão</span>
+            </div>
+
+            <i></i>
+
+            <div class="step">
+                <b>4</b>
+                <span>Finalizar</span>
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             ETAPA 1
+             ================================================= -->
+
+        <section
+            id="dados"
+            class="screen on"
         >
-            <span class="upload-icon">📷</span>
 
-            <strong>
-                Tirar foto
-            </strong>
-
-            <small>
-                Usar a câmera
-            </small>
-        </button>
+            <div class="card">
 
 
-        <button
-            type="button"
-            id="selectPhoto"
-            class="upload-option"
+                <div class="title">
+
+                    <strong>👤</strong>
+
+                    <div>
+
+                        <h2>
+                            Dados do responsável
+                        </h2>
+
+                        <p>
+                            Preencha suas informações para iniciar o RDD
+                        </p>
+
+                    </div>
+
+
+                    <aside>
+
+                        <small>
+                            Nº do Demonstrativo
+                        </small>
+
+                        <b id="rddNumber">
+                            RDD-210
+                        </b>
+
+                    </aside>
+
+                </div>
+
+
+
+                <div class="grid">
+
+
+                    <!-- FINALIDADE -->
+
+                    <label class="full">
+
+                        Finalidade
+
+                        <input
+                            id="finalidade"
+                            value="Reembolso de Pagamentos e Despesa"
+                            disabled
+                        >
+
+                    </label>
+
+
+
+                    <!-- NOME -->
+
+                    <label>
+
+                        Nome *
+
+                        <input
+                            id="nome"
+                            type="text"
+                            autocomplete="name"
+                            placeholder="Digite seu nome completo"
+                        >
+
+                    </label>
+
+
+
+                    <!-- CPF -->
+
+                    <label>
+
+                        CPF *
+
+                        <input
+                            id="cpf"
+                            type="text"
+                            inputmode="numeric"
+                            autocomplete="off"
+                            maxlength="14"
+                            placeholder="000.000.000-00"
+                        >
+
+                    </label>
+
+
+
+                    <!-- DEPARTAMENTO -->
+
+                    <label>
+
+                        Departamento
+
+                        <input
+                            id="departamento"
+                            value="Projetos"
+                            disabled
+                        >
+
+                    </label>
+
+
+
+                    <!-- OBRA -->
+
+                    <label>
+
+                        Obra *
+
+                        <input
+                            id="obra"
+                            type="text"
+                            autocomplete="off"
+                            placeholder="Digite a obra / projeto"
+                        >
+
+                    </label>
+
+
+
+                    <!-- PERÍODO -->
+
+                    <label>
+
+                        Período de pagamento
+
+                        <input
+                            id="periodo"
+                            disabled
+                        >
+
+                    </label>
+
+
+
+                    <!-- CARGO -->
+
+                    <label>
+
+                        Cargo
+
+                        <input
+                            id="cargo"
+                            value="Prestador de Serviços"
+                            disabled
+                        >
+
+                    </label>
+
+
+
+                    <!-- GERENTE -->
+
+                    <label>
+
+                        Gerente
+
+                        <input
+                            id="gerente"
+                            value="Roberto Almeida Blanco"
+                            disabled
+                        >
+
+                    </label>
+
+
+                </div>
+
+
+
+                <button
+                    type="button"
+                    class="primary"
+                    id="next1"
+                >
+                    Avançar →
+                </button>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             ETAPA 2 - CUPONS
+             ================================================= -->
+
+        <section
+            id="cupons"
+            class="screen"
         >
-            <span class="upload-icon">🖼️</span>
 
-            <strong>
-                Selecionar foto
-            </strong>
+            <div class="card">
 
-            <small>
-                Galeria ou arquivos
-            </small>
-        </button>
 
-    </div>
+                <div class="title">
+
+                    <strong>🧾</strong>
+
+                    <div>
+
+                        <h2>
+                            Adicionar cupons
+                        </h2>
+
+                        <p>
+                            Fotografe ou selecione seus comprovantes
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     ÁREA DE UPLOAD
+                     ========================================= -->
+
+                <div class="upload">
+
+
+                    <!--
+                        CÂMERA
+
+                        No celular:
+                        abre a câmera.
+
+                        No computador:
+                        poderá abrir a opção de câmera
+                        quando disponível.
+                    -->
+
+                    <input
+                        id="cameraInput"
+                        type="file"
+                        accept="image/*,.heic,.heif"
+                        capture="environment"
+                        hidden
+                    >
+
+
+
+                    <!--
+                        GALERIA / ARQUIVOS
+
+                        Permite selecionar uma ou várias imagens.
+                    -->
+
+                    <input
+                        id="galleryInput"
+                        type="file"
+                        accept="image/*,.heic,.heif"
+                        multiple
+                        hidden
+                    >
+
+
+
+                    <!--
+                        COMPATIBILIDADE COM O APP.JS ANTIGO
+
+                        Mantemos estes IDs temporariamente para evitar
+                        que o JavaScript antigo que ainda estiver publicado
+                        quebre a página.
+                    -->
+
+                    <input
+                        id="files"
+                        type="file"
+                        accept="image/*,.heic,.heif"
+                        multiple
+                        hidden
+                    >
+
+
+
+                    <!-- =====================================
+                         DOIS BOTÕES
+                         ===================================== -->
+
+                    <div
+                        class="upload-options"
+                        style="
+                            display:grid;
+                            grid-template-columns:repeat(2,minmax(0,1fr));
+                            gap:14px;
+                            width:100%;
+                        "
+                    >
+
+
+                        <!-- TIRAR FOTO -->
+
+                        <button
+                            type="button"
+                            id="takePhoto"
+                            class="upload-option"
+                            style="
+                                min-height:145px;
+                                padding:20px;
+                                border:2px dashed #C7D1DA;
+                                border-radius:14px;
+                                background:linear-gradient(180deg,#FAFCFD,#F4F7F9);
+                                color:#06284A;
+                                display:flex;
+                                flex-direction:column;
+                                align-items:center;
+                                justify-content:center;
+                                gap:7px;
+                            "
+                        >
+
+                            <span
+                                style="
+                                    font-size:38px;
+                                    line-height:1;
+                                "
+                            >
+                                📷
+                            </span>
+
+                            <strong
+                                style="
+                                    font-size:15px;
+                                "
+                            >
+                                Tirar foto
+                            </strong>
+
+                            <small
+                                style="
+                                    color:#687786;
+                                    font-size:11px;
+                                "
+                            >
+                                Usar a câmera
+                            </small>
+
+                        </button>
+
+
+
+                        <!-- SELECIONAR FOTO -->
+
+                        <button
+                            type="button"
+                            id="selectPhoto"
+                            class="upload-option"
+                            style="
+                                min-height:145px;
+                                padding:20px;
+                                border:2px dashed #C7D1DA;
+                                border-radius:14px;
+                                background:linear-gradient(180deg,#FAFCFD,#F4F7F9);
+                                color:#06284A;
+                                display:flex;
+                                flex-direction:column;
+                                align-items:center;
+                                justify-content:center;
+                                gap:7px;
+                            "
+                        >
+
+                            <span
+                                style="
+                                    font-size:38px;
+                                    line-height:1;
+                                "
+                            >
+                                🖼️
+                            </span>
+
+                            <strong
+                                style="
+                                    font-size:15px;
+                                "
+                            >
+                                Selecionar foto
+                            </strong>
+
+                            <small
+                                style="
+                                    color:#687786;
+                                    font-size:11px;
+                                "
+                            >
+                                Galeria ou arquivos
+                            </small>
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =========================================
+                     LISTA DE CUPONS
+                     ========================================= -->
+
+                <div id="list"></div>
+
+
+
+                <!-- =========================================
+                     TOTAL
+                     ========================================= -->
+
+                <div class="total">
+
+                    <span>
+
+                        Cupons adicionados:
+
+                        <b id="count">
+                            0
+                        </b>
+
+                    </span>
+
+
+                    <b>
+
+                        Total:
+
+                        <em id="sum">
+                            R$ 0,00
+                        </em>
+
+                    </b>
+
+                </div>
+
+
+
+                <!-- =========================================
+                     AÇÕES
+                     ========================================= -->
+
+                <div class="actions">
+
+
+                    <button
+                        type="button"
+                        class="secondary"
+                        id="back1"
+                    >
+                        ← Voltar
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="primary"
+                        id="next2"
+                    >
+                        Avançar para revisão →
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             ETAPA 3 - REVISÃO
+             ================================================= -->
+
+        <section
+            id="revisao"
+            class="screen"
+        >
+
+            <div class="card">
+
+
+                <div class="title">
+
+                    <strong>✓</strong>
+
+                    <div>
+
+                        <h2>
+                            Revisão do RDD
+                        </h2>
+
+                        <p>
+                            Confira os dados antes de gerar
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div
+                    id="review"
+                    class="review"
+                ></div>
+
+
+
+                <div class="actions">
+
+
+                    <button
+                        type="button"
+                        class="secondary"
+                        id="back2"
+                    >
+                        ← Voltar
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="primary"
+                        id="generate"
+                    >
+                        GERAR RDD + CUPONS →
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             ETAPA 4 - FINALIZAÇÃO
+             ================================================= -->
+
+        <section
+            id="final"
+            class="screen"
+        >
+
+            <div class="card done">
+
+
+                <div>
+                    ✓
+                </div>
+
+
+                <h2>
+                    RDD pronto!
+                </h2>
+
+
+                <p id="message">
+                    Seu RDD foi gerado com sucesso.
+                </p>
+
+
+                <button
+                    type="button"
+                    class="primary"
+                    id="new"
+                >
+                    Criar novo RDD
+                </button>
+
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         MENU INFERIOR
+         ===================================================== -->
+
+    <nav>
+
+        <span class="active">
+            ⌂
+        </span>
+
+        <span>
+            🧾
+        </span>
+
+        <span>
+            ✓
+        </span>
+
+        <span>
+            ✓
+        </span>
+
+    </nav>
+
 
 </div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT PRINCIPAL
+     ========================================================= -->
+
+<script src="./app.js"></script>
+
+
+
+<!-- =========================================================
+     CONTROLE DOS DOIS BOTÕES DE FOTO
+     ========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const cameraInput =
+        document.getElementById("cameraInput");
+
+    const galleryInput =
+        document.getElementById("galleryInput");
+
+    const takePhoto =
+        document.getElementById("takePhoto");
+
+    const selectPhoto =
+        document.getElementById("selectPhoto");
+
+
+
+    /*
+     * BOTÃO: TIRAR FOTO
+     */
+
+    if (takePhoto && cameraInput) {
+
+        takePhoto.addEventListener("click", function () {
+
+            cameraInput.click();
+
+        });
+
+    }
+
+
+
+    /*
+     * BOTÃO: SELECIONAR FOTO
+     */
+
+    if (selectPhoto && galleryInput) {
+
+        selectPhoto.addEventListener("click", function () {
+
+            galleryInput.click();
+
+        });
+
+    }
+
+
+
+    /*
+     * COMPATIBILIDADE:
+     *
+     * Quando uma imagem for escolhida pela câmera,
+     * copiamos os arquivos para o input antigo "files"
+     * quando o navegador permitir.
+     *
+     * O processamento definitivo será feito no app.js.
+     */
+
+    if (cameraInput) {
+
+        cameraInput.addEventListener("change", function () {
+
+            console.log(
+                "Foto capturada:",
+                cameraInput.files
+            );
+
+        });
+
+    }
+
+
+
+    if (galleryInput) {
+
+        galleryInput.addEventListener("change", function () {
+
+            console.log(
+                "Fotos selecionadas:",
+                galleryInput.files
+            );
+
+        });
+
+    }
+
+
+});
+
+</script>
+
+
+</body>
+
+</html>
