@@ -12,7 +12,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from openpyxl import load_workbook
 from PIL import Image
+from pillow_heif import register_heif_opener
 import fitz  # PyMuPDF
+
+
+# ============================================================
+# SUPORTE HEIC / HEIF
+# ============================================================
+
+register_heif_opener()
 
 
 # ============================================================
@@ -30,7 +38,10 @@ DATA_DIR = Path(
     )
 )
 
-DATA_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR.mkdir(
+    parents=True,
+    exist_ok=True
+)
 
 DB_PATH = DATA_DIR / "rdd.db"
 
@@ -49,17 +60,52 @@ CATEGORY_COLUMNS = {
 }
 
 
-# Mapa normalizado para aceitar:
-# Materiais
-# materiais
-# MATERIAIS
-# MaTeRiAiS
-#
-# Todos serão tratados como "Materiais"
+# ============================================================
+# MAPA NORMALIZADO DAS CATEGORIAS
+# ============================================================
+
 CATEGORY_COLUMNS_NORMALIZED = {
     chave.casefold(): coluna
     for chave, coluna in CATEGORY_COLUMNS.items()
 }
+
+
+def normalize_category(value):
+    """
+    Normaliza a categoria.
+
+    Aceita:
+
+    materiais
+    Materiais
+    MATERIAIS
+    MaTeRiAiS
+
+    Todas serão convertidas para:
+
+    Materiais
+    """
+
+    category = str(value or "").strip()
+
+    if not category:
+        return None
+
+    normalized = category.casefold()
+
+    if normalized not in CATEGORY_COLUMNS_NORMALIZED:
+        return None
+
+    column = CATEGORY_COLUMNS_NORMALIZED[
+        normalized
+    ]
+
+    for official_name, official_column in CATEGORY_COLUMNS.items():
+
+        if official_column == column:
+            return official_name
+
+    return None
 
 
 # ============================================================
@@ -86,17 +132,21 @@ app.add_middleware(
 # ============================================================
 
 def db():
+
     con = sqlite3.connect(
         DB_PATH,
         timeout=30
     )
 
-    con.execute("PRAGMA journal_mode=WAL")
+    con.execute(
+        "PRAGMA journal_mode=WAL"
+    )
 
     return con
 
 
 def init_db():
+
     con = db()
 
     con.execute(
@@ -123,6 +173,7 @@ def init_db():
 
 @app.on_event("startup")
 def startup():
+
     init_db()
 
 
@@ -132,6 +183,7 @@ def startup():
 
 @app.get("/")
 def root():
+
     return {
         "ok": True,
         "service": "RDD Parceiro BMB3 API"
@@ -140,6 +192,7 @@ def root():
 
 @app.get("/health")
 def health():
+
     return {
         "ok": True,
         "template": TEMPLATE.exists()
@@ -147,50 +200,49 @@ def health():
 
 
 # ============================================================
-# UTILITÁRIOS
+# CONVERSÃO DE DATA
 # ============================================================
 
 def parse_date(value):
-    """
-    Aceita:
-    YYYY-MM-DD
-    DD/MM/YYYY
-    """
 
     if not value:
         return None
 
     s = str(value).strip()
 
-    for fmt in ("%Y-%m-%d", "%d/%m/%Y"):
+    for fmt in (
+        "%Y-%m-%d",
+        "%d/%m/%Y"
+    ):
 
         try:
+
             return datetime.strptime(
                 s,
                 fmt
             ).date()
 
         except ValueError:
+
             pass
 
     return None
 
 
-def money(value):
-    """
-    Converte valores como:
+# ============================================================
+# CONVERSÃO DE VALOR
+# ============================================================
 
-    120
-    120.50
-    120,50
-    R$ 120,50
-    1.250,50
-    """
+def money(value):
 
     if value is None or value == "":
         return 0.0
 
-    if isinstance(value, (int, float)):
+    if isinstance(
+        value,
+        (int, float)
+    ):
+
         return float(value)
 
     s = str(value).strip()
@@ -212,36 +264,9 @@ def money(value):
     return float(s)
 
 
-def normalize_category(value):
-    """
-    Normaliza a categoria para o nome oficial.
-
-    Exemplos:
-
-    materiais  -> Materiais
-    Materiais  -> Materiais
-    MATERIAIS  -> Materiais
-    """
-
-    category = str(value or "").strip()
-
-    if not category:
-        return None
-
-    normalized = category.casefold()
-
-    if normalized not in CATEGORY_COLUMNS_NORMALIZED:
-        return None
-
-    column = CATEGORY_COLUMNS_NORMALIZED[normalized]
-
-    for official_name, official_column in CATEGORY_COLUMNS.items():
-
-        if official_column == column:
-            return official_name
-
-    return None
-
+# ============================================================
+# PRÓXIMO NÚMERO DO RDD
+# ============================================================
 
 def get_next_rdd_number():
 
@@ -249,7 +274,9 @@ def get_next_rdd_number():
 
     try:
 
-        con.execute("BEGIN IMMEDIATE")
+        con.execute(
+            "BEGIN IMMEDIATE"
+        )
 
         row = con.execute(
             """
@@ -260,11 +287,14 @@ def get_next_rdd_number():
         ).fetchone()
 
         if not row:
+
             raise RuntimeError(
                 "Contador de RDD não encontrado."
             )
 
-        number = int(row[0])
+        number = int(
+            row[0]
+        )
 
         con.execute(
             """
@@ -272,7 +302,9 @@ def get_next_rdd_number():
             SET next_number=?
             WHERE id=1
             """,
-            (number + 1,)
+            (
+                number + 1,
+            )
         )
 
         con.commit()
@@ -301,10 +333,12 @@ def fill_workbook(
 ):
 
     # --------------------------------------------------------
-    # Abre o modelo original
+    # ABRE MODELO
     # --------------------------------------------------------
 
-    wb = load_workbook(TEMPLATE)
+    wb = load_workbook(
+        TEMPLATE
+    )
 
     if "RDD" not in wb.sheetnames:
 
@@ -316,11 +350,12 @@ def fill_workbook(
 
 
     # --------------------------------------------------------
-    # CABEÇALHO
+    # NÚMERO DO RDD
     # --------------------------------------------------------
 
-    # Número do RDD
-    ws["F3"] = f"RDD-{rdd_number:03d}"
+    ws["F3"] = (
+        f"RDD-{rdd_number:03d}"
+    )
 
 
     # --------------------------------------------------------
@@ -356,44 +391,50 @@ def fill_workbook(
     ws["I3"] = first
     ws["K3"] = last
 
-    ws["I3"].number_format = "dd/mm/yyyy"
-    ws["K3"].number_format = "dd/mm/yyyy"
+    ws["I3"].number_format = (
+        "dd/mm/yyyy"
+    )
+
+    ws["K3"].number_format = (
+        "dd/mm/yyyy"
+    )
 
 
     # --------------------------------------------------------
-    # DADOS FIXOS DO RDD PARCEIRO
+    # CAMPOS FIXOS
     # --------------------------------------------------------
 
-    # Finalidade
-    ws["C3"] = "Reembolso de Pagamentos e Despesa"
+    ws["C3"] = (
+        "Reembolso de Pagamentos e Despesa"
+    )
 
-    # Cargo
-    ws["G5"] = "Prestador de Serviços"
+    ws["G5"] = (
+        "Prestador de Serviços"
+    )
 
-    # Departamento
-    ws["C6"] = "Projetos"
+    ws["C6"] = (
+        "Projetos"
+    )
 
-    # Gerente
-    ws["G6"] = "Roberto Almeida Blanco"
+    ws["G6"] = (
+        "Roberto Almeida Blanco"
+    )
 
 
     # --------------------------------------------------------
-    # DADOS PREENCHIDOS PELO PARCEIRO
+    # CAMPOS DO PARCEIRO
     # --------------------------------------------------------
 
-    # Nome
     ws["C5"] = payload.get(
         "nome",
         ""
     )
 
-    # CPF
     ws["K5"] = payload.get(
         "cpf",
         ""
     )
 
-    # Obra
     ws["K6"] = payload.get(
         "obra",
         ""
@@ -401,10 +442,13 @@ def fill_workbook(
 
 
     # --------------------------------------------------------
-    # LIMPA AS LINHAS DE DESPESAS
+    # LIMPA DESPESAS
     # --------------------------------------------------------
 
-    for row in range(9, 44):
+    for row in range(
+        9,
+        44
+    ):
 
         ws[f"B{row}"] = None
         ws[f"C{row}"] = None
@@ -413,16 +457,17 @@ def fill_workbook(
 
         for col in "FGHIJK":
 
-            ws[f"{col}{row}"] = None
+            ws[
+                f"{col}{row}"
+            ] = None
 
-        # Mantém a fórmula do total
-        ws[f"L{row}"] = (
-            f"=SUM(F{row}:K{row})"
-        )
+        ws[
+            f"L{row}"
+        ] = f"=SUM(F{row}:K{row})"
 
 
     # --------------------------------------------------------
-    # RECEITAS / CUPONS
+    # CUPONS
     # --------------------------------------------------------
 
     receipts = payload.get(
@@ -440,17 +485,16 @@ def fill_workbook(
         )
 
 
-    # O modelo possui linhas 9 até 43
     if len(receipts) > 35:
 
         raise ValueError(
-            "O modelo possui 35 linhas de despesas "
-            "(9 a 43)."
+            "O modelo possui 35 linhas "
+            "de despesas (9 a 43)."
         )
 
 
     # --------------------------------------------------------
-    # PREENCHE CADA CUPOM
+    # PREENCHIMENTO DOS CUPONS
     # --------------------------------------------------------
 
     for idx, item in enumerate(
@@ -468,9 +512,13 @@ def fill_workbook(
 
         if d:
 
-            ws[f"B{idx}"] = d
+            ws[
+                f"B{idx}"
+            ] = d
 
-            ws[f"B{idx}"].number_format = (
+            ws[
+                f"B{idx}"
+            ].number_format = (
                 "dd/mm/yyyy"
             )
 
@@ -479,7 +527,9 @@ def fill_workbook(
         # CONTA
         # ----------------------------------------------------
 
-        ws[f"C{idx}"] = item.get(
+        ws[
+            f"C{idx}"
+        ] = item.get(
             "account",
             ""
         )
@@ -489,7 +539,9 @@ def fill_workbook(
         # DESCRIÇÃO
         # ----------------------------------------------------
 
-        ws[f"D{idx}"] = item.get(
+        ws[
+            f"D{idx}"
+        ] = item.get(
             "description",
             ""
         )
@@ -499,7 +551,9 @@ def fill_workbook(
         # DOCUMENTO
         # ----------------------------------------------------
 
-        ws[f"E{idx}"] = item.get(
+        ws[
+            f"E{idx}"
+        ] = item.get(
             "document",
             ""
         )
@@ -521,7 +575,7 @@ def fill_workbook(
         if not category:
 
             raise ValueError(
-                f"Categoria inválida: "
+                "Categoria inválida: "
                 f"{original_category}"
             )
 
@@ -531,7 +585,9 @@ def fill_workbook(
         # ----------------------------------------------------
 
         category_column = (
-            CATEGORY_COLUMNS[category]
+            CATEGORY_COLUMNS[
+                category
+            ]
         )
 
 
@@ -542,7 +598,9 @@ def fill_workbook(
         ws[
             f"{category_column}{idx}"
         ] = money(
-            item.get("value")
+            item.get(
+                "value"
+            )
         )
 
 
@@ -550,11 +608,13 @@ def fill_workbook(
     # ÁREA DE IMPRESSÃO
     # --------------------------------------------------------
 
-    ws.print_area = "A1:L49"
+    ws.print_area = (
+        "A1:L49"
+    )
 
 
     # --------------------------------------------------------
-    # SALVA O EXCEL
+    # SALVA EXCEL
     # --------------------------------------------------------
 
     wb.save(
@@ -563,7 +623,7 @@ def fill_workbook(
 
 
 # ============================================================
-# ANEXAR CUPONS AO PDF
+# ANEXAR IMAGENS AO PDF
 # ============================================================
 
 def append_images_to_pdf(
@@ -580,6 +640,10 @@ def append_images_to_pdf(
 
         try:
 
+            # ------------------------------------------------
+            # ABRE JPG / JPEG / PNG / HEIC / HEIF
+            # ------------------------------------------------
+
             with Image.open(
                 img_path
             ) as im:
@@ -594,7 +658,7 @@ def append_images_to_pdf(
 
 
                 # --------------------------------------------
-                # Limita resolução
+                # LIMITA RESOLUÇÃO
                 # --------------------------------------------
 
                 max_side = 2200
@@ -615,12 +679,13 @@ def append_images_to_pdf(
                             int(
                                 im.height * ratio
                             )
-                        )
+                        ),
+                        Image.LANCZOS
                     )
 
 
                 # --------------------------------------------
-                # Compactação JPEG
+                # COMPACTAÇÃO
                 # --------------------------------------------
 
                 buf = io.BytesIO()
@@ -634,7 +699,7 @@ def append_images_to_pdf(
 
 
                 # --------------------------------------------
-                # Cria página A4
+                # PÁGINA A4
                 # --------------------------------------------
 
                 rect = fitz.Rect(
@@ -651,7 +716,7 @@ def append_images_to_pdf(
 
 
                 # --------------------------------------------
-                # Área da imagem
+                # MARGEM
                 # --------------------------------------------
 
                 margin = 18
@@ -665,7 +730,7 @@ def append_images_to_pdf(
 
 
                 # --------------------------------------------
-                # Insere imagem
+                # INSERE IMAGEM
                 # --------------------------------------------
 
                 page.insert_image(
@@ -679,13 +744,14 @@ def append_images_to_pdf(
         except Exception as exc:
 
             raise ValueError(
-                f"Não foi possível anexar "
-                f"a imagem {img_path.name}: {exc}"
+                "Não foi possível anexar "
+                f"a imagem {img_path.name}: "
+                f"{exc}"
             )
 
 
     # --------------------------------------------------------
-    # Salva PDF FINAL
+    # PDF FINAL
     # --------------------------------------------------------
 
     final = pdf_path.with_name(
@@ -709,7 +775,9 @@ def append_images_to_pdf(
 # GERAR RDD
 # ============================================================
 
-@app.post("/api/generate")
+@app.post(
+    "/api/generate"
+)
 async def generate(
 
     payload: str = Form(...),
@@ -720,7 +788,7 @@ async def generate(
 ):
 
     # --------------------------------------------------------
-    # VERIFICA MODELO
+    # MODELO
     # --------------------------------------------------------
 
     if not TEMPLATE.exists():
@@ -733,7 +801,7 @@ async def generate(
 
 
     # --------------------------------------------------------
-    # LÊ JSON
+    # JSON
     # --------------------------------------------------------
 
     try:
@@ -765,7 +833,10 @@ async def generate(
         field
         for field in required
         if not str(
-            data.get(field, "")
+            data.get(
+                field,
+                ""
+            )
         ).strip()
     ]
 
@@ -775,12 +846,15 @@ async def generate(
         raise HTTPException(
             400,
             "Campos obrigatórios ausentes: "
-            + ", ".join(missing)
+            +
+            ", ".join(
+                missing
+            )
         )
 
 
     # --------------------------------------------------------
-    # CUPONS
+    # RECEITAS
     # --------------------------------------------------------
 
     receipt_data = data.get(
@@ -806,7 +880,10 @@ async def generate(
         1
     ):
 
-        # Documento obrigatório
+        # ----------------------------------------------------
+        # DOCUMENTO
+        # ----------------------------------------------------
+
         if not str(
             item.get(
                 "document",
@@ -822,7 +899,10 @@ async def generate(
             )
 
 
-        # Categoria obrigatória
+        # ----------------------------------------------------
+        # CATEGORIA
+        # ----------------------------------------------------
+
         if not str(
             item.get(
                 "category",
@@ -838,12 +918,14 @@ async def generate(
 
 
         # ----------------------------------------------------
-        # VALIDA CATEGORIA
+        # NORMALIZA CATEGORIA
         # ----------------------------------------------------
 
-        normalized_category = normalize_category(
-            item.get(
-                "category"
+        normalized_category = (
+            normalize_category(
+                item.get(
+                    "category"
+                )
             )
         )
 
@@ -853,23 +935,13 @@ async def generate(
             raise HTTPException(
                 400,
                 f"Cupom {i}: "
-                f"categoria inválida: "
+                "categoria inválida: "
                 f"{item.get('category')}"
             )
 
 
         # ----------------------------------------------------
-        # NORMALIZA A CATEGORIA
-        #
-        # Isso faz com que:
-        #
-        # materiais
-        # Materiais
-        # MATERIAIS
-        #
-        # virem oficialmente:
-        #
-        # Materiais
+        # GUARDA NOME PADRÃO
         # ----------------------------------------------------
 
         item["category"] = (
@@ -878,14 +950,16 @@ async def generate(
 
 
     # --------------------------------------------------------
-    # GERA NÚMERO DO RDD
+    # NÚMERO DO RDD
     # --------------------------------------------------------
 
-    rdd_number = get_next_rdd_number()
+    rdd_number = (
+        get_next_rdd_number()
+    )
 
 
     # --------------------------------------------------------
-    # CRIA DIRETÓRIO TEMPORÁRIO
+    # DIRETÓRIO TEMPORÁRIO
     # --------------------------------------------------------
 
     workdir = Path(
@@ -1006,14 +1080,16 @@ async def generate(
 
 
         # ----------------------------------------------------
-        # JUNTA CUPONS AO PDF
+        # ANEXA CUPONS
         # ----------------------------------------------------
 
         if image_paths:
 
-            final_pdf = append_images_to_pdf(
-                pdf,
-                image_paths
+            final_pdf = (
+                append_images_to_pdf(
+                    pdf,
+                    image_paths
+                )
             )
 
         else:
