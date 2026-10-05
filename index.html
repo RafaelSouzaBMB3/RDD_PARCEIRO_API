@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -20,12 +21,14 @@
         rel="stylesheet"
         href="./styles.css"
     >
+
 </head>
 
 
 <body>
 
 <div class="app">
+
 
     <!-- =====================================================
          CABEÇALHO
@@ -61,15 +64,11 @@
 
 
 
-    <!-- =====================================================
-         CONTEÚDO
-         ===================================================== -->
-
     <main>
 
 
         <!-- =================================================
-             ETAPAS
+             PROGRESSO
              ================================================= -->
 
         <div class="progress">
@@ -105,7 +104,7 @@
 
 
         <!-- =================================================
-             ETAPA 1
+             ETAPA 1 - DADOS
              ================================================= -->
 
         <section
@@ -139,7 +138,7 @@
                             Nº do Demonstrativo
                         </small>
 
-                        <b id="rddNumber">
+                        <b>
                             RDD-210
                         </b>
 
@@ -334,74 +333,70 @@
 
 
 
-                <!-- =========================================
+                <!-- =================================================
+                     INPUT PRINCIPAL USADO PELO APP.JS
+                     ================================================= -->
+
+                <input
+                    id="files"
+                    type="file"
+                    accept="image/*,.heic,.heif"
+                    multiple
+                    hidden
+                >
+
+
+
+                <!-- =================================================
+                     INPUT DA CÂMERA
+                     ================================================= -->
+
+                <input
+                    id="cameraInput"
+                    type="file"
+                    accept="image/*,.heic,.heif"
+                    capture="environment"
+                    hidden
+                >
+
+
+
+                <!-- =================================================
+                     INPUT GALERIA / ARQUIVOS
+                     ================================================= -->
+
+                <input
+                    id="galleryInput"
+                    type="file"
+                    accept="image/*,.heic,.heif"
+                    multiple
+                    hidden
+                >
+
+
+
+                <!-- =================================================
+                     BOTÃO ANTIGO - MANTIDO PARA COMPATIBILIDADE
+                     ================================================= -->
+
+                <button
+                    id="pick"
+                    type="button"
+                    hidden
+                >
+                    Adicionar foto
+                </button>
+
+
+
+                <!-- =================================================
                      ÁREA DE UPLOAD
-                     ========================================= -->
+                     ================================================= -->
 
                 <div class="upload">
 
 
-                    <!--
-                        CÂMERA
-
-                        No celular:
-                        abre a câmera.
-
-                        No computador:
-                        poderá abrir a opção de câmera
-                        quando disponível.
-                    -->
-
-                    <input
-                        id="cameraInput"
-                        type="file"
-                        accept="image/*,.heic,.heif"
-                        capture="environment"
-                        hidden
-                    >
-
-
-
-                    <!--
-                        GALERIA / ARQUIVOS
-
-                        Permite selecionar uma ou várias imagens.
-                    -->
-
-                    <input
-                        id="galleryInput"
-                        type="file"
-                        accept="image/*,.heic,.heif"
-                        multiple
-                        hidden
-                    >
-
-
-
-                    <!--
-                        COMPATIBILIDADE COM O APP.JS ANTIGO
-
-                        Mantemos estes IDs temporariamente para evitar
-                        que o JavaScript antigo que ainda estiver publicado
-                        quebre a página.
-                    -->
-
-                    <input
-                        id="files"
-                        type="file"
-                        accept="image/*,.heic,.heif"
-                        multiple
-                        hidden
-                    >
-
-
-
-                    <!-- =====================================
-                         DOIS BOTÕES
-                         ===================================== -->
-
                     <div
-                        class="upload-options"
                         style="
                             display:grid;
                             grid-template-columns:repeat(2,minmax(0,1fr));
@@ -414,9 +409,8 @@
                         <!-- TIRAR FOTO -->
 
                         <button
-                            type="button"
                             id="takePhoto"
-                            class="upload-option"
+                            type="button"
                             style="
                                 min-height:145px;
                                 padding:20px;
@@ -429,6 +423,7 @@
                                 align-items:center;
                                 justify-content:center;
                                 gap:7px;
+                                cursor:pointer;
                             "
                         >
 
@@ -441,20 +436,11 @@
                                 📷
                             </span>
 
-                            <strong
-                                style="
-                                    font-size:15px;
-                                "
-                            >
+                            <b>
                                 Tirar foto
-                            </strong>
+                            </b>
 
-                            <small
-                                style="
-                                    color:#687786;
-                                    font-size:11px;
-                                "
-                            >
+                            <small>
                                 Usar a câmera
                             </small>
 
@@ -465,9 +451,8 @@
                         <!-- SELECIONAR FOTO -->
 
                         <button
-                            type="button"
                             id="selectPhoto"
-                            class="upload-option"
+                            type="button"
                             style="
                                 min-height:145px;
                                 padding:20px;
@@ -480,6 +465,7 @@
                                 align-items:center;
                                 justify-content:center;
                                 gap:7px;
+                                cursor:pointer;
                             "
                         >
 
@@ -492,20 +478,11 @@
                                 🖼️
                             </span>
 
-                            <strong
-                                style="
-                                    font-size:15px;
-                                "
-                            >
+                            <b>
                                 Selecionar foto
-                            </strong>
+                            </b>
 
-                            <small
-                                style="
-                                    color:#687786;
-                                    font-size:11px;
-                                "
-                            >
+                            <small>
                                 Galeria ou arquivos
                             </small>
 
@@ -519,17 +496,17 @@
 
 
 
-                <!-- =========================================
-                     LISTA DE CUPONS
-                     ========================================= -->
+                <!-- =================================================
+                     LISTA DOS CUPONS
+                     ================================================= -->
 
                 <div id="list"></div>
 
 
 
-                <!-- =========================================
+                <!-- =================================================
                      TOTAL
-                     ========================================= -->
+                     ================================================= -->
 
                 <div class="total">
 
@@ -558,12 +535,11 @@
 
 
 
-                <!-- =========================================
+                <!-- =================================================
                      AÇÕES
-                     ========================================= -->
+                     ================================================= -->
 
                 <div class="actions">
-
 
                     <button
                         type="button"
@@ -581,7 +557,6 @@
                     >
                         Avançar para revisão →
                     </button>
-
 
                 </div>
 
@@ -633,7 +608,6 @@
 
                 <div class="actions">
 
-
                     <button
                         type="button"
                         class="secondary"
@@ -651,7 +625,6 @@
                         GERAR RDD + CUPONS →
                     </button>
 
-
                 </div>
 
 
@@ -662,7 +635,7 @@
 
 
         <!-- =================================================
-             ETAPA 4 - FINALIZAÇÃO
+             ETAPA 4 - FINAL
              ================================================= -->
 
         <section
@@ -672,21 +645,15 @@
 
             <div class="card done">
 
-
                 <div>
                     ✓
                 </div>
-
 
                 <h2>
                     RDD pronto!
                 </h2>
 
-
-                <p id="message">
-                    Seu RDD foi gerado com sucesso.
-                </p>
-
+                <p id="message"></p>
 
                 <button
                     type="button"
@@ -695,7 +662,6 @@
                 >
                     Criar novo RDD
                 </button>
-
 
             </div>
 
@@ -731,12 +697,199 @@
     </nav>
 
 
+
 </div>
 
 
 
 <!-- =========================================================
-     JAVASCRIPT PRINCIPAL
+     MODAL DE EDIÇÃO DO CUPOM
+
+     O app.js atual utiliza estes elementos.
+     ========================================================= -->
+
+<div
+    id="modal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <h3>
+                    Editar cupom
+                </h3>
+
+                <p>
+                    Confira e corrija os dados identificados.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="close"
+                class="modal-close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+
+        <!-- FOTO -->
+
+        <div
+            id="photo"
+            class="photo-preview"
+        ></div>
+
+
+
+        <!-- DATA -->
+
+        <label>
+
+            Data
+
+            <input
+                id="mdate"
+                type="date"
+            >
+
+        </label>
+
+
+
+        <!-- CATEGORIA -->
+
+        <label>
+
+            Categoria *
+
+            <select id="mcat">
+
+                <option value="">
+                    Selecione...
+                </option>
+
+                <option value="transporte">
+                    Transporte
+                </option>
+
+                <option value="combustivel">
+                    Combustível
+                </option>
+
+                <option value="refeicoes">
+                    Refeições
+                </option>
+
+                <option value="hospedagem">
+                    Hospedagem
+                </option>
+
+                <option value="materiais">
+                    Materiais
+                </option>
+
+                <option value="diversos">
+                    Diversos
+                </option>
+
+            </select>
+
+        </label>
+
+
+
+        <!-- DESCRIÇÃO -->
+
+        <label>
+
+            Estabelecimento / descrição
+
+            <input
+                id="mdesc"
+                type="text"
+                placeholder="Nome do estabelecimento"
+            >
+
+        </label>
+
+
+
+        <!-- DOCUMENTO -->
+
+        <label>
+
+            Número do documento *
+
+            <input
+                id="mdoc"
+                type="text"
+                placeholder="NFC-e, NF-e, cupom etc."
+            >
+
+        </label>
+
+
+
+        <!-- VALOR -->
+
+        <label>
+
+            Valor
+
+            <input
+                id="mvalue"
+                type="text"
+                inputmode="decimal"
+                placeholder="R$ 0,00"
+            >
+
+        </label>
+
+
+
+        <!-- AÇÕES -->
+
+        <div class="actions">
+
+            <button
+                type="button"
+                class="secondary"
+                id="closeModal"
+            >
+                Cancelar
+            </button>
+
+
+            <button
+                type="button"
+                class="primary"
+                id="save"
+            >
+                Salvar cupom
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     APP.JS
      ========================================================= -->
 
 <script src="./app.js"></script>
@@ -751,87 +904,240 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
+
     const cameraInput =
         document.getElementById("cameraInput");
+
 
     const galleryInput =
         document.getElementById("galleryInput");
 
+
+    const filesInput =
+        document.getElementById("files");
+
+
     const takePhoto =
         document.getElementById("takePhoto");
+
 
     const selectPhoto =
         document.getElementById("selectPhoto");
 
 
+    const closeModal =
+        document.getElementById("closeModal");
 
-    /*
-     * BOTÃO: TIRAR FOTO
-     */
+
+    const modal =
+        document.getElementById("modal");
+
+
+    const close =
+        document.getElementById("close");
+
+
+
+    /* =====================================================
+       FUNÇÃO CENTRAL
+
+       Pega os arquivos escolhidos pela câmera/galeria
+       e entrega para o input "files", que é justamente
+       o input que o app.js atual já monitora.
+       ===================================================== */
+
+    function enviarParaAppJS(arquivos) {
+
+
+        if (!arquivos || arquivos.length === 0) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const dataTransfer =
+                new DataTransfer();
+
+
+            Array.from(arquivos).forEach(function (arquivo) {
+
+                dataTransfer.items.add(arquivo);
+
+            });
+
+
+            filesInput.files =
+                dataTransfer.files;
+
+
+            /*
+             * Dispara o mesmo evento que aconteceria
+             * se o usuário tivesse escolhido diretamente
+             * pelo input original.
+             */
+
+            filesInput.dispatchEvent(
+                new Event("change", {
+                    bubbles: true
+                })
+            );
+
+
+        } catch (erro) {
+
+            console.error(
+                "Erro ao transferir imagens:",
+                erro
+            );
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       TIRAR FOTO
+       ===================================================== */
 
     if (takePhoto && cameraInput) {
 
-        takePhoto.addEventListener("click", function () {
+        takePhoto.addEventListener(
+            "click",
+            function () {
 
-            cameraInput.click();
+                cameraInput.click();
 
-        });
-
-    }
-
-
-
-    /*
-     * BOTÃO: SELECIONAR FOTO
-     */
-
-    if (selectPhoto && galleryInput) {
-
-        selectPhoto.addEventListener("click", function () {
-
-            galleryInput.click();
-
-        });
+            }
+        );
 
     }
 
 
 
-    /*
-     * COMPATIBILIDADE:
-     *
-     * Quando uma imagem for escolhida pela câmera,
-     * copiamos os arquivos para o input antigo "files"
-     * quando o navegador permitir.
-     *
-     * O processamento definitivo será feito no app.js.
-     */
+    /* =====================================================
+       FOTO CAPTURADA
+       ===================================================== */
 
     if (cameraInput) {
 
-        cameraInput.addEventListener("change", function () {
+        cameraInput.addEventListener(
+            "change",
+            function () {
 
-            console.log(
-                "Foto capturada:",
-                cameraInput.files
-            );
+                enviarParaAppJS(
+                    cameraInput.files
+                );
 
-        });
+                cameraInput.value = "";
+
+            }
+        );
 
     }
 
 
 
+    /* =====================================================
+       SELECIONAR FOTO
+       ===================================================== */
+
+    if (selectPhoto && galleryInput) {
+
+        selectPhoto.addEventListener(
+            "click",
+            function () {
+
+                galleryInput.click();
+
+            }
+        );
+
+    }
+
+
+
+    /* =====================================================
+       FOTOS DA GALERIA
+       ===================================================== */
+
     if (galleryInput) {
 
-        galleryInput.addEventListener("change", function () {
+        galleryInput.addEventListener(
+            "change",
+            function () {
 
-            console.log(
-                "Fotos selecionadas:",
-                galleryInput.files
-            );
+                enviarParaAppJS(
+                    galleryInput.files
+                );
 
-        });
+                galleryInput.value = "";
+
+            }
+        );
+
+    }
+
+
+
+    /* =====================================================
+       FECHAR MODAL
+       ===================================================== */
+
+    if (closeModal) {
+
+        closeModal.addEventListener(
+            "click",
+            function () {
+
+                if (modal) {
+
+                    modal.classList.remove("open");
+
+                }
+
+            }
+        );
+
+    }
+
+
+    if (close) {
+
+        close.addEventListener(
+            "click",
+            function () {
+
+                if (modal) {
+
+                    modal.classList.remove("open");
+
+                }
+
+            }
+        );
+
+    }
+
+
+
+    if (modal) {
+
+        modal.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === modal) {
+
+                    modal.classList.remove("open");
+
+                }
+
+            }
+        );
 
     }
 
