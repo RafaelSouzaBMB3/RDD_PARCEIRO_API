@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -72,9 +73,7 @@
       </div>
 
 
-      <!-- =========================================
-           ETAPA 1 - DADOS
-      ========================================== -->
+      <!-- ETAPA 1 - DADOS -->
 
       <section
         id="dados"
@@ -116,121 +115,77 @@
           <div class="grid">
 
 
-            <!-- FINALIDADE -->
-
             <label class="full">
-
               Finalidade
-
               <input
                 value="Reembolso de Pagamentos e Despesa"
                 disabled
               >
-
             </label>
 
 
-            <!-- NOME -->
-
             <label>
-
               Nome *
-
               <input
                 id="nome"
                 placeholder="Digite seu nome completo"
               >
-
             </label>
 
 
-            <!-- CPF -->
-
             <label>
-
               CPF *
-
               <input
                 id="cpf"
                 inputmode="numeric"
                 placeholder="000.000.000-00"
               >
-
             </label>
 
 
-            <!-- DEPARTAMENTO -->
-
             <label>
-
               Departamento
-
               <input
                 value="Projetos"
                 disabled
               >
-
             </label>
 
 
-            <!-- OBRA -->
-
             <label>
-
               Obra *
-
               <input
                 id="obra"
                 placeholder="Digite a obra / projeto"
               >
-
             </label>
 
 
-            <!-- PERÍODO -->
-
             <label>
-
               Período de pagamento
-
               <input
                 id="periodo"
                 disabled
               >
-
             </label>
 
 
-            <!-- CARGO -->
-
             <label>
-
               Cargo
-
               <input
                 value="Prestador de Serviços"
                 disabled
               >
-
             </label>
 
 
-            <!-- GERENTE -->
-
             <label>
-
               Gerente
-
               <input
                 value="Roberto Almeida Blanco"
                 disabled
               >
-
             </label>
-
-
-            <!-- VNC -->
-
 
           </div>
 
@@ -239,9 +194,7 @@
             class="primary"
             id="next1"
           >
-
             Avançar →
-
           </button>
 
         </div>
@@ -249,10 +202,7 @@
       </section>
 
 
-
-      <!-- =========================================
-           ETAPA 2 - CUPONS
-      ========================================== -->
+      <!-- ETAPA 2 - CUPONS -->
 
       <section
         id="cupons"
@@ -261,28 +211,17 @@
 
         <div class="card">
 
-
           <div class="title">
 
             <strong>🧾</strong>
 
             <div>
-
-              <h2>
-                Adicionar cupom
-              </h2>
-
-              <p>
-                Fotografe ou selecione o comprovante
-              </p>
-
+              <h2>Adicionar cupom</h2>
+              <p>Fotografe ou selecione o comprovante</p>
             </div>
 
           </div>
 
-
-
-          <!-- ÁREA DE UPLOAD -->
 
           <div class="upload">
 
@@ -294,7 +233,6 @@
               multiple
               hidden
             >
-
 
             <button id="pick">
 
@@ -313,43 +251,23 @@
           </div>
 
 
-
-          <!-- LISTA DE CUPONS -->
-
           <div id="list"></div>
 
-
-
-          <!-- TOTAL -->
 
           <div class="total">
 
             <span>
-
               Cupons adicionados:
-
-              <b id="count">
-                0
-              </b>
-
+              <b id="count">0</b>
             </span>
 
-
             <b>
-
               Total:
-
-              <em id="sum">
-                R$ 0,00
-              </em>
-
+              <em id="sum">R$ 0,00</em>
             </b>
 
           </div>
 
-
-
-          <!-- BOTÕES -->
 
           <div class="actions">
 
@@ -357,19 +275,14 @@
               class="secondary"
               id="back1"
             >
-
               ← Voltar
-
             </button>
-
 
             <button
               class="primary"
               id="next2"
             >
-
               Avançar para revisão →
-
             </button>
 
           </div>
@@ -379,10 +292,7 @@
       </section>
 
 
-
-      <!-- =========================================
-           ETAPA 3 - REVISÃO
-      ========================================== -->
+      <!-- ETAPA 3 - REVISÃO -->
 
       <section
         id="revisao"
@@ -391,21 +301,13 @@
 
         <div class="card">
 
-
           <div class="title">
 
             <strong>✓</strong>
 
             <div>
-
-              <h2>
-                Revisão do RDD
-              </h2>
-
-              <p>
-                Confira os dados antes de gerar
-              </p>
-
+              <h2>Revisão do RDD</h2>
+              <p>Confira os dados antes de gerar</p>
             </div>
 
           </div>
@@ -423,19 +325,14 @@
               class="secondary"
               id="back2"
             >
-
               ← Voltar
-
             </button>
-
 
             <button
               class="primary"
               id="generate"
             >
-
               GERAR RDD + CUPONS →
-
             </button>
 
           </div>
@@ -445,10 +342,7 @@
       </section>
 
 
-
-      <!-- =========================================
-           ETAPA 4 - FINALIZAÇÃO
-      ========================================== -->
+      <!-- ETAPA 4 - FINALIZAÇÃO -->
 
       <section
         id="final"
@@ -457,24 +351,17 @@
 
         <div class="card done">
 
-          <div>
-            ✓
-          </div>
+          <div>✓</div>
 
-          <h2>
-            RDD pronto!
-          </h2>
+          <h2>RDD pronto!</h2>
 
           <p id="message"></p>
-
 
           <button
             class="primary"
             id="new"
           >
-
             Criar novo RDD
-
           </button>
 
         </div>
@@ -484,200 +371,10 @@
     </main>
 
 
-
-    <!-- =========================================
-         MENU INFERIOR CELULAR
-    ========================================== -->
+    <!-- MENU INFERIOR CELULAR -->
 
     <nav>
 
       <span class="active">
-
         ⌂
-
-        <small>
-          Início
-        </small>
-
-      </span>
-
-
-      <span>
-
-        ▤
-
-        <small>
-          Meus RDDs
-        </small>
-
-      </span>
-
-
-      <span>
-
-        ?
-
-        <small>
-          Ajuda
-        </small>
-
-      </span>
-
-    </nav>
-
-
-
-    <!-- =========================================
-         MODAL DE EDIÇÃO DO CUPOM
-    ========================================== -->
-
-    <div
-      id="modal"
-      class="modal"
-    >
-
-      <div class="modalbox">
-
-
-        <button
-          id="close"
-        >
-          ×
-        </button>
-
-
-        <h3>
-          Editar cupom
-        </h3>
-
-
-        <div id="photo"></div>
-
-
-        <div class="grid">
-
-
-          <!-- DATA -->
-
-          <label>
-
-            Data *
-
-            <input
-              id="mdate"
-              type="date"
-            >
-
-          </label>
-
-
-          <!-- CATEGORIA -->
-
-          <label>
-
-            Categoria *
-
-            <select id="mcat">
-
-              <option value="">
-                Selecione
-              </option>
-
-              <option>
-                Transporte
-              </option>
-
-              <option>
-                Combustível
-              </option>
-
-              <option>
-                Refeições
-              </option>
-
-              <option>
-                Hospedagem
-              </option>
-
-              <option>
-                Materiais
-              </option>
-
-              <option>
-                Diversos
-              </option>
-
-            </select>
-
-          </label>
-
-
-          <!-- DESCRIÇÃO -->
-
-          <label class="full">
-
-            Descrição *
-
-            <input
-              id="mdesc"
-              placeholder="Ex.: abastecimento, refeição..."
-            >
-
-          </label>
-
-
-          <!-- DOCUMENTO -->
-
-          <label>
-
-            Nº do documento *
-
-            <input
-              id="mdoc"
-              placeholder="NF / NFC-e / Cupom"
-            >
-
-          </label>
-
-
-          <!-- VALOR -->
-
-          <label>
-
-            Valor (R$) *
-
-            <input
-              id="mvalue"
-              inputmode="decimal"
-              placeholder="0,00"
-            >
-
-          </label>
-
-
-        </div>
-
-
-        <button
-          class="primary"
-          id="save"
-        >
-
-          Salvar cupom
-
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <!-- JAVASCRIPT -->
-
-  <script src="app.js"></script>
-
-</body>
-
-</html>
+       
