@@ -72,3 +72,56 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
+const cameraInput = document.getElementById("cameraInput");
+const galleryInput = document.getElementById("galleryInput");
+
+const takePhoto = document.getElementById("takePhoto");
+const selectPhoto = document.getElementById("selectPhoto");
+
+
+takePhoto.addEventListener("click", function () {
+    cameraInput.click();
+});
+
+
+selectPhoto.addEventListener("click", function () {
+    galleryInput.click();
+});
+
+
+cameraInput.addEventListener("change", function () {
+
+    if (cameraInput.files.length > 0) {
+
+        console.log(
+            "Foto tirada:",
+            cameraInput.files[0].name
+        );
+
+        alert(
+            "Foto adicionada: " +
+            cameraInput.files[0].name
+        );
+
+    }
+
+});
+
+
+galleryInput.addEventListener("change", function () {
+
+    if (galleryInput.files.length > 0) {
+
+        console.log(
+            "Fotos selecionadas:",
+            galleryInput.files.length
+        );
+
+        alert(
+            galleryInput.files.length +
+            " foto(s) selecionada(s)."
+        );
+
+    }
+
+});
