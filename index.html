@@ -65,7 +65,7 @@
 
 
     <!-- =====================================================
-         CONTEÚDO PRINCIPAL
+         CONTEÚDO
          ===================================================== -->
 
     <main>
@@ -134,7 +134,7 @@
 
 
         <!-- =================================================
-             ETAPA 1
+             ETAPA 1 - DADOS
              ================================================= -->
 
         <section
@@ -184,8 +184,6 @@
                 <div class="grid">
 
 
-                    <!-- FINALIDADE -->
-
                     <label class="full">
 
                         Finalidade
@@ -199,8 +197,6 @@
                     </label>
 
 
-
-                    <!-- NOME -->
 
                     <label>
 
@@ -216,8 +212,6 @@
                     </label>
 
 
-
-                    <!-- CPF -->
 
                     <label>
 
@@ -236,8 +230,6 @@
 
 
 
-                    <!-- DEPARTAMENTO -->
-
                     <label>
 
                         Departamento
@@ -251,8 +243,6 @@
                     </label>
 
 
-
-                    <!-- OBRA -->
 
                     <label>
 
@@ -269,8 +259,6 @@
 
 
 
-                    <!-- PERÍODO -->
-
                     <label>
 
                         Período de pagamento
@@ -283,8 +271,6 @@
                     </label>
 
 
-
-                    <!-- CARGO -->
 
                     <label>
 
@@ -299,8 +285,6 @@
                     </label>
 
 
-
-                    <!-- GERENTE -->
 
                     <label>
 
@@ -346,7 +330,7 @@
             <div class="card">
 
 
-                <!-- CABEÇALHO DA ETAPA -->
+                <!-- CABEÇALHO -->
 
                 <div class="title">
 
@@ -372,8 +356,7 @@
 
 
                 <!-- =================================================
-                     INPUT PRINCIPAL
-                     O APP.JS ATUAL USA ESTE INPUT
+                     INPUT PRINCIPAL DO APP.JS
                      ================================================= -->
 
                 <input
@@ -387,7 +370,7 @@
 
 
                 <!-- =================================================
-                     INPUT DA CÂMERA
+                     CÂMERA
                      ================================================= -->
 
                 <input
@@ -401,7 +384,7 @@
 
 
                 <!-- =================================================
-                     INPUT DA GALERIA
+                     GALERIA / ARQUIVOS
                      ================================================= -->
 
                 <input
@@ -414,10 +397,7 @@
 
 
 
-                <!-- =================================================
-                     BOTÃO ORIGINAL DO APP.JS
-                     FICA OCULTO, MAS É MANTIDO
-                     ================================================= -->
+                <!-- COMPATIBILIDADE COM APP.JS -->
 
                 <button
                     id="pick"
@@ -430,11 +410,10 @@
 
 
                 <!-- =================================================
-                     BOTÕES DE FOTO
+                     BOTÕES
                      ================================================= -->
 
                 <div class="upload">
-
 
                     <div
                         style="
@@ -446,9 +425,7 @@
                     >
 
 
-                        <!-- ================================
-                             TIRAR FOTO
-                             ================================ -->
+                        <!-- TIRAR FOTO -->
 
                         <button
                             id="takePhoto"
@@ -492,9 +469,7 @@
 
 
 
-                        <!-- ================================
-                             SELECIONAR FOTO
-                             ================================ -->
+                        <!-- SELECIONAR FOTO -->
 
                         <button
                             id="selectPhoto"
@@ -544,7 +519,7 @@
 
 
                 <!-- =================================================
-                     CONFIRMAÇÃO VISUAL DOS ARQUIVOS
+                     CONFIRMAÇÃO DE UPLOAD
                      ================================================= -->
 
                 <div
@@ -552,7 +527,7 @@
                     style="
                         display:none;
                         margin-top:18px;
-                        padding:15px 17px;
+                        padding:16px;
                         border-radius:14px;
                         background:#EAF7EE;
                         border:1px solid #B9DFC2;
@@ -569,16 +544,16 @@
 
                         <div
                             style="
-                                width:44px;
-                                height:44px;
-                                min-width:44px;
+                                width:46px;
+                                height:46px;
+                                min-width:46px;
                                 border-radius:50%;
                                 background:#2E8B57;
-                                color:#FFFFFF;
+                                color:white;
                                 display:flex;
                                 align-items:center;
                                 justify-content:center;
-                                font-size:22px;
+                                font-size:24px;
                                 font-weight:bold;
                             "
                         >
@@ -593,10 +568,10 @@
                                 style="
                                     display:block;
                                     color:#176B37;
-                                    font-size:16px;
+                                    font-size:17px;
                                 "
                             >
-                                0 cupons carregados
+                                Arquivos carregados
                             </strong>
 
 
@@ -609,12 +584,25 @@
                                     font-size:13px;
                                 "
                             >
-                                Nenhuma imagem adicionada.
+                                Os comprovantes foram carregados.
                             </span>
 
                         </div>
 
                     </div>
+
+
+
+                    <!-- LISTA DOS ARQUIVOS -->
+
+                    <div
+                        id="selectedFilesSummary"
+                        style="
+                            margin-top:12px;
+                            padding-top:12px;
+                            border-top:1px solid #C9E2D0;
+                        "
+                    ></div>
 
                 </div>
 
@@ -622,7 +610,6 @@
 
                 <!-- =================================================
                      LISTA DOS CUPONS
-                     O APP.JS PREENCHE ESTE LOCAL
                      ================================================= -->
 
                 <div
@@ -772,7 +759,7 @@
 
 
         <!-- =================================================
-             ETAPA 4 - FINALIZAÇÃO
+             ETAPA 4
              ================================================= -->
 
         <section
@@ -824,16 +811,13 @@
             ⌂
         </span>
 
-
         <span>
             🧾
         </span>
 
-
         <span>
             ✓
         </span>
-
 
         <span>
             ✓
@@ -847,7 +831,7 @@
 
 
 <!-- =========================================================
-     MODAL DE EDIÇÃO DO CUPOM
+     MODAL DE EDIÇÃO
      ========================================================= -->
 
 <div
@@ -858,8 +842,6 @@
     <div class="modal-content">
 
 
-        <!-- CABEÇALHO -->
-
         <div class="modal-header">
 
 
@@ -868,7 +850,6 @@
                 <h3>
                     Editar cupom
                 </h3>
-
 
                 <p>
                     Confira e corrija os dados identificados.
@@ -890,16 +871,12 @@
 
 
 
-        <!-- FOTO -->
-
         <div
             id="photo"
             class="photo-preview"
         ></div>
 
 
-
-        <!-- DATA -->
 
         <label>
 
@@ -914,8 +891,6 @@
 
 
 
-        <!-- CATEGORIA -->
-
         <label>
 
             Categoria *
@@ -926,31 +901,25 @@
                     Selecione...
                 </option>
 
-
                 <option value="transporte">
                     Transporte
                 </option>
-
 
                 <option value="combustivel">
                     Combustível
                 </option>
 
-
                 <option value="refeicoes">
                     Refeições
                 </option>
-
 
                 <option value="hospedagem">
                     Hospedagem
                 </option>
 
-
                 <option value="materiais">
                     Materiais
                 </option>
-
 
                 <option value="diversos">
                     Diversos
@@ -961,8 +930,6 @@
         </label>
 
 
-
-        <!-- DESCRIÇÃO -->
 
         <label>
 
@@ -978,8 +945,6 @@
 
 
 
-        <!-- DOCUMENTO -->
-
         <label>
 
             Número do documento *
@@ -993,8 +958,6 @@
         </label>
 
 
-
-        <!-- VALOR -->
 
         <label>
 
@@ -1010,8 +973,6 @@
         </label>
 
 
-
-        <!-- AÇÕES -->
 
         <div class="actions">
 
@@ -1053,7 +1014,6 @@
 
 <!-- =========================================================
      CONTROLE DOS BOTÕES DE FOTO
-     + CONFIRMAÇÃO VISUAL
      ========================================================= -->
 
 <script>
@@ -1111,44 +1071,31 @@ document.addEventListener(
             );
 
 
-        const count =
+        const selectedFilesSummary =
             document.getElementById(
-                "count"
+                "selectedFilesSummary"
             );
 
 
 
-        /* =====================================================
-           ATUALIZA A CONFIRMAÇÃO VISUAL
-           COM BASE NO CONTADOR REAL DO APP.JS
-           ===================================================== */
+        /*
+         * =====================================================
+         * MOSTRA A CONFIRMAÇÃO DIRETAMENTE NA TELA
+         *
+         * IMPORTANTE:
+         * Esta função NÃO depende do #count do app.js.
+         * =====================================================
+         */
 
-        function atualizarConfirmacao() {
-
-
-            if (!count) {
-                return;
-            }
-
-
-            const total =
-                parseInt(
-                    count.textContent || "0",
-                    10
-                );
+        function mostrarConfirmacao(
+            arquivos
+        ) {
 
 
             if (
-                isNaN(total) ||
-                total <= 0
+                !arquivos ||
+                arquivos.length === 0
             ) {
-
-                if (uploadSummary) {
-
-                    uploadSummary.style.display =
-                        "none";
-
-                }
 
                 return;
 
@@ -1156,73 +1103,136 @@ document.addEventListener(
 
 
 
-            if (uploadSummary) {
-
-                uploadSummary.style.display =
-                    "block";
-
-            }
+            const quantidade =
+                arquivos.length;
 
 
 
-            if (uploadSummaryTitle) {
+            /*
+             * Torna o painel visível
+             */
+
+            uploadSummary.style.display =
+                "block";
+
+
+
+            /*
+             * TÍTULO
+             */
+
+            if (quantidade === 1) {
 
                 uploadSummaryTitle.textContent =
-                    total === 1
-                        ? "1 cupom carregado"
-                        : total +
-                          " cupons carregados";
+                    "🟢 1 cupom carregado";
+
+            } else {
+
+                uploadSummaryTitle.textContent =
+                    "🟢 " +
+                    quantidade +
+                    " cupons carregados";
 
             }
 
 
 
-            if (uploadSummaryText) {
+            /*
+             * MENSAGEM
+             */
+
+            if (quantidade === 1) {
 
                 uploadSummaryText.textContent =
-                    total === 1
-                        ? "✓ 1 imagem adicionada com sucesso e pronta para conferência."
-                        : "✓ " +
-                          total +
-                          " imagens adicionadas com sucesso e prontas para conferência.";
+                    "✓ 1 imagem adicionada com sucesso e pronta para conferência.";
+
+            } else {
+
+                uploadSummaryText.textContent =
+                    "✓ " +
+                    quantidade +
+                    " imagens adicionadas com sucesso e prontas para conferência.";
 
             }
 
-        }
 
 
+            /*
+             * LISTA DOS NOMES
+             */
 
-        /* =====================================================
-           OBSERVA O CONTADOR DO APP.JS
-
-           Quando o app.js mudar:
-           0 → 1
-           1 → 2
-           2 → 3
-
-           a confirmação da tela acompanha automaticamente.
-           ===================================================== */
-
-        if (count) {
+            selectedFilesSummary.innerHTML =
+                "";
 
 
-            const observer =
-                new MutationObserver(
-                    function () {
+            Array.from(
+                arquivos
+            ).forEach(
+                function (
+                    arquivo,
+                    indice
+                ) {
 
-                        atualizarConfirmacao();
 
-                    }
-                );
+                    const linha =
+                        document.createElement(
+                            "div"
+                        );
 
 
-            observer.observe(
-                count,
-                {
-                    childList: true,
-                    characterData: true,
-                    subtree: true
+                    linha.style.cssText = `
+                        display:flex;
+                        align-items:center;
+                        gap:8px;
+                        padding:5px 0;
+                        color:#365344;
+                        font-size:13px;
+                    `;
+
+
+                    linha.innerHTML =
+                        `
+                            <span
+                                style="
+                                    color:#2E8B57;
+                                    font-weight:bold;
+                                "
+                            >
+                                ✓
+                            </span>
+
+                            <span>
+                                Cupom
+                                ${String(indice + 1).padStart(2, "0")}
+                                —
+                                ${arquivo.name}
+                            </span>
+                        `;
+
+
+                    selectedFilesSummary.appendChild(
+                        linha
+                    );
+
+
                 }
+            );
+
+
+            /*
+             * Rola suavemente até a confirmação.
+             */
+
+            setTimeout(
+                function () {
+
+                    uploadSummary.scrollIntoView({
+                        behavior: "smooth",
+                        block: "nearest"
+                    });
+
+                },
+                100
             );
 
 
@@ -1230,9 +1240,11 @@ document.addEventListener(
 
 
 
-        /* =====================================================
-           ENVIA OS ARQUIVOS PARA O INPUT "FILES"
-           ===================================================== */
+        /*
+         * =====================================================
+         * ENVIA OS ARQUIVOS PARA O APP.JS
+         * =====================================================
+         */
 
         function enviarParaAppJS(
             arquivos
@@ -1250,6 +1262,25 @@ document.addEventListener(
 
 
 
+            /*
+             * PRIMEIRO:
+             * mostramos a confirmação.
+             *
+             * Assim ela aparece mesmo se o app.js
+             * tiver qualquer problema posteriormente.
+             */
+
+            mostrarConfirmacao(
+                arquivos
+            );
+
+
+
+            /*
+             * DEPOIS:
+             * entregamos os arquivos para o app.js.
+             */
+
             try {
 
 
@@ -1261,7 +1292,9 @@ document.addEventListener(
                 Array.from(
                     arquivos
                 ).forEach(
-                    function (arquivo) {
+                    function (
+                        arquivo
+                    ) {
 
                         dataTransfer.items.add(
                             arquivo
@@ -1272,32 +1305,24 @@ document.addEventListener(
 
 
 
-                /*
-                 * Entrega os arquivos para o
-                 * input que o app.js monitora.
-                 */
-
                 filesInput.files =
                     dataTransfer.files;
 
 
 
-                /*
-                 * Dispara o evento change.
-                 */
-
                 filesInput.dispatchEvent(
                     new Event(
                         "change",
                         {
-                            bubbles: true
+                            bubbles:true
                         }
                     )
                 );
 
 
-
-            } catch (erro) {
+            } catch (
+                erro
+            ) {
 
 
                 console.error(
@@ -1312,9 +1337,11 @@ document.addEventListener(
 
 
 
-        /* =====================================================
-           BOTÃO TIRAR FOTO
-           ===================================================== */
+        /*
+         * =====================================================
+         * BOTÃO TIRAR FOTO
+         * =====================================================
+         */
 
         if (
             takePhoto &&
@@ -1336,11 +1363,15 @@ document.addEventListener(
 
 
 
-        /* =====================================================
-           FOTO DA CÂMERA
-           ===================================================== */
+        /*
+         * =====================================================
+         * RESULTADO DA CÂMERA
+         * =====================================================
+         */
 
-        if (cameraInput) {
+        if (
+            cameraInput
+        ) {
 
 
             cameraInput.addEventListener(
@@ -1365,9 +1396,11 @@ document.addEventListener(
 
 
 
-        /* =====================================================
-           BOTÃO SELECIONAR FOTO
-           ===================================================== */
+        /*
+         * =====================================================
+         * BOTÃO SELECIONAR FOTO
+         * =====================================================
+         */
 
         if (
             selectPhoto &&
@@ -1389,11 +1422,15 @@ document.addEventListener(
 
 
 
-        /* =====================================================
-           FOTOS DA GALERIA
-           ===================================================== */
+        /*
+         * =====================================================
+         * RESULTADO DA GALERIA
+         * =====================================================
+         */
 
-        if (galleryInput) {
+        if (
+            galleryInput
+        ) {
 
 
             galleryInput.addEventListener(
@@ -1417,16 +1454,7 @@ document.addEventListener(
         }
 
 
-
-        /* =====================================================
-           ATUALIZAÇÃO INICIAL
-           ===================================================== */
-
-        atualizarConfirmacao();
-
-
     }
-
 );
 
 </script>
