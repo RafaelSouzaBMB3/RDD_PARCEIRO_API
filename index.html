@@ -1,2186 +1,311 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>RDD Parceiro BMB3</title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f6f8;
-            color: #172033;
-        }
-
-        body {
-            min-height: 100vh;
-        }
-
-        button,
-        input,
-        select {
-            font-family: inherit;
-        }
-
-        /* =====================================================
-           TOPO
-        ===================================================== */
-
-        .topbar {
-            width: 100%;
-            background: #071b33;
-            min-height: 78px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 24px;
-            box-shadow: 0 3px 12px rgba(0,0,0,.15);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-        }
-
-        .brand img {
-            width: 120px !important;
-            height: 58px !important;
-            object-fit: contain !important;
-            background: transparent !important;
-            border-radius: 0 !important;
-            padding: 0 !important;
-            display: block !important;
-        }
-
-        .brand-text {
-            margin-left: 15px;
-            color: white;
-        }
-
-        .brand-text strong {
-            display: block;
-            font-size: 20px;
-        }
-
-        .brand-text span {
-            display: block;
-            font-size: 12px;
-            opacity: .75;
-            margin-top: 3px;
-        }
-
-        .settings-button {
-            border: 1px solid rgba(255,255,255,.25);
-            background: rgba(255,255,255,.08);
-            color: white;
-            border-radius: 12px;
-            padding: 10px 14px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .settings-button:hover {
-            background: rgba(255,255,255,.15);
-        }
-
-        /* =====================================================
-           PROGRESSO
-        ===================================================== */
-
-        .progress {
-            max-width: 1000px;
-            margin: 24px auto 10px;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            position: relative;
-        }
-
-        .progress::before {
-            content: "";
-            position: absolute;
-            top: 17px;
-            left: 65px;
-            right: 65px;
-            height: 3px;
-            background: #d8dde5;
-            z-index: 0;
-        }
-
-        .step {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            color: #7b8492;
-            font-size: 12px;
-            width: 100px;
-        }
-
-        .step-circle {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: #d8dde5;
-            color: #5c6675;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 6px;
-            font-weight: bold;
-        }
-
-        .step.active .step-circle {
-            background: #c9a227;
-            color: white;
-        }
-
-        .step.done .step-circle {
-            background: #0b6b45;
-            color: white;
-        }
-
-        .step.active,
-        .step.done {
-            color: #071b33;
-            font-weight: bold;
-        }
-
-        /* =====================================================
-           CONTAINER
-        ===================================================== */
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 15px 20px 50px;
-        }
-
-        /* =====================================================
-           TELAS
-        ===================================================== */
-
-        .step-section {
-            display: none !important;
-        }
-
-        .step-section.active {
-            display: block !important;
-        }
-
-        .screen {
-            display: none !important;
-        }
-
-        .screen.on {
-            display: block !important;
-        }
-
-        .card {
-            background: white;
-            border-radius: 18px;
-            padding: 26px;
-            box-shadow: 0 5px 20px rgba(0,0,0,.08);
-            margin-bottom: 20px;
-        }
-
-        .card h1 {
-            margin: 0 0 8px;
-            font-size: 25px;
-            color: #071b33;
-        }
-
-        .card h2 {
-            margin: 0 0 8px;
-            font-size: 20px;
-            color: #071b33;
-        }
-
-        .subtitle {
-            color: #687386;
-            margin: 0 0 24px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        /* =====================================================
-           FORMULÃRIO
-        ===================================================== */
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .field.full {
-            grid-column: 1 / -1;
-        }
-
-        .field label {
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 7px;
-            color: #344054;
-        }
-
-        .field input,
-        .field select {
-            width: 100%;
-            min-height: 45px;
-            border: 1px solid #ccd3dc;
-            border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 14px;
-            outline: none;
-            background: white;
-        }
-
-        .field input:focus,
-        .field select:focus {
-            border-color: #c9a227;
-            box-shadow: 0 0 0 3px rgba(201,162,39,.12);
-        }
-
-        .field input[readonly] {
-            background: #f2f4f7;
-            color: #667085;
-        }
-
-        /* =====================================================
-           BOTÃ•ES
-        ===================================================== */
-
-        .actions {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            margin-top: 25px;
-        }
-
-        .actions-right {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 11px;
-            min-height: 45px;
-            padding: 0 20px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: .2s;
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-        }
-
-        .btn-primary {
-            background: #c9a227;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #b18c1d;
-        }
-
-        .btn-secondary {
-            background: #e9edf2;
-            color: #253047;
-        }
-
-        .btn-secondary:hover {
-            background: #dce2e9;
-        }
-
-        .btn-dark {
-            background: #071b33;
-            color: white;
-        }
-
-        .btn-dark:hover {
-            background: #0c294a;
-        }
-
-        .btn-success {
-            background: #0b6b45;
-            color: white;
-        }
-
-        /* =====================================================
-           UPLOAD
-        ===================================================== */
-
-        .upload-area {
-            border: 2px dashed #cbd3dd;
-            border-radius: 16px;
-            padding: 28px;
-            text-align: center;
-            background: #fafbfc;
-        }
-
-        .upload-area h3 {
-            margin: 0 0 8px;
-            color: #071b33;
-        }
-
-        .upload-area p {
-            color: #687386;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-
-        .upload-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .upload-status {
-            margin-top: 20px;
-            padding: 14px;
-            background: #f0f4f8;
-            border-radius: 12px;
-            display: none;
-        }
-
-        .upload-status.show {
-            display: block;
-        }
-
-        .upload-status strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .upload-status span {
-            color: #667085;
-            font-size: 13px;
-        }
-
-        #files {
-            display: none;
-        }
-
-        /* =====================================================
-           CUPONS
-        ===================================================== */
-
-        .coupon-summary {
-            display: flex;
-            gap: 15px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .summary-box {
-            flex: 1;
-            min-width: 150px;
-            background: #f6f8fa;
-            border-radius: 12px;
-            padding: 15px;
-        }
-
-        .summary-box small {
-            display: block;
-            color: #667085;
-            margin-bottom: 5px;
-        }
-
-        .summary-box strong {
-            font-size: 18px;
-            color: #071b33;
-        }
-
-        #list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .coupon-card {
-            background: #fff;
-            border: 1px solid #e0e5eb;
-            border-radius: 13px;
-            padding: 15px;
-        }
-
-        /* =====================================================
-           REVISÃƒO
-        ===================================================== */
-
-        .review-box {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .review-box > div {
-            padding: 14px;
-            background: #f6f8fa;
-            border-radius: 10px;
-        }
-
-        .review-box strong {
-            display: block;
-            color: #667085;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .review-box span {
-            font-weight: bold;
-            color: #071b33;
-        }
-
-        /* =====================================================
-           FINAL
-        ===================================================== */
-
-        .success {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .success-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: #0b6b45;
-            color: white;
-            font-size: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-
-        .success h2 {
-            color: #071b33;
-            margin-bottom: 10px;
-        }
-
-        .success p {
-            color: #667085;
-        }
-
-        /* =====================================================
-           MODAL
-        ===================================================== */
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.55);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal.show {
-            display: flex;
-        }
-
-        .modal-content {
-            width: 100%;
-            max-width: 520px;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: white;
-            border-radius: 18px;
-            padding: 22px;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            color: #071b33;
-        }
-
-        .close {
-            border: none;
-            background: transparent;
-            font-size: 25px;
-            cursor: pointer;
-        }
-
-        .modal-photo {
-            width: 100%;
-            max-height: 300px;
-            object-fit: contain;
-            border-radius: 10px;
-            background: #f5f5f5;
-            margin-bottom: 18px;
-        }
-
-        /* =====================================================
-           CONFIGURAÃ‡Ã•ES
-        ===================================================== */
-
-        .settings-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .setting-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px;
-            background: #f6f8fa;
-            border-radius: 10px;
-        }
-
-        .setting-item span {
-            font-weight: bold;
-        }
-
-        .setting-item small {
-            display: block;
-            color: #667085;
-            font-weight: normal;
-            margin-top: 3px;
-        }
-
-        /* =====================================================
-           PROCESSAMENTO / OCR
-        ===================================================== */
-        .processing-overlay {
-            position: fixed; inset: 0; background: rgba(7,27,51,.82);
-            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            z-index: 20000; display: none; align-items: center; justify-content: center; padding: 20px;
-        }
-        .processing-overlay.show { display: flex; }
-        .processing-box { width:100%; max-width:430px; background:white; border-radius:20px; padding:32px 24px; text-align:center; box-shadow:0 15px 45px rgba(0,0,0,.28); }
-        .processing-spinner { width:58px; height:58px; margin:0 auto 20px; border:5px solid #e7ebf0; border-top-color:#c9a227; border-radius:50%; animation:rddSpin .9s linear infinite; }
-        @keyframes rddSpin { to { transform:rotate(360deg); } }
-        .processing-box h3 { margin:0 0 8px; color:#071b33; font-size:20px; }
-        .processing-box p { margin:0; color:#667085; font-size:14px; line-height:1.5; }
-        .processing-progress { margin-top:18px; height:7px; background:#e9edf2; border-radius:99px; overflow:hidden; }
-        .processing-progress-bar { height:100%; width:15%; background:#c9a227; border-radius:99px; transition:width .3s ease; }
-        .processing-counter { display:block; margin-top:10px; color:#071b33; font-size:13px; font-weight:bold; }
-
-        /* =====================================================
-           RESPONSIVO
-        ===================================================== */
-
-        @media (max-width: 700px) {
-
-            .topbar {
-                padding: 8px 14px;
-                min-height: 65px;
-            }
-
-            .brand img {
-                width: 105px !important;
-                height: 43px !important;
-            }
-
-            .brand-text {
-                display: none;
-            }
-
-            .settings-button {
-                padding: 8px 10px;
-                font-size: 12px;
-            }
-
-            .progress {
-                padding: 0 8px;
-                margin-top: 18px;
-            }
-
-            .progress::before {
-                left: 40px;
-                right: 40px;
-                top: 15px;
-            }
-
-            .step {
-                font-size: 10px;
-                width: 75px;
-            }
-
-            .step-circle {
-                width: 30px;
-                height: 30px;
-                font-size: 12px;
-            }
-
-            .container {
-                padding: 10px 12px 40px;
-            }
-
-            .card {
-                padding: 18px;
-                border-radius: 15px;
-            }
-
-            .card h1 {
-                font-size: 21px;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .field.full {
-                grid-column: auto;
-            }
-
-            .review-box {
-                grid-template-columns: 1fr;
-            }
-
-            .actions {
-                flex-direction: column-reverse;
-            }
-
-            .actions-right {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .upload-area {
-                padding: 20px 12px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<div id="processingOverlay" class="processing-overlay" aria-hidden="true">
-    <div class="processing-box">
-        <div class="processing-spinner"></div>
-        <h3 id="processingTitle">Processando comprovante...</h3>
-        <p id="processingText">Estamos lendo a imagem e identificando os dados. Aguarde.</p>
-        <div class="processing-progress"><div id="processingProgressBar" class="processing-progress-bar"></div></div>
-        <span id="processingCounter" class="processing-counter">Preparando...</span>
-    </div>
-</div>
-
-<!-- =========================================================
-     TOPO
-========================================================= -->
-
-<header class="topbar">
-
-    <div class="brand">
-
-        <img src="assets/logo-bmb3.svg" alt="BMB3">
-
-        <div class="brand-text">
-            <strong>RDD Parceiro</strong>
-            <span>Reembolso de Despesas</span>
-        </div>
-
-    </div>
-
-    <button
-        type="button"
-        id="settingsButton"
-        class="settings-button">
-        âš™ï¸ ConfiguraÃ§Ãµes
-    </button>
-
-</header>
-
-
-<!-- =========================================================
-     PROGRESSO
-========================================================= -->
-
-<div class="progress">
-
-    <div class="step active">
-        <div class="step-circle">1</div>
-        Dados
-    </div>
-
-    <div class="step">
-        <div class="step-circle">2</div>
-        Cupons
-    </div>
-
-    <div class="step">
-        <div class="step-circle">3</div>
-        RevisÃ£o
-    </div>
-
-    <div class="step">
-        <div class="step-circle">4</div>
-        FinalizaÃ§Ã£o
-    </div>
-
-</div>
-
-
-<main class="container">
-
-
-<!-- =========================================================
-     ETAPA 1
-========================================================= -->
-
-<section
-    id="dados"
-    class="step-section screen on active">
-
-    <div class="card">
-
-        <h1>Dados do responsÃ¡vel</h1>
-
-        <p class="subtitle">
-            Preencha os dados necessÃ¡rios para gerar o RDD do parceiro.
-        </p>
-
-        <div class="form-grid">
-
-            <div class="field full">
-                <label for="finalidade">
-                    Finalidade
-                </label>
-
-                <input
-                    type="text"
-                    id="finalidade"
-                    value="Reembolso de Pagamentos e Despesa"
-                    readonly>
-            </div>
-
-
-            <div class="field">
-                <label for="nome">
-                    Nome *
-                </label>
-
-                <input
-                    type="text"
-                    id="nome"
-                    placeholder="Nome completo">
-            </div>
-
-
-            <div class="field">
-                <label for="cpf">
-                    CPF *
-                </label>
-
-                <input
-                    type="text"
-                    id="cpf"
-                    placeholder="000.000.000-00">
-            </div>
-
-
-            <div class="field">
-                <label for="departamento">
-                    Departamento
-                </label>
-
-                <input
-                    type="text"
-                    id="departamento"
-                    value="Projetos"
-                    readonly>
-            </div>
-
-
-            <div class="field">
-                <label for="cargo">
-                    Cargo
-                </label>
-
-                <input
-                    type="text"
-                    id="cargo"
-                    value="Prestador de ServiÃ§os"
-                    readonly>
-            </div>
-
-
-            <div class="field">
-                <label for="gerente">
-                    Gerente
-                </label>
-
-                <input
-                    type="text"
-                    id="gerente"
-                    value="Roberto Almeida Blanco"
-                    readonly>
-            </div>
-
-
-            <div class="field">
-                <label for="obra">
-                    Obra *
-                </label>
-
-                <input
-                    type="text"
-                    id="obra"
-                    placeholder="Informe a obra">
-            </div>
-
-
-            <div class="field">
-                <label for="periodo">
-                    PerÃ­odo
-                </label>
-
-                <input
-                    type="text"
-                    id="periodo"
-                    readonly>
-            </div>
-
-        </div>
-
-
-        <div class="actions">
-
-            <div></div>
-
-            <button
-                type="button"
-                id="next1"
-                class="btn btn-primary">
-
-                Continuar â†’
-
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     ETAPA 2
-========================================================= -->
-
-<section
-    id="cupons"
-    class="step-section screen">
-
-    <div class="card">
-
-        <h1>Adicionar cupons</h1>
-
-        <p class="subtitle">
-            Fotografe ou selecione os comprovantes das despesas.
-            Todos os novos cupons comeÃ§am automaticamente na categoria
-            <strong>Materiais</strong>.
-        </p>
-
-
-        <div class="upload-area">
-
-            <h3>ðŸ“¸ Adicionar comprovantes</h3>
-
-            <p>
-                VocÃª pode tirar uma foto ou selecionar imagens da galeria.
-            </p>
-
-            <div class="upload-buttons">
-
-                <button
-                    type="button"
-                    id="takePhoto"
-                    class="btn btn-primary">
-
-                    ðŸ“· Tirar foto
-
-                </button>
-
-
-                <button
-                    type="button"
-                    id="selectPhoto"
-                    class="btn btn-secondary">
-
-                    ðŸ–¼ï¸ Selecionar imagens
-
-                </button>
-
-            </div>
-
-
-            <input
-                type="file"
-                id="cameraInput"
-                accept="image/*"
-                capture="environment"
-                style="display:none;">
-
-
-            <input
-                type="file"
-                id="galleryInput"
-                accept="image/*,.heic,.heif"
-                multiple
-                style="display:none;">
-
-
-            <input
-                type="file"
-                id="files"
-                accept="image/*,.heic,.heif"
-                multiple>
-
-        </div>
-
-
-        <div
-            id="uploadStatus"
-            class="upload-status">
-
-            <strong id="uploadStatusTitle">
-                Arquivos selecionados
-            </strong>
-
-            <span id="uploadStatusText">
-                Os comprovantes foram adicionados.
-            </span>
-
-            <div
-                id="selectedFilesSummary"
-                style="margin-top:8px;">
-            </div>
-
-        </div>
-
-
-        <div class="coupon-summary">
-
-            <div class="summary-box">
-
-                <small>
-                    Cupons
-                </small>
-
-                <strong id="count">
-                    0
-                </strong>
-
-            </div>
-
-
-            <div class="summary-box">
-
-                <small>
-                    Total
-                </small>
-
-                <strong id="sum">
-                    R$ 0,00
-                </strong>
-
-            </div>
-
-        </div>
-
-
-        <div id="list"></div>
-
-
-        <div class="actions">
-
-            <button
-                type="button"
-                id="back1"
-                class="btn btn-secondary">
-
-                â† Voltar
-
-            </button>
-
-
-            <button
-                type="button"
-                id="next2"
-                class="btn btn-primary">
-
-                Continuar â†’
-
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     ETAPA 3
-========================================================= -->
-
-<section
-    id="revisao"
-    class="step-section screen">
-
-    <div class="card">
-
-        <h1>RevisÃ£o</h1>
-
-        <p class="subtitle">
-            Confira os dados antes de gerar o RDD.
-        </p>
-
-
-        <div id="review">
-
-            <div class="review-box">
-
-                <div>
-                    <strong>ResponsÃ¡vel</strong>
-                    <span id="reviewNome">-</span>
-                </div>
-
-                <div>
-                    <strong>CPF</strong>
-                    <span id="reviewCpf">-</span>
-                </div>
-
-                <div>
-                    <strong>Obra</strong>
-                    <span id="reviewObra">-</span>
-                </div>
-
-                <div>
-                    <strong>Cupons</strong>
-                    <span id="reviewCount">0</span>
-                </div>
-
-                <div>
-                    <strong>Total</strong>
-                    <span id="reviewTotal">R$ 0,00</span>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="actions">
-
-            <button
-                type="button"
-                id="back2"
-                class="btn btn-secondary">
-
-                â† Voltar
-
-            </button>
-
-
-            <button
-                type="button"
-                id="generate"
-                class="btn btn-success">
-
-                GERAR RDD + CUPONS
-
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     ETAPA 4
-========================================================= -->
-
-<section
-    id="final"
-    class="step-section screen">
-
-    <div class="card">
-
-        <div class="success">
-
-            <div class="success-icon">
-                âœ“
-            </div>
-
-            <h2>
-                RDD gerado com sucesso!
-            </h2>
-
-            <p>
-                O RDD e os comprovantes foram processados.
-            </p>
-
-
-            <div
-                id="message"
-                style="margin-top:20px;">
-            </div>
-
-
-            <div
-                style="
-                    margin-top:25px;
-                    display:flex;
-                    justify-content:center;
-                    gap:12px;
-                    flex-wrap:wrap;
-                ">
-
-                <button
-                    type="button"
-                    id="new"
-                    class="btn btn-primary">
-
-                    + Novo RDD
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-</main>
-
-
-<!-- =========================================================
-     MODAL DO CUPOM
-========================================================= -->
-
-<div
-    id="modal"
-    class="modal">
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h3>
-                Editar cupom
-            </h3>
-
-            <button
-                type="button"
-                id="close"
-                class="close">
-
-                Ã—
-
-            </button>
-
-        </div>
-
-
-        <img
-            id="photo"
-            class="modal-photo"
-            alt="Cupom">
-
-
-        <div class="form-grid">
-
-            <div class="field">
-                <label for="mdate">
-                    Data
-                </label>
-
-                <input
-                    type="date"
-                    id="mdate">
-            </div>
-
-
-            <div class="field">
-                <label for="mcat">
-                    Categoria *
-                </label>
-
-                <select id="mcat">
-
-                    <option
-                        value="materiais"
-                        selected>
-                        Materiais
-                    </option>
-
-                    <option
-                        value="transporte"
-                        disabled>
-                        Transporte
-                    </option>
-
-                    <option
-                        value="combustivel"
-                        disabled>
-                        CombustÃ­vel
-                    </option>
-
-                    <option
-                        value="refeicoes"
-                        disabled>
-                        RefeiÃ§Ãµes
-                    </option>
-
-                    <option
-                        value="hospedagem"
-                        disabled>
-                        Hospedagem
-                    </option>
-
-                    <option
-                        value="diversos"
-                        disabled>
-                        Diversos
-                    </option>
-
-                </select>
-            </div>
-
-
-            <div class="field full">
-
-                <label for="mdesc">
-                    Estabelecimento / DescriÃ§Ã£o
-                </label>
-
-                <input
-                    type="text"
-                    id="mdesc">
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="mdoc">
-                    NÃºmero do documento *
-                </label>
-
-                <input
-                    type="text"
-                    id="mdoc">
-
-            </div>
-
-
-            <div class="field">
-
-                <label for="mvalue">
-                    Valor
-                </label>
-
-                <input
-                    type="text"
-                    id="mvalue">
-
-            </div>
-
-        </div>
-
-
-        <div class="actions">
-
-            <button
-                type="button"
-                id="closeModal"
-                class="btn btn-secondary">
-
-                Cancelar
-
-            </button>
-
-
-            <button
-                type="button"
-                id="save"
-                class="btn btn-primary">
-
-                Salvar
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     MODAL CONFIGURAÃ‡Ã•ES
-========================================================= -->
-
-<div
-    id="settingsModal"
-    class="modal">
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <h3>
-                âš™ï¸ ConfiguraÃ§Ãµes
-            </h3>
-
-            <button
-                type="button"
-                id="closeSettings"
-                class="close">
-
-                Ã—
-
-            </button>
-
-        </div>
-
-
-        <p class="subtitle">
-            Defina quais categorias estarÃ£o disponÃ­veis para os
-            comprovantes do RDD Parceiro.
-        </p>
-
-
-        <div class="settings-list">
-
-            <label class="setting-item">
-
-                <span>
-                    Materiais
-                    <small>
-                        Categoria padrÃ£o
-                    </small>
-                </span>
-
-                <input
-                    type="checkbox"
-                    id="catMateriais"
-                    checked>
-
-            </label>
-
-
-            <label class="setting-item">
-
-                <span>
-                    Transporte
-                    <small>
-                        DisponÃ­vel futuramente
-                    </small>
-                </span>
-
-                <input
-                    type="checkbox"
-                    disabled>
-
-            </label>
-
-
-            <label class="setting-item">
-
-                <span>
-                    CombustÃ­vel
-                    <small>
-                        DisponÃ­vel futuramente
-                    </small>
-                </span>
-
-                <input
-                    type="checkbox"
-                    disabled>
-
-            </label>
-
-
-            <label class="setting-item">
-
-                <span>
-                    RefeiÃ§Ãµes
-                    <small>
-                        DisponÃ­vel futuramente
-                    </small>
-                </span>
-
-                <input
-                    type="checkbox"
-                    disabled>
-
-            </label>
-
-
-            <label class="setting-item">
-
-                <span>
-                    Hospedagem
-                    <small>
-                        DisponÃ­vel futuramente
-                    </small>
-                </span>
-
-                <input
-                    type="checkbox"
-                    disabled>
-
-            </label>
-
-
-            <label class="setting-item">
-
-                <span>
-                    Diversos
-                    <small>
-                        DisponÃ­vel futuramente
-                    </small>
-                </span>
-
-                <input
-                    type="checkbox"
-                    disabled>
-
-            </label>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     APP.JS
-========================================================= -->
-
-<script src="app.js?v=20261005-fixed2"></script>
-
-
-<!-- =========================================================
-     CONTROLE DAS TELAS
-========================================================= -->
-
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const processingOverlay = document.getElementById("processingOverlay");
-    const processingTitle = document.getElementById("processingTitle");
-    const processingText = document.getElementById("processingText");
-    const processingCounter = document.getElementById("processingCounter");
-    const processingProgressBar = document.getElementById("processingProgressBar");
-
-    function mostrarProcessamento(total, atual) {
-        if (!processingOverlay) return;
-        const quantidade=Math.max(Number(total)||1,1); const numero=Math.min(Math.max(Number(atual)||1,1),quantidade);
-        processingOverlay.classList.add("show"); processingOverlay.setAttribute("aria-hidden","false");
-        if(processingTitle) processingTitle.textContent="ðŸ”Ž Lendo comprovante...";
-        if(processingText) processingText.textContent="Estamos processando a imagem e identificando os dados. Aguarde.";
-        if(processingCounter) processingCounter.textContent="Comprovante "+numero+" de "+quantidade;
-        if(processingProgressBar) processingProgressBar.style.width=Math.max(8,Math.round(numero/quantidade*100))+"%";
-    }
-    function atualizarProcessamento(
-        etapa,
-        mensagem,
-        total,
-        atual
-    ) {
-        if (!processingOverlay) return;
-
-        if (processingTitle) {
-            processingTitle.textContent = etapa;
-        }
-
-        if (processingText && mensagem) {
-            processingText.textContent = mensagem;
-        }
-
-        if (processingCounter && total) {
-            processingCounter.textContent =
-                "Comprovante " + atual + " de " + total;
-        }
-
-        if (processingProgressBar && total) {
-            processingProgressBar.style.width =
-                Math.max(
-                    8,
-                    Math.min(
-                        100,
-                        Math.round((atual / total) * 100)
-                    )
-                ) + "%";
-        }
-    }
-
-    function finalizarProcessamento() {
-        if (!processingOverlay) return;
-
-        if (processingTitle) {
-            processingTitle.textContent =
-                "âœ… Processamento concluÃ­do";
-        }
-
-        if (processingText) {
-            processingText.textContent =
-                "Os comprovantes foram carregados. Confira os dados antes de continuar.";
-        }
-
-        if (processingCounter) {
-            processingCounter.textContent =
-                "Leitura concluÃ­da";
-        }
-
-        if (processingProgressBar) {
-            processingProgressBar.style.width = "100%";
-        }
-
-        setTimeout(function () {
-            processingOverlay.classList.remove("show");
-            processingOverlay.setAttribute("aria-hidden", "true");
-
-            if (processingProgressBar) {
-                processingProgressBar.style.width = "15%";
-            }
-        }, 700);
-    }
-
-    window.RDD_PROCESSAMENTO = {
-        mostrar: mostrarProcessamento,
-        atualizar: atualizarProcessamento,
-        finalizar: finalizarProcessamento
-    };
-
-    const telas = {
-        1: document.getElementById("dados"),
-        2: document.getElementById("cupons"),
-        3: document.getElementById("revisao"),
-        4: document.getElementById("final")
-    };
-
-    const etapas = document.querySelectorAll(".progress .step");
-
-
-    function mostrarTela(numero) {
-
-        Object.values(telas).forEach(function (tela) {
-
-            if (!tela) return;
-
-            tela.classList.remove("on");
-            tela.classList.remove("active");
-
-            tela.style.display = "none";
-
-        });
-
-
-        const telaAtual = telas[numero];
-
-        if (telaAtual) {
-
-            telaAtual.classList.add("on");
-            telaAtual.classList.add("active");
-
-            telaAtual.style.display = "block";
-
-        }
-
-
-        etapas.forEach(function (etapa, index) {
-
-            const numeroEtapa = index + 1;
-
-            etapa.classList.remove("active");
-            etapa.classList.remove("done");
-
-            if (numeroEtapa < numero) {
-                etapa.classList.add("done");
-            }
-
-            if (numeroEtapa === numero) {
-                etapa.classList.add("active");
-            }
-
-        });
-
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-
-    }
-
-
-    /* =====================================================
-       PERÃODO AUTOMÃTICO
-    ===================================================== */
-
-    const periodo = document.getElementById("periodo");
-
-    if (periodo) {
-
-        const hoje = new Date();
-
-        const primeiroDia = new Date(
-            hoje.getFullYear(),
-            hoje.getMonth(),
-            1
-        );
-
-        const ultimoDia = new Date(
-            hoje.getFullYear(),
-            hoje.getMonth() + 1,
-            0
-        );
-
-
-        function formatarData(data) {
-
-            return String(data.getDate()).padStart(2, "0")
-                + "/"
-                + String(data.getMonth() + 1).padStart(2, "0")
-                + "/"
-                + data.getFullYear();
-
-        }
-
-
-        periodo.value =
-            formatarData(primeiroDia)
-            + " a "
-            + formatarData(ultimoDia);
-
-    }
-
-
-    /* =====================================================
-       ETAPA 1 â†’ ETAPA 2
-    ===================================================== */
-
-    const next1 = document.getElementById("next1");
-
-    if (next1) {
-
-        next1.type = "button";
-
-        next1.addEventListener("click", function (event) {
-
-            event.preventDefault();
-            event.stopImmediatePropagation();
-
-            const nome = document.getElementById("nome");
-            const cpf = document.getElementById("cpf");
-            const obra = document.getElementById("obra");
-
-
-            if (!nome || !nome.value.trim()) {
-
-                alert("Informe o nome.");
-
-                if (nome) {
-                    nome.focus();
-                }
-
-                return;
-            }
-
-
-            if (!cpf || !cpf.value.trim()) {
-
-                alert("Informe o CPF.");
-
-                if (cpf) {
-                    cpf.focus();
-                }
-
-                return;
-            }
-
-
-            if (!obra || !obra.value.trim()) {
-
-                alert("Informe a obra.");
-
-                if (obra) {
-                    obra.focus();
-                }
-
-                return;
-            }
-
-
-            mostrarTela(2);
-
-        }, true);
-
-    }
-
-
-    /* =====================================================
-       ETAPA 2 â†’ ETAPA 1
-    ===================================================== */
-
-    const back1 = document.getElementById("back1");
-
-    if (back1) {
-
-        back1.type = "button";
-
-        back1.addEventListener("click", function (event) {
-
-            event.preventDefault();
-            event.stopImmediatePropagation();
-
-            mostrarTela(1);
-
-        }, true);
-
-    }
-
-
-    /* =====================================================
-       ETAPA 2 â†’ ETAPA 3
-    ===================================================== */
-
-    const next2 = document.getElementById("next2");
-
-    if (next2) {
-
-        next2.type = "button";
-
-        next2.addEventListener("click", function (event) {
-
-            event.preventDefault();
-            event.stopImmediatePropagation();
-
-
-            const lista = document.getElementById("list");
-
-            if (
-                lista &&
-                lista.children.length === 0
-            ) {
-
-                alert(
-                    "Adicione pelo menos um cupom antes de continuar."
-                );
-
-                return;
-
-            }
-
-
-            /* Atualiza dados da revisÃ£o */
-
-            const nome =
-                document.getElementById("nome")?.value || "-";
-
-            const cpf =
-                document.getElementById("cpf")?.value || "-";
-
-            const obra =
-                document.getElementById("obra")?.value || "-";
-
-            const count =
-                document.getElementById("count")?.textContent || "0";
-
-            const sum =
-                document.getElementById("sum")?.textContent || "R$ 0,00";
-
-
-            const reviewNome =
-                document.getElementById("reviewNome");
-
-            const reviewCpf =
-                document.getElementById("reviewCpf");
-
-            const reviewObra =
-                document.getElementById("reviewObra");
-
-            const reviewCount =
-                document.getElementById("reviewCount");
-
-            const reviewTotal =
-                document.getElementById("reviewTotal");
-
-
-            if (reviewNome) {
-                reviewNome.textContent = nome;
-            }
-
-            if (reviewCpf) {
-                reviewCpf.textContent = cpf;
-            }
-
-            if (reviewObra) {
-                reviewObra.textContent = obra;
-            }
-
-            if (reviewCount) {
-                reviewCount.textContent = count;
-            }
-
-            if (reviewTotal) {
-                reviewTotal.textContent = sum;
-            }
-
-
-            mostrarTela(3);
-
-        }, true);
-
-    }
-
-
-    /* =====================================================
-       ETAPA 3 â†’ ETAPA 2
-    ===================================================== */
-
-    const back2 = document.getElementById("back2");
-
-    if (back2) {
-
-        back2.type = "button";
-
-        back2.addEventListener("click", function (event) {
-
-            event.preventDefault();
-            event.stopImmediatePropagation();
-
-            mostrarTela(2);
-
-        }, true);
-
-    }
-
-
-    /* =====================================================
-       NOVO RDD
-    ===================================================== */
-
-    const novo = document.getElementById("new");
-
-    if (novo) {
-
-        novo.type = "button";
-
-        novo.addEventListener("click", function (event) {
-
-            event.preventDefault();
-            event.stopImmediatePropagation();
-
-            mostrarTela(1);
-
-        }, true);
-
-    }
-
-
-    /* =====================================================
-       BOTÃ•ES DE FOTO
-    ===================================================== */
-
-    const takePhoto =
-        document.getElementById("takePhoto");
-
-    const selectPhoto =
-        document.getElementById("selectPhoto");
-
-    const cameraInput =
-        document.getElementById("cameraInput");
-
-    const galleryInput =
-        document.getElementById("galleryInput");
-
-
-    if (takePhoto && cameraInput) {
-
-        takePhoto.addEventListener("click", function () {
-
-            cameraInput.click();
-
-        });
-
-    }
-
-
-    if (selectPhoto && galleryInput) {
-
-        selectPhoto.addEventListener("click", function () {
-
-            galleryInput.click();
-
-        });
-
-    }
-
-
-    /* =====================================================
-       TRANSFERÃŠNCIA PARA INPUT PRINCIPAL
-    ===================================================== */
-
-    function transferirArquivos(inputOrigem) {
-
-        const inputPrincipal =
-            document.getElementById("files");
-
-        if (!inputPrincipal || !inputOrigem.files.length) {
-            return;
-        }
-
-        const dt = new DataTransfer();
-
-        Array.from(inputPrincipal.files).forEach(function (arquivo) {
-            dt.items.add(arquivo);
-        });
-
-        Array.from(inputOrigem.files).forEach(function (arquivo) {
-            dt.items.add(arquivo);
-        });
-
-        inputPrincipal.files = dt.files;
-
-        const status =
-            document.getElementById("uploadStatus");
-
-        const statusTitle =
-            document.getElementById("uploadStatusTitle");
-
-        const statusText =
-            document.getElementById("uploadStatusText");
-
-        const summary =
-            document.getElementById("selectedFilesSummary");
-
-        if (status) {
-            status.classList.add("show");
-        }
-
-        if (statusTitle) {
-            statusTitle.textContent =
-                "ðŸ”Ž Preparando comprovante...";
-        }
-
-        if (statusText) {
-            statusText.textContent =
-                dt.files.length +
-                " arquivo(s) selecionado(s). Iniciando leitura...";
-        }
-
-        if (summary) {
-            summary.textContent =
-                Array.from(dt.files)
-                    .map(function (arquivo) {
-                        return arquivo.name;
-                    })
-                    .join(", ");
-        }
-
-        /*
-         * O app.js Ã© o responsÃ¡vel pelo OCR.
-         * Aqui somente entregamos os arquivos para ele.
-         */
-        inputPrincipal.dispatchEvent(
-            new Event("change", {
-                bubbles: true
-            })
-        );
-
-        inputOrigem.value = "";
-    }
-
-    if (cameraInput) {
-
-        cameraInput.addEventListener(
-            "change",
-            function () {
-
-                transferirArquivos(cameraInput);
-
-            }
-        );
-
-    }
-
-
-    if (galleryInput) {
-
-        galleryInput.addEventListener(
-            "change",
-            function () {
-
-                transferirArquivos(galleryInput);
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       CONFIGURAÃ‡Ã•ES
-    ===================================================== */
-
-    const settingsButton =
-        document.getElementById("settingsButton");
-
-    const settingsModal =
-        document.getElementById("settingsModal");
-
-    const closeSettings =
-        document.getElementById("closeSettings");
-
-
-    if (settingsButton && settingsModal) {
-
-        settingsButton.addEventListener(
-            "click",
-            function () {
-
-                settingsModal.classList.add("show");
-
-            }
-        );
-
-    }
-
-
-    if (closeSettings && settingsModal) {
-
-        closeSettings.addEventListener(
-            "click",
-            function () {
-
-                settingsModal.classList.remove("show");
-
-            }
-        );
-
-    }
-
-
-    if (settingsModal) {
-
-        settingsModal.addEventListener(
-            "click",
-            function (event) {
-
-                if (event.target === settingsModal) {
-
-                    settingsModal.classList.remove("show");
-
-                }
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       CATEGORIA PADRÃƒO = MATERIAIS
-    ===================================================== */
-
-    const mcat =
-        document.getElementById("mcat");
-
-    if (mcat) {
-
-        mcat.value = "materiais";
-
-    }
-
-
-    /* =====================================================
-       MODAL CUPOM
-    ===================================================== */
-
-    const modal =
-        document.getElementById("modal");
-
-    const closeModal =
-        document.getElementById("closeModal");
-
-    const close =
-        document.getElementById("close");
-
-
-    if (closeModal && modal) {
-
-        closeModal.addEventListener(
-            "click",
-            function () {
-
-                modal.classList.remove("show");
-
-            }
-        );
-
-    }
-
-
-    if (close && modal) {
-
-        close.addEventListener(
-            "click",
-            function () {
-
-                modal.classList.remove("show");
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       INICIALIZAÃ‡ÃƒO
-    ===================================================== */
-
-    mostrarTela(1);
-
-});
-
-</script>
-
-</body>
-</html>
+import os
+import re
+import io
+import json
+import sqlite3
+import tempfile
+import subprocess
+from datetime import date
+from pathlib import Path
+
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from openpyxl import load_workbook
+from PIL import Image
+import fitz  # PyMuPDF
+
+try:
+    from pillow_heif import register_heif_opener
+    register_heif_opener()
+except Exception:
+    pass
+
+BASE_DIR = Path(__file__).resolve().parent
+TEMPLATE = BASE_DIR / "template" / "RDD.PARCEIRO.xlsx"
+DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR / "data")))
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+DB_PATH = DATA_DIR / "rdd.db"
+
+CATEGORY_COLUMNS = {
+    "Transporte": "F",
+    "Combustível": "G",
+    "Refeições": "H",
+    "Hospedagem": "I",
+    "Materiais": "J",
+    "Diversos": "K",
+}
+
+app = FastAPI(title="RDD Parceiro BMB3 API", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # restringiremos ao GitHub Pages depois do primeiro teste
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["Content-Disposition"],
+)
+
+
+def db():
+    con = sqlite3.connect(DB_PATH, timeout=30)
+    con.execute("PRAGMA journal_mode=WAL")
+    return con
+
+
+def init_db():
+    con = db()
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS counters (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            next_number INTEGER NOT NULL
+        )
+    """)
+    con.execute(
+        "INSERT OR IGNORE INTO counters (id, next_number) VALUES (1, 210)"
+    )
+    con.commit()
+    con.close()
+
+
+@app.on_event("startup")
+def startup():
+    init_db()
+
+
+@app.get("/")
+def root():
+    return {"ok": True, "service": "RDD Parceiro BMB3 API"}
+
+
+@app.get("/health")
+def health():
+    return {"ok": True, "template": TEMPLATE.exists()}
+
+
+def parse_date(value):
+    if not value:
+        return None
+    s = str(value).strip()
+    # Aceita YYYY-MM-DD e DD/MM/YYYY
+    for fmt in ("%Y-%m-%d", "%d/%m/%Y"):
+        try:
+            from datetime import datetime
+            return datetime.strptime(s, fmt).date()
+        except ValueError:
+            pass
+    return None
+
+
+def money(value):
+    if value is None or value == "":
+        return 0.0
+    if isinstance(value, (int, float)):
+        return float(value)
+    s = str(value).strip().replace("R$", "").replace(" ", "")
+    if "," in s:
+        s = s.replace(".", "").replace(",", ".")
+    return float(s)
+
+
+def safe_filename(value):
+    """Gera um nome seguro para o arquivo PDF sem remover acentos."""
+    value = str(value or "").strip()
+    value = re.sub(r'[\\/:*?"<>|]+', " ", value)
+    value = re.sub(r'\s+', " ", value).strip(" .")
+    return value or "Sem Nome"
+
+
+def get_next_rdd_number():
+    con = db()
+    try:
+        con.execute("BEGIN IMMEDIATE")
+        row = con.execute(
+            "SELECT next_number FROM counters WHERE id=1"
+        ).fetchone()
+        n = int(row[0])
+        con.execute(
+            "UPDATE counters SET next_number=? WHERE id=1",
+            (n + 1,)
+        )
+        con.commit()
+        return n
+    except Exception:
+        con.rollback()
+        raise
+    finally:
+        con.close()
+
+
+def fill_workbook(payload, rdd_number, output_xlsx):
+    wb = load_workbook(TEMPLATE)
+    if "RDD" not in wb.sheetnames:
+        raise RuntimeError("Aba RDD não encontrada no modelo.")
+    ws = wb["RDD"]
+
+    # Cabeçalho
+    ws["F3"] = f"RDD-{rdd_number:03d}"
+
+    today = date.today()
+    first = today.replace(day=1)
+    if today.month == 12:
+        next_month = today.replace(year=today.year + 1, month=1, day=1)
+    else:
+        next_month = today.replace(month=today.month + 1, day=1)
+    last = next_month.fromordinal(next_month.toordinal() - 1)
+
+    ws["I3"] = first
+    ws["K3"] = last
+    ws["I3"].number_format = "dd/mm/yyyy"
+    ws["K3"].number_format = "dd/mm/yyyy"
+
+    ws["C5"] = payload.get("nome", "")
+    ws["K5"] = payload.get("cpf", "")
+    ws["K6"] = payload.get("obra", "")
+
+    # Limpa as linhas de despesas antes de preencher.
+    for r in range(9, 44):
+        ws[f"B{r}"] = None
+        ws[f"C{r}"] = None
+        ws[f"D{r}"] = None
+        ws[f"E{r}"] = None
+        for col in "FGHIJK":
+            ws[f"{col}{r}"] = None
+        # preserva/recria a fórmula de total
+        ws[f"L{r}"] = f"=SUM(F{r}:K{r})"
+
+    receipts = payload.get("receipts", [])
+    if not isinstance(receipts, list):
+        raise ValueError("receipts deve ser uma lista.")
+
+    if len(receipts) > 35:
+        raise ValueError("O modelo possui 35 linhas de despesas (9 a 43).")
+
+    for idx, item in enumerate(receipts, start=9):
+        d = parse_date(item.get("date"))
+        if d:
+            ws[f"B{idx}"] = d
+            ws[f"B{idx}"].number_format = "dd/mm/yyyy"
+
+        ws[f"C{idx}"] = item.get("account", "")
+        ws[f"D{idx}"] = item.get("description", "")
+        ws[f"E{idx}"] = item.get("document", "")
+
+        category = str(item.get("category", "")).strip()
+        if category not in CATEGORY_COLUMNS:
+            raise ValueError(f"Categoria inválida: {category}")
+
+        ws[f"{CATEGORY_COLUMNS[category]}{idx}"] = money(item.get("value"))
+
+    # Garante área de impressão do modelo
+    ws.print_area = "A1:L49"
+
+    wb.save(output_xlsx)
+
+
+def append_images_to_pdf(pdf_path, image_files):
+    doc = fitz.open(pdf_path)
+    for img_path in image_files:
+        try:
+            with Image.open(img_path) as im:
+                im = im.convert("RGB")
+                # Limita resolução exagerada sem perder legibilidade.
+                max_side = 2200
+                if max(im.size) > max_side:
+                    ratio = max_side / max(im.size)
+                    im = im.resize((int(im.width * ratio), int(im.height * ratio)))
+                buf = io.BytesIO()
+                im.save(buf, format="JPEG", quality=82, optimize=True)
+                rect = fitz.Rect(0, 0, 595, 842)  # A4 aproximado
+                page = doc.new_page(width=rect.width, height=rect.height)
+                # preserva proporção
+                margin = 18
+                box = fitz.Rect(margin, margin, rect.width-margin, rect.height-margin)
+                page.insert_image(box, stream=buf.getvalue(), keep_proportion=True, overlay=True)
+        except Exception as exc:
+            raise ValueError(f"Não foi possível anexar a imagem {img_path.name}: {exc}")
+    doc.save(pdf_path.with_name(pdf_path.stem + "_final.pdf"), garbage=4, deflate=True)
+    final = pdf_path.with_name(pdf_path.stem + "_final.pdf")
+    doc.close()
+    return final
+
+
+@app.post("/api/generate")
+async def generate(
+    payload: str = Form(...),
+    receipts: list[UploadFile] = File(default=[]),
+):
+    if not TEMPLATE.exists():
+        raise HTTPException(500, "Modelo RDD.PARCEIRO.xlsx não encontrado no servidor.")
+
+    try:
+        data = json.loads(payload)
+    except Exception:
+        raise HTTPException(400, "Payload JSON inválido.")
+
+    required = ["nome", "cpf", "obra"]
+    missing = [x for x in required if not str(data.get(x, "")).strip()]
+    if missing:
+        raise HTTPException(400, "Campos obrigatórios ausentes: " + ", ".join(missing))
+
+    receipt_data = data.get("receipts", [])
+    if not receipt_data:
+        raise HTTPException(400, "Nenhum cupom informado.")
+
+    for i, item in enumerate(receipt_data, 1):
+        if not str(item.get("document", "")).strip():
+            raise HTTPException(400, f"Cupom {i}: número do documento é obrigatório.")
+        if not str(item.get("category", "")).strip():
+            raise HTTPException(400, f"Cupom {i}: categoria é obrigatória.")
+
+    rdd_number = get_next_rdd_number()
+
+    workdir = Path(tempfile.mkdtemp(prefix="rdd_"))
+    xlsx = workdir / f"RDD-{rdd_number:03d}.xlsx"
+    pdf = workdir / f"RDD-{rdd_number:03d}.pdf"
+
+    try:
+        fill_workbook(data, rdd_number, xlsx)
+
+        # LibreOffice é instalado no container e faz a conversão real do Excel.
+        cmd = [
+            "libreoffice", "--headless", "--convert-to", "pdf",
+            "--outdir", str(workdir), str(xlsx)
+        ]
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=90)
+        if proc.returncode != 0 or not pdf.exists():
+            raise RuntimeError(
+                "Falha na conversão Excel -> PDF. "
+                + (proc.stderr or proc.stdout or "")
+            )
+
+        # Salva os uploads e acrescenta cada cupom como uma página.
+        image_paths = []
+        for i, upload in enumerate(receipts):
+            suffix = Path(upload.filename or "").suffix.lower() or ".jpg"
+            p = workdir / f"cupom_{i+1}{suffix}"
+            content = await upload.read()
+            if not content:
+                continue
+            p.write_bytes(content)
+            image_paths.append(p)
+
+        final_pdf = append_images_to_pdf(pdf, image_paths) if image_paths else pdf
+
+        return FileResponse(
+            final_pdf,
+            media_type="application/pdf",
+            filename=f"{safe_filename(data.get('nome'))} - RDD-{rdd_number:03d}.pdf",
+            background=None,
+        )
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(500, f"Erro ao gerar RDD: {exc}")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", "8000")))
