@@ -1491,7 +1491,7 @@
      APP.JS
 ========================================================= -->
 
-<script src="app.js?v=20261005-1835"></script>
+<script src="app.js?v=20261005-1845"></script>
 
 
 <!-- =========================================================
@@ -1517,12 +1517,76 @@ document.addEventListener("DOMContentLoaded", function () {
         if(processingCounter) processingCounter.textContent="Comprovante "+numero+" de "+quantidade;
         if(processingProgressBar) processingProgressBar.style.width=Math.max(8,Math.round(numero/quantidade*100))+"%";
     }
-    function esconderProcessamento() {
-        if(!processingOverlay) return; processingOverlay.classList.remove("show"); processingOverlay.setAttribute("aria-hidden","true");
-        if(processingProgressBar) processingProgressBar.style.width="15%";
-    }
-    window.RDD_PROCESSAMENTO={mostrar:mostrarProcessamento,esconder:esconderProcessamento};
+    function atualizarProcessamento(
+        etapa,
+        mensagem,
+        total,
+        atual
+    ) {
+        if (!processingOverlay) return;
 
+        if (processingTitle) {
+            processingTitle.textContent = etapa;
+        }
+
+        if (processingText && mensagem) {
+            processingText.textContent = mensagem;
+        }
+
+        if (processingCounter && total) {
+            processingCounter.textContent =
+                "Comprovante " + atual + " de " + total;
+        }
+
+        if (processingProgressBar && total) {
+            processingProgressBar.style.width =
+                Math.max(
+                    8,
+                    Math.min(
+                        100,
+                        Math.round((atual / total) * 100)
+                    )
+                ) + "%";
+        }
+    }
+
+    function finalizarProcessamento() {
+        if (!processingOverlay) return;
+
+        if (processingTitle) {
+            processingTitle.textContent =
+                "✅ Processamento concluído";
+        }
+
+        if (processingText) {
+            processingText.textContent =
+                "Os comprovantes foram carregados. Confira os dados antes de continuar.";
+        }
+
+        if (processingCounter) {
+            processingCounter.textContent =
+                "Leitura concluída";
+        }
+
+        if (processingProgressBar) {
+            processingProgressBar.style.width = "100%";
+        }
+
+        setTimeout(function () {
+            processingOverlay.classList.remove("show");
+            processingOverlay.setAttribute("aria-hidden", "true");
+
+            if (processingProgressBar) {
+                processingProgressBar.style.width = "15%";
+            }
+        }, 700);
+    }
+
+    window.RDD_PROCESSAMENTO = {
+        mostrar: mostrarProcessamento,
+        atualizar: atualizarProcessamento,
+        finalizar: finalizarProcessamento
+    };
 
     const telas = {
         1: document.getElementById("dados"),
@@ -1894,40 +1958,74 @@ document.addEventListener("DOMContentLoaded", function () {
        TRANSFERÊNCIA PARA INPUT PRINCIPAL
     ===================================================== */
 
-    async function transferirArquivos(inputOrigem) {
-        const inputPrincipal=document.getElementById("files");
-        if(!inputPrincipal || !inputOrigem.files.length) return;
-        const dt=new DataTransfer();
-        Array.from(inputPrincipal.files).forEach(a=>dt.items.add(a));
-        Array.from(inputOrigem.files).forEach(a=>dt.items.add(a));
-        inputPrincipal.files=dt.files;
+    function transferirArquivos(inputOrigem) {
 
-        const status=document.getElementById("uploadStatus");
-        const statusTitle=document.getElementById("uploadStatusTitle");
-        const statusText=document.getElementById("uploadStatusText");
-        const summary=document.getElementById("selectedFilesSummary");
-        if(status) status.classList.add("show");
-        if(statusTitle) statusTitle.textContent="Processando comprovantes...";
-        if(statusText) statusText.textContent=dt.files.length+" arquivo(s) recebido(s). Aguarde a leitura.";
-        if(summary) summary.textContent=Array.from(dt.files).map(f=>f.name).join(", ");
-        if(window.RDD_PROCESSAMENTO) window.RDD_PROCESSAMENTO.mostrar(dt.files.length,1);
+        const inputPrincipal =
+            document.getElementById("files");
 
-        try {
-            if(typeof processarArquivos === "function") {
-                await processarArquivos(Array.from(dt.files));
-            } else {
-                inputPrincipal.dispatchEvent(new Event("change",{bubbles:true}));
-            }
-            if(statusTitle) statusTitle.textContent="Comprovantes processados";
-            if(statusText) statusText.textContent=dt.files.length+" arquivo(s) processado(s).";
-        } catch(erro) {
-            console.error("Erro ao processar comprovantes:",erro);
-            if(statusTitle) statusTitle.textContent="Erro ao processar comprovante";
-            if(statusText) statusText.textContent="Não foi possível ler um ou mais comprovantes. Verifique os dados manualmente.";
-        } finally {
-            setTimeout(()=>{ if(window.RDD_PROCESSAMENTO) window.RDD_PROCESSAMENTO.esconder(); },450);
-            inputOrigem.value="";
+        if (!inputPrincipal || !inputOrigem.files.length) {
+            return;
         }
+
+        const dt = new DataTransfer();
+
+        Array.from(inputPrincipal.files).forEach(function (arquivo) {
+            dt.items.add(arquivo);
+        });
+
+        Array.from(inputOrigem.files).forEach(function (arquivo) {
+            dt.items.add(arquivo);
+        });
+
+        inputPrincipal.files = dt.files;
+
+        const status =
+            document.getElementById("uploadStatus");
+
+        const statusTitle =
+            document.getElementById("uploadStatusTitle");
+
+        const statusText =
+            document.getElementById("uploadStatusText");
+
+        const summary =
+            document.getElementById("selectedFilesSummary");
+
+        if (status) {
+            status.classList.add("show");
+        }
+
+        if (statusTitle) {
+            statusTitle.textContent =
+                "🔎 Preparando comprovante...";
+        }
+
+        if (statusText) {
+            statusText.textContent =
+                dt.files.length +
+                " arquivo(s) selecionado(s). Iniciando leitura...";
+        }
+
+        if (summary) {
+            summary.textContent =
+                Array.from(dt.files)
+                    .map(function (arquivo) {
+                        return arquivo.name;
+                    })
+                    .join(", ");
+        }
+
+        /*
+         * O app.js é o responsável pelo OCR.
+         * Aqui somente entregamos os arquivos para ele.
+         */
+        inputPrincipal.dispatchEvent(
+            new Event("change", {
+                bubbles: true
+            })
+        );
+
+        inputOrigem.value = "";
     }
 
     if (cameraInput) {
