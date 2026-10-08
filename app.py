@@ -27,6 +27,11 @@ DATA_DIR = Path(os.getenv("DATA_DIR", str(BASE_DIR / "data")))
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 DB_PATH = DATA_DIR / "rdd.db"
 
+# Diagnóstico: deixa visível nos logs do Render onde o contador está sendo
+# gravado. Se o caminho não for o disco persistente (/data), o número
+# sequencial zera a cada restart/redeploy.
+print(f"[RDD] DATA_DIR={DATA_DIR}  DB={DB_PATH}  exists={DB_PATH.exists()}")
+
 CATEGORY_COLUMNS = {
     "Transporte": "F",
     "Combustível": "G",
@@ -65,6 +70,20 @@ def init_db():
     con.execute(
         "INSERT OR IGNORE INTO counters (id, next_number) VALUES (1, 210)"
     )
+    # Segurança contra perda do disco: se o container recomeçar com o
+    # banco zerado, RDD_SEED permite continuar a sequência de onde
+    # parou (configure em Render -> Environment Variables).
+    seed = os.getenv("RDD_SEED", "").strip()
+    if seed.isdigit():
+        s = int(seed)
+        row = con.execute(
+            "SELECT next_number FROM counters WHERE id=1"
+        ).fetchone()
+        if row and s > int(row[0]):
+            con.execute(
+                "UPDATE counters SET next_number=? WHERE id=1", (s,)
+            )
+            print(f"[RDD] contador ajustado por RDD_SEED para {s}")
     con.commit()
     con.close()
 
@@ -81,7 +100,18 @@ def root():
 
 @app.get("/health")
 def health():
-    return {"ok": True, "template": TEMPLATE.exists()}
+    return {"ok": True, "template": TEMPLATE.exists(), "db": str(DB_PATH)}
+
+
+@app.get("/api/next-rdd")
+def next_rdd():
+    """Devolve o próximo número SEM consumir, para conferência."""
+    con = db()
+    row = con.execute(
+        "SELECT next_number FROM counters WHERE id=1"
+    ).fetchone()
+    con.close()
+    return {"next": f"RDD-{int(row[0]):03d}", "db": str(DB_PATH)}
 
 
 def parse_date(value):
