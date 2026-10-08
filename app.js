@@ -414,7 +414,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             return (
                                 !cupom.document ||
-                                !cupom.category
+                                !cupom.category ||
+                                !cupom.description
                             );
 
                         }
@@ -427,7 +428,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     alert(
                         "Existem cupons que precisam ser revisados. " +
-                        "Informe o número do documento."
+                        "Informe o número do documento e o nome do estabelecimento."
                     );
 
                     return;
@@ -1074,8 +1075,9 @@ async function processarCupom(
             dados.date ||
             "",
 
+        // O nome do estabelecimento NUNCA vem preenchido do OCR:
+        // a pessoa que está preenchendo é obrigada a digitar.
         description:
-            dados.description ||
             "",
 
         document:
@@ -2497,6 +2499,33 @@ function salvarEdicao() {
     }
 
 
+    // ESTABELECIMENTO É OBRIGATÓRIO: o OCR não preenche,
+    // então a pessoa precisa digitar o nome.
+    const estabelecimento =
+        mdesc
+            ? mdesc.value.trim()
+            : "";
+
+
+    if (!estabelecimento) {
+
+        alert(
+            "Informe o nome do estabelecimento."
+        );
+
+
+        if (mdesc) {
+
+            mdesc.focus();
+
+        }
+
+
+        return;
+
+    }
+
+
     cupom.date =
         mdate
             ? mdate.value
@@ -2508,9 +2537,7 @@ function salvarEdicao() {
 
 
     cupom.description =
-        mdesc
-            ? mdesc.value.trim()
-            : "";
+        estabelecimento;
 
 
     cupom.document =
@@ -2819,7 +2846,8 @@ async function gerarRDD() {
 
                 return (
                     !cupom.document ||
-                    !cupom.category
+                    !cupom.category ||
+                    !cupom.description
                 );
 
             }
@@ -2831,7 +2859,7 @@ async function gerarRDD() {
     ) {
 
         alert(
-            "Existem cupons sem número de documento."
+            "Existem cupons sem número de documento ou sem nome do estabelecimento."
         );
 
         return;
