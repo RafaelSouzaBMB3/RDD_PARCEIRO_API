@@ -12,6 +12,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from openpyxl import load_workbook
+from openpyxl.styles import Border, Side, PatternFill, Font, Alignment
 from PIL import Image
 import fitz  # PyMuPDF
 
@@ -230,6 +231,42 @@ def fill_workbook(payload, rdd_number, output_xlsx):
 
     # Garante área de impressão do modelo
     ws.print_area = "A1:L49"
+
+    # --------------------------------------------------------
+    # GRADE DA TABELA (barras diretas nas células)
+    # O modelo usa "Tabelas do Excel" (table styles) para a
+    # grade, mas o LibreOffice NÃO renderiza table styles na
+    # conversão para PDF. Sem bordas diretas, a tabela sai
+    # sem colunas visíveis e o resultado parece desalinhado.
+    # --------------------------------------------------------
+    thin = Side(style="thin", color="8E9AAF")
+    grade = Border(left=thin, right=thin, top=thin, bottom=thin)
+
+    # Cabeçalho (linha 8) + lançamentos (9 a 43) + totais (44)
+    for row in ws.iter_rows(min_row=8, max_row=44, min_col=2, max_col=12):
+        for cell in row:
+            cell.border = grade
+
+    # Cabeçalho com fundo verde e texto branco em destaque
+    head_fill = PatternFill("solid", fgColor="0B6B45")
+    for cell in ws[8]:
+        if 2 <= cell.column <= 12:
+            cell.fill = head_fill
+            cell.font = Font(bold=True, color="FFFFFF")
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    # Alinhamento das colunas: data/documento centrais,
+    # descrição à esquerda, valores sempre à direita.
+    for r in range(9, 44):
+        ws.cell(row=r, column=2).alignment = Alignment(horizontal="center")
+        ws.cell(row=r, column=5).alignment = Alignment(horizontal="center")
+        for col in range(6, 13):
+            ws.cell(row=r, column=col).alignment = Alignment(horizontal="right")
+
+    # Linha de totais em destaque
+    for cell in ws[44]:
+        if 2 <= cell.column <= 12:
+            cell.font = Font(bold=True)
 
     # IMPORTANTE: hide every other sheet from the PDF output. The shared
     # template contains old sheets (RDD-112, RDD-113, etc.) with previous
