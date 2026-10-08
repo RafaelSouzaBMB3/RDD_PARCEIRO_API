@@ -195,6 +195,14 @@ def fill_workbook(payload, rdd_number, output_xlsx):
     ws["K5"] = payload.get("cpf", "")
     ws["K6"] = payload.get("obra", "")
 
+    # O campo VNC (J4/K4) vem pré-preenchido no arquivo modelo
+    # do repositório. A pessoa responsável apagou o valor na
+    # planilha dela, mas o servidor continuava imprimindo porque
+    # usa o modelo do repo. Limpamos aqui para que o PDF saia
+    # em branco. Se quiser o VNC de volta, remova estas duas linhas.
+    ws["J4"] = None
+    ws["K4"] = None
+
     # Limpa as linhas de despesas antes de preencher.
     for r in range(9, 44):
         ws[f"B{r}"] = None
