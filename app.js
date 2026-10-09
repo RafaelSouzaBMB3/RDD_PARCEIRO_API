@@ -529,18 +529,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 renderizarCupons();
 
-                
-
-            if (window.RDD_PROCESSAMENTO) {
-                window.RDD_PROCESSAMENTO.atualizar(
-                    "✅ Comprovante processado",
-                    "Os dados foram carregados e o cupom está disponível para conferência.",
-                    arquivos.length,
-                    i + 1
-                );
-            }
-
-mostrarTela(1);
+                mostrarTela(1);
 
             },
             true
