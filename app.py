@@ -387,6 +387,21 @@ def fill_workbook(payload, rdd_number, output_xlsx):
     ws.print_area = "A1:L49"
 
     # --------------------------------------------------------
+    # TOTAL DUPLICADO (L48/L49)
+    # O modelo do repositório traz a fórmula do total
+    # repetida em três linhas (L47, L48, L49). Mantemos
+    # apenas a L47 e limpamos as outras duas, para que
+    # o valor total apareça UMA vez no fim da folha.
+    # --------------------------------------------------------
+    try:
+        for linha_duplicada in (48, 49):
+            celula_duplicada = ws[f"L{linha_duplicada}"]
+            celula_duplicada.value = None
+            celula_duplicada.border = Border()
+    except Exception as erro_total:
+        print(f"[RDD] aviso ao limpar total duplicado: {erro_total}")
+
+    # --------------------------------------------------------
     # GRADE DA TABELA (barras diretas nas células)
     # O modelo usa "Tabelas do Excel" (table styles) para a
     # grade, mas o LibreOffice NÃO renderiza table styles na
