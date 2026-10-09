@@ -2679,38 +2679,28 @@ function ativarZoomImagem() {
 
             overlay.style.position =
                 "fixed";
-
-
-            overlay.style.inset =
+            overlay.style.top =
                 "0";
-
-
+            overlay.style.left =
+                "0";
+            overlay.style.right =
+                "0";
+            overlay.style.bottom =
+                "0";
             overlay.style.background =
-                "rgba(0,0,0,.92)";
-
-
+                "rgba(0,0,0,.94)";
             overlay.style.zIndex =
                 "99999";
-
-
             overlay.style.display =
                 "flex";
-
-
             overlay.style.alignItems =
                 "center";
-
-
             overlay.style.justifyContent =
                 "center";
-
-
+            overlay.style.overflow =
+                "hidden";
             overlay.style.padding =
                 "20px";
-
-
-            overlay.style.cursor =
-                "zoom-out";
 
 
             const imagem =
@@ -2721,18 +2711,22 @@ function ativarZoomImagem() {
 
             imagem.src =
                 photo.src;
-
-
+            imagem.alt =
+                "Cupom ampliado";
+            imagem.draggable =
+                false;
             imagem.style.maxWidth =
                 "100%";
-
-
             imagem.style.maxHeight =
                 "100%";
-
-
             imagem.style.objectFit =
                 "contain";
+            imagem.style.transition =
+                "transform .25s ease";
+            imagem.style.touchAction =
+                "none";
+            imagem.style.userSelect =
+                "none";
 
 
             overlay.appendChild(
@@ -2740,6 +2734,147 @@ function ativarZoomImagem() {
             );
 
 
+            /* Botão dedicado fechar
+               (evita fechar sem querer) */
+            const botaoFechar =
+                document.createElement(
+                    "button"
+                );
+
+
+            botaoFechar.type =
+                "button";
+            botaoFechar.textContent =
+                "×";
+            botaoFechar.setAttribute(
+                "aria-label",
+                "Fechar imagem"
+            );
+            botaoFechar.style.cssText =
+                "position:absolute;top:14px;right:14px;z-index:100000;" +
+                "width:46px;height:46px;border-radius:50%;" +
+                "border:none;background:rgba(255,255,255,.16);" +
+                "color:#fff;font-size:28px;line-height:1;cursor:pointer;";
+
+
+            botaoFechar.addEventListener(
+                "click",
+                function (evento) {
+
+                    evento.stopPropagation();
+                    overlay.remove();
+
+                }
+            );
+
+
+            overlay.appendChild(
+                botaoFechar
+            );
+
+
+            /* 1 toque = aumenta,
+               1 toque = diminui */
+            let zoom = 1;
+            let panX = 0;
+            let panY = 0;
+            let arrastando = false;
+            let inicioX = 0;
+            let inicioY = 0;
+
+
+            function aplicarTransformacao() {
+
+                imagem.style.transform =
+                    "translate(" + panX + "px," + panY + "px) scale(" + zoom + ")";
+
+            }
+
+
+            imagem.addEventListener(
+                "click",
+                function (evento) {
+
+                    evento.stopPropagation();
+
+
+                    if (zoom === 1) {
+
+                        zoom = 2.5;
+                        panX = 0;
+                        panY = 0;
+
+                    } else {
+
+                        zoom = 1;
+                        panX = 0;
+                        panY = 0;
+
+                    }
+
+
+                    aplicarTransformacao();
+
+                }
+            );
+
+
+            /* Arrastar para
+               mover quando ampliado */
+            imagem.addEventListener(
+                "pointerdown",
+                function (evento) {
+
+                    if (zoom > 1) {
+
+                        arrastando = true;
+                        inicioX = evento.clientX - panX;
+                        inicioY = evento.clientY - panY;
+
+                    }
+
+                }
+            );
+
+
+            imagem.addEventListener(
+                "pointermove",
+                function (evento) {
+
+                    if (arrastando) {
+
+                        panX = evento.clientX - inicioX;
+                        panY = evento.clientY - inicioY;
+                        aplicarTransformacao();
+
+                    }
+
+                }
+            );
+
+
+            imagem.addEventListener(
+                "pointerup",
+                function () {
+
+                    arrastando = false;
+
+                }
+            );
+
+
+            imagem.addEventListener(
+                "pointerleave",
+                function () {
+
+                    arrastando = false;
+
+                }
+            );
+
+
+            /* Toque no fundo escuro
+               também fecha */
             overlay.addEventListener(
                 "click",
                 function () {
