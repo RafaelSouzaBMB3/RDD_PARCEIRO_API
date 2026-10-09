@@ -2,9 +2,12 @@ import os
 import re
 import io
 import json
+import base64
 import sqlite3
 import tempfile
 import subprocess
+import urllib.error
+import urllib.request
 from datetime import date
 from pathlib import Path
 
@@ -32,6 +35,88 @@ DB_PATH = DATA_DIR / "rdd.db"
 # gravado. Se o caminho não for o disco persistente (/data), o número
 # sequencial zera a cada restart/redeploy.
 print(f"[RDD] DATA_DIR={DATA_DIR}  DB={DB_PATH}  exists={DB_PATH.exists()}")
+
+# ------------------------------------------------------------------
+# CONTADOR SEQUENCIAL
+# O Render free tier NAO oferece discos persistentes, entao o
+# arquivo /data/rdd.db e recriado a cada restart e o numero
+# sempre voltava para RDD_SEED. Solucao: o contador passa a
+# morar no PROPRIO REPOSITORIO GITHUB (arquivo JSON), que
+# sobrevive a restart, redeploy e troca de container.
+# Para ativar, configure em Render -> Environment Variables:
+#   GITHUB_TOKEN  = token de acesso (escopo "repo" / Contents)
+#   GITHUB_REPO   = opcional, padrao abaixo
+#   GITHUB_BRANCH = opcional, padrao "main"
+# Sem GITHUB_TOKEN, usa o SQLite local (NAO persiste em restart).
+# ------------------------------------------------------------------
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN", "").strip()
+GITHUB_REPO = os.getenv("GITHUB_REPO", "RafaelSouzaBMB3/RDD_PARCEIRO_API").strip()
+GITHUB_BRANCH = os.getenv("GITHUB_BRANCH", "main").strip()
+GITHUB_COUNTER_PATH = os.getenv("GITHUB_COUNTER_PATH", "counter/rdd-counter.json").strip()
+COUNTER_START = 210
+
+
+def _gh_headers():
+    return {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "rdd-parceiro-api",
+    }
+
+
+def _seed_number():
+    seed = os.getenv("RDD_SEED", "").strip()
+    return int(seed) if seed.isdigit() else COUNTER_START
+
+
+def gh_read_counter():
+    """Le o contador no repo. Devolve {"next": int, "sha": str} ou None."""
+    url = (
+        "https://api.github.com/repos/"
+        f"{GITHUB_REPO}/contents/{GITHUB_COUNTER_PATH}?ref={GITHUB_BRANCH}"
+    )
+    req = urllib.request.Request(url, headers=_gh_headers())
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        raw = base64.b64decode(data["content"]).decode("utf-8")
+        return {"next": int(json.loads(raw)["next"]), "sha": data["sha"]}
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            return None  # arquivo ainda nao existe
+        raise
+
+
+def gh_write_counter(next_number, sha=None):
+    """Grava o contador no repo. Devolve True ou False (conflito 409)."""
+    url = (
+        "https://api.github.com/repos/"
+        f"{GITHUB_REPO}/contents/{GITHUB_COUNTER_PATH}"
+    )
+    body = {
+        "message": f"Contador RDD: proximo = {next_number}",
+        "content": base64.b64encode(
+            json.dumps({"next": next_number}).encode("utf-8")
+        ).decode("ascii"),
+        "branch": GITHUB_BRANCH,
+    }
+    if sha:
+        body["sha"] = sha
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers=_gh_headers(),
+        method="PUT",
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            resp.read()
+        return True
+    except urllib.error.HTTPError as exc:
+        if exc.code == 409:
+            return False  # sha desatualizado -> ler de novo e tentar
+        raise
 
 CATEGORY_COLUMNS = {
     "Transporte": "F",
@@ -92,6 +177,11 @@ def init_db():
 @app.on_event("startup")
 def startup():
     init_db()
+    print(
+        "[RDD] contador sequencial: "
+        + ("GITHUB (repo " + GITHUB_REPO + ")" if GITHUB_TOKEN
+           else "SQLite LOCAL - NAO persiste em restart! Configure GITHUB_TOKEN")
+    )
 
 
 @app.get("/")
@@ -106,13 +196,24 @@ def health():
 
 @app.get("/api/next-rdd")
 def next_rdd():
-    """Devolve o próximo número SEM consumir, para conferência."""
+    """Devolve o proximo numero SEM consumir, para conferencia."""
+    if GITHUB_TOKEN:
+        try:
+            state = gh_read_counter()
+            n = int(state["next"]) if state else _seed_number()
+            return {
+                "next": f"RDD-{n:03d}",
+                "source": "github",
+                "path": f"{GITHUB_REPO}/{GITHUB_COUNTER_PATH}",
+            }
+        except Exception as exc:
+            raise HTTPException(503, f"Erro ao ler o contador no GitHub: {exc}")
     con = db()
     row = con.execute(
         "SELECT next_number FROM counters WHERE id=1"
     ).fetchone()
     con.close()
-    return {"next": f"RDD-{int(row[0]):03d}", "db": str(DB_PATH)}
+    return {"next": f"RDD-{int(row[0]):03d}", "source": "sqlite-local", "db": str(DB_PATH)}
 
 
 def parse_date(value):
@@ -149,6 +250,26 @@ def safe_filename(value):
 
 
 def get_next_rdd_number():
+    if GITHUB_TOKEN:
+        # Contador no repositorio GitHub: sobrevive a restart,
+        # redeploy e troca de container. Lock otimista pelo sha
+        # do arquivo; em conflito (409) le de novo e tenta outra vez.
+        for _ in range(6):
+            state = gh_read_counter()
+            if state is None:
+                n = _seed_number()
+                if gh_write_counter(n + 1, sha=None):
+                    print(f"[RDD] contador criado no repo, primeiro numero RDD-{n:03d}")
+                    return n
+                continue
+            n = int(state["next"])
+            if gh_write_counter(n + 1, sha=state["sha"]):
+                return n
+        raise RuntimeError(
+            "Nao foi possivel atualizar o contador no GitHub. Tente novamente."
+        )
+
+    # Modo local (sem GITHUB_TOKEN): NAO persiste em restart.
     con = db()
     try:
         con.execute("BEGIN IMMEDIATE")
