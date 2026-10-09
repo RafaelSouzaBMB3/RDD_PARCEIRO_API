@@ -668,7 +668,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (mcat) {
 
         mcat.value =
-            "materiais";
+            "Materiais";
 
     }
 
@@ -1154,7 +1154,7 @@ async function processarCupom(
             "",
 
         category:
-            "materiais",
+            "Materiais",
 
         value:
             dados.value ||
@@ -1194,7 +1194,7 @@ function interpretarCupom(
         value: "",
 
         category:
-            "materiais"
+            "Materiais"
 
     };
 
@@ -2196,7 +2196,7 @@ function abrirEdicao(index) {
     if (mcat) {
 
         mcat.value =
-            "materiais";
+            "Materiais";
 
         mcat.disabled =
             true;
@@ -2394,7 +2394,7 @@ function abrirVisualizacao(index) {
     if (mcat) {
 
         mcat.value =
-            "materiais";
+            "Materiais";
 
         mcat.disabled =
             true;
@@ -2575,7 +2575,7 @@ function salvarEdicao() {
 
 
     cupom.category =
-        "materiais";
+        "Materiais";
 
 
     cupom.description =
@@ -3207,7 +3207,7 @@ function finalizarGerandoRDD(sucesso) {
 
     if (sucesso) {
 
-        if (titulo) titulo.textContent = "âœ… RDD gerado!";
+        if (titulo) titulo.textContent = "✅ RDD gerado!";
         if (texto) texto.textContent =
             "O PDF foi criado com os comprovantes anexados.";
         if (contador) contador.textContent = "Concluído";
@@ -3343,7 +3343,7 @@ async function gerarRDD() {
                             "",
 
                         category:
-                            "materiais",
+                            "Materiais",
 
                         value:
                             cupom.value ||
