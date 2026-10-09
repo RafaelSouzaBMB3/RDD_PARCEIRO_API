@@ -2,7 +2,7 @@ const API_URL = "https://rdd-parceiro-api-1.onrender.com";
 
 
 // ============================================================
-// ESTADO GLOBAL ÚNICO
+// ESTADO GLOBAL ÃšNICO
 // ============================================================
 
 if (!window.RDD_PARCEIRO_STATE) {
@@ -30,7 +30,7 @@ const STATE = window.RDD_PARCEIRO_STATE;
 
 
 // ============================================================
-// INICIALIZAÇÃO
+// INICIALIZAÃ‡ÃƒO
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (STATE.inicializado) {
 
         console.log(
-            "RDD Parceiro: inicialização duplicada ignorada."
+            "RDD Parceiro: inicializaÃ§Ã£o duplicada ignorada."
         );
 
         return;
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // PERÍODO AUTOMÁTICO
+    // PERÃODO AUTOMÃTICO
     // ========================================================
 
     if (periodo) {
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         periodo.value =
             primeiroDia.toLocaleDateString("pt-BR") +
-            " até " +
+            " atÃ© " +
             ultimoDia.toLocaleDateString("pt-BR");
 
     }
@@ -133,7 +133,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         3: document.getElementById("revisao"),
 
-        4: document.getElementById("final")
+        4: document.getElementById("final"),
+
+        5: document.getElementById("direcionar")
 
     };
 
@@ -231,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // ETAPA 1 → ETAPA 2
+    // ETAPA 1 â†’ ETAPA 2
     // ========================================================
 
     if (next1) {
@@ -280,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 ) {
 
                     alert(
-                        "Informe um CPF válido com 11 números."
+                        "Informe um CPF vÃ¡lido com 11 nÃºmeros."
                     );
 
                     if (cpf) {
@@ -320,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // VOLTAR → DADOS
+    // VOLTAR â†’ DADOS
     // ========================================================
 
     if (back1) {
@@ -346,7 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // ETAPA 2 → ETAPA 3
+    // ETAPA 2 â†’ ETAPA 3
     // ========================================================
 
     if (next2) {
@@ -414,8 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             return (
                                 !cupom.document ||
-                                !cupom.category ||
-                                !cupom.description
+                                !cupom.category
                             );
 
                         }
@@ -428,7 +429,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     alert(
                         "Existem cupons que precisam ser revisados. " +
-                        "Informe o número do documento e o nome do estabelecimento."
+                        "Informe o nÃºmero do documento."
                     );
 
                     return;
@@ -448,7 +449,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // VOLTAR → CUPONS
+    // VOLTAR â†’ CUPONS
     // ========================================================
 
     if (back2) {
@@ -533,6 +534,86 @@ document.addEventListener("DOMContentLoaded", function () {
 
             },
             true
+        );
+
+    }
+
+
+
+
+    // ========================================================
+    // BOTOES DE ENVIO DO PDF
+    // ========================================================
+
+    const botaoEmail = document.getElementById("enviarEmail");
+    const botaoWhats = document.getElementById("enviarWhats");
+    const botaoArquivo = document.getElementById("enviarArquivo");
+    const botaoBaixar = document.getElementById("baixarPdf");
+    const botaoNovo2 = document.getElementById("novo2");
+
+    if (botaoEmail) {
+
+        botaoEmail.addEventListener(
+            "click",
+            function () {
+
+                enviarPdfPorEmail();
+
+            }
+        );
+
+    }
+
+    if (botaoWhats) {
+
+        botaoWhats.addEventListener(
+            "click",
+            function () {
+
+                enviarPdfPorWhats();
+
+            }
+        );
+
+    }
+
+    if (botaoArquivo) {
+
+        botaoArquivo.addEventListener(
+            "click",
+            function () {
+
+                enviarPdfComoArquivo();
+
+            }
+        );
+
+    }
+
+    if (botaoBaixar) {
+
+        botaoBaixar.addEventListener(
+            "click",
+            function () {
+
+                baixarPdfGerado();
+
+            }
+        );
+
+    }
+
+    if (botaoNovo2) {
+
+        botaoNovo2.addEventListener(
+            "click",
+            function () {
+
+                STATE.pdfGerado = null;
+
+                mostrarTela(1);
+
+            }
         );
 
     }
@@ -675,7 +756,7 @@ function carregarScript(src) {
 
                     reject(
                         new Error(
-                            "Não foi possível carregar: " +
+                            "NÃ£o foi possÃ­vel carregar: " +
                             src
                         )
                     );
@@ -752,7 +833,7 @@ const status =
     if (statusTitle) {
 
         statusTitle.textContent =
-            "🔎 Lendo os comprovantes...";
+            "ðŸ”Ž Lendo os comprovantes...";
 
     }
 
@@ -813,8 +894,8 @@ const status =
 
             if (window.RDD_PROCESSAMENTO) {
                 window.RDD_PROCESSAMENTO.atualizar(
-                    "🔎 Lendo comprovante...",
-                    "O sistema está identificando data, estabelecimento, documento e valor.",
+                    "ðŸ”Ž Lendo comprovante...",
+                    "O sistema estÃ¡ identificando data, estabelecimento, documento e valor.",
                     arquivos.length,
                     i + 1
                 );
@@ -822,7 +903,7 @@ const status =
 
             if (window.RDD_PROCESSAMENTO) {
                 window.RDD_PROCESSAMENTO.atualizar(
-                    "⚙️ Processando imagem...",
+                    "âš™ï¸ Processando imagem...",
                     "Convertendo e preparando o comprovante para leitura.",
                     arquivos.length,
                     i + 1
@@ -852,7 +933,7 @@ const status =
         if (statusTitle) {
 
             statusTitle.textContent =
-                "✅ Comprovantes processados";
+                "âœ… Comprovantes processados";
 
         }
 
@@ -877,7 +958,7 @@ const status =
         if (statusTitle) {
 
             statusTitle.textContent =
-                "⚠️ Atenção";
+                "âš ï¸ AtenÃ§Ã£o";
 
         }
 
@@ -885,8 +966,8 @@ const status =
         if (statusText) {
 
             statusText.textContent =
-                "Não foi possível processar todos os comprovantes. " +
-                "Você poderá revisar manualmente.";
+                "NÃ£o foi possÃ­vel processar todos os comprovantes. " +
+                "VocÃª poderÃ¡ revisar manualmente.";
 
         }
 
@@ -970,7 +1051,7 @@ async function processarCupom(
         } catch (erro) {
 
             console.warn(
-                "Falha na conversão HEIC:",
+                "Falha na conversÃ£o HEIC:",
                 erro
             );
 
@@ -1026,7 +1107,7 @@ async function processarCupom(
 
 
     // --------------------------------------------------------
-    // INTERPRETAÇÃO
+    // INTERPRETAÃ‡ÃƒO
     // --------------------------------------------------------
 
     const dados =
@@ -1064,9 +1145,8 @@ async function processarCupom(
             dados.date ||
             "",
 
-        // O nome do estabelecimento NUNCA vem preenchido do OCR:
-        // a pessoa que está preenchendo é obrigada a digitar.
         description:
+            dados.description ||
             "",
 
         document:
@@ -1292,7 +1372,7 @@ function interpretarCupom(
 
         /DOCUMENTO[^0-9]{0,20}(\d{4,20})/i,
 
-        /N[º°.]?\s*[:\-]?\s*(\d{4,20})/i
+        /N[ÂºÂ°.]?\s*[:\-]?\s*(\d{4,20})/i
 
     ];
 
@@ -1347,13 +1427,13 @@ function interpretarCupom(
 
         "EMISSAO",
 
-        "EMISSÃO",
+        "EMISSÃƒO",
 
         "CONSUMIDOR",
 
         "ENDERECO",
 
-        "ENDEREÇO",
+        "ENDEREÃ‡O",
 
         "CHAVE",
 
@@ -1369,7 +1449,7 @@ function interpretarCupom(
 
         "VALOR UNITARIO",
 
-        "VALOR UNITÁRIO"
+        "VALOR UNITÃRIO"
 
     ];
 
@@ -1425,7 +1505,7 @@ function interpretarCupom(
 
         if (
             /\d{2,}/.test(limpa) &&
-            !/[A-Za-zÀ-ÿ]{4,}/.test(limpa)
+            !/[A-Za-z\u00C0-\u00FF]{4,}/.test(limpa)
         ) {
 
             continue;
@@ -1494,7 +1574,7 @@ function renderizarCupons() {
                             color:#0b6b45;
                             font-weight:bold;
                         ">
-                            ✓ Dados identificados
+                            âœ“ Dados identificados
                         </span>
                     `
 
@@ -1503,7 +1583,7 @@ function renderizarCupons() {
                             color:#b42318;
                             font-weight:bold;
                         ">
-                            ⚠️ Revisão necessária
+                            âš ï¸ RevisÃ£o necessÃ¡ria
                         </span>
                     `;
 
@@ -1512,7 +1592,7 @@ function renderizarCupons() {
                 cupom.value
                     ? "R$ " +
                       cupom.value
-                    : "Não identificado";
+                    : "NÃ£o identificado";
 
 
             card.innerHTML = `
@@ -1551,7 +1631,7 @@ function renderizarCupons() {
                         ">
 
                             <strong>
-                                🧾 Cupom ${index + 1}
+                                ðŸ§¾ Cupom ${index + 1}
                             </strong>
 
                             ${statusHTML}
@@ -1579,7 +1659,7 @@ function renderizarCupons() {
 
                                 ${escapeHTML(
                                     cupom.description ||
-                                    "Não identificado"
+                                    "NÃ£o identificado"
                                 )}
                             </div>
 
@@ -1591,7 +1671,7 @@ function renderizarCupons() {
 
                                 ${escapeHTML(
                                     cupom.document ||
-                                    "Não identificado"
+                                    "NÃ£o identificado"
                                 )}
                             </div>
 
@@ -1639,7 +1719,7 @@ function renderizarCupons() {
                                     padding:0 12px;
                                 "
                             >
-                                🔍 Ver cupom
+                                ðŸ” Ver cupom
                             </button>
 
 
@@ -1652,7 +1732,7 @@ function renderizarCupons() {
                                     padding:0 12px;
                                 "
                             >
-                                ✏️ Editar
+                                âœï¸ Editar
                             </button>
 
                         </div>
@@ -1673,7 +1753,7 @@ function renderizarCupons() {
 
 
     // --------------------------------------------------------
-    // BOTÃO EDITAR
+    // BOTÃƒO EDITAR
     // --------------------------------------------------------
 
     lista
@@ -1705,7 +1785,7 @@ function renderizarCupons() {
 
 
     // --------------------------------------------------------
-    // BOTÃO VER
+    // BOTÃƒO VER
     // --------------------------------------------------------
 
     lista
@@ -1802,7 +1882,7 @@ function atualizarResumo() {
 
 
 // ============================================================
-// REVISÃO
+// REVISÃƒO
 // ============================================================
 
 function atualizarRevisao() {
@@ -2149,7 +2229,7 @@ function abrirEdicao(index) {
 
 
     // --------------------------------------------------------
-    // BOTÃO SALVAR
+    // BOTÃƒO SALVAR
     // --------------------------------------------------------
 
     const save =
@@ -2167,13 +2247,13 @@ function abrirEdicao(index) {
             false;
 
         save.textContent =
-            "💾 Salvar alterações";
+            "ðŸ’¾ Salvar alteraÃ§Ãµes";
 
     }
 
 
     // --------------------------------------------------------
-    // TÍTULO
+    // TÃTULO
     // --------------------------------------------------------
 
     const titulo =
@@ -2185,7 +2265,7 @@ function abrirEdicao(index) {
     if (titulo) {
 
         titulo.textContent =
-            "✏️ Editar cupom";
+            "âœï¸ Editar cupom";
 
     }
 
@@ -2378,7 +2458,7 @@ function abrirVisualizacao(index) {
     if (titulo) {
 
         titulo.textContent =
-            "🔍 Visualizar cupom";
+            "ðŸ” Visualizar cupom";
 
     }
 
@@ -2395,7 +2475,7 @@ function abrirVisualizacao(index) {
 
 
 // ============================================================
-// SALVAR EDIÇÃO
+// SALVAR EDIÃ‡ÃƒO
 // ============================================================
 
 function salvarEdicao() {
@@ -2466,46 +2546,19 @@ function salvarEdicao() {
 
 
     // --------------------------------------------------------
-    // DOCUMENTO É OBRIGATÓRIO
+    // DOCUMENTO Ã‰ OBRIGATÃ“RIO
     // --------------------------------------------------------
 
     if (!documento) {
 
         alert(
-            "Informe o número do documento."
+            "Informe o nÃºmero do documento."
         );
 
 
         if (mdoc) {
 
             mdoc.focus();
-
-        }
-
-
-        return;
-
-    }
-
-
-    // ESTABELECIMENTO É OBRIGATÓRIO: o OCR não preenche,
-    // então a pessoa precisa digitar o nome.
-    const estabelecimento =
-        mdesc
-            ? mdesc.value.trim()
-            : "";
-
-
-    if (!estabelecimento) {
-
-        alert(
-            "Informe o nome do estabelecimento."
-        );
-
-
-        if (mdesc) {
-
-            mdesc.focus();
 
         }
 
@@ -2526,7 +2579,9 @@ function salvarEdicao() {
 
 
     cupom.description =
-        estabelecimento;
+        mdesc
+            ? mdesc.value.trim()
+            : "";
 
 
     cupom.document =
@@ -2579,7 +2634,7 @@ function fecharModal() {
     }
 
 
-    // Reabilita os campos para a próxima edição
+    // Reabilita os campos para a prÃ³xima ediÃ§Ã£o
 
     const campos = [
 
@@ -2679,28 +2734,38 @@ function ativarZoomImagem() {
 
             overlay.style.position =
                 "fixed";
-            overlay.style.top =
+
+
+            overlay.style.inset =
                 "0";
-            overlay.style.left =
-                "0";
-            overlay.style.right =
-                "0";
-            overlay.style.bottom =
-                "0";
+
+
             overlay.style.background =
-                "rgba(0,0,0,.94)";
+                "rgba(0,0,0,.92)";
+
+
             overlay.style.zIndex =
                 "99999";
+
+
             overlay.style.display =
                 "flex";
+
+
             overlay.style.alignItems =
                 "center";
+
+
             overlay.style.justifyContent =
                 "center";
-            overlay.style.overflow =
-                "hidden";
+
+
             overlay.style.padding =
                 "20px";
+
+
+            overlay.style.cursor =
+                "zoom-out";
 
 
             const imagem =
@@ -2711,22 +2776,18 @@ function ativarZoomImagem() {
 
             imagem.src =
                 photo.src;
-            imagem.alt =
-                "Cupom ampliado";
-            imagem.draggable =
-                false;
+
+
             imagem.style.maxWidth =
                 "100%";
+
+
             imagem.style.maxHeight =
                 "100%";
+
+
             imagem.style.objectFit =
                 "contain";
-            imagem.style.transition =
-                "transform .25s ease";
-            imagem.style.touchAction =
-                "none";
-            imagem.style.userSelect =
-                "none";
 
 
             overlay.appendChild(
@@ -2734,147 +2795,6 @@ function ativarZoomImagem() {
             );
 
 
-            /* Botão dedicado fechar
-               (evita fechar sem querer) */
-            const botaoFechar =
-                document.createElement(
-                    "button"
-                );
-
-
-            botaoFechar.type =
-                "button";
-            botaoFechar.textContent =
-                "×";
-            botaoFechar.setAttribute(
-                "aria-label",
-                "Fechar imagem"
-            );
-            botaoFechar.style.cssText =
-                "position:absolute;top:14px;right:14px;z-index:100000;" +
-                "width:46px;height:46px;border-radius:50%;" +
-                "border:none;background:rgba(255,255,255,.16);" +
-                "color:#fff;font-size:28px;line-height:1;cursor:pointer;";
-
-
-            botaoFechar.addEventListener(
-                "click",
-                function (evento) {
-
-                    evento.stopPropagation();
-                    overlay.remove();
-
-                }
-            );
-
-
-            overlay.appendChild(
-                botaoFechar
-            );
-
-
-            /* 1 toque = aumenta,
-               1 toque = diminui */
-            let zoom = 1;
-            let panX = 0;
-            let panY = 0;
-            let arrastando = false;
-            let inicioX = 0;
-            let inicioY = 0;
-
-
-            function aplicarTransformacao() {
-
-                imagem.style.transform =
-                    "translate(" + panX + "px," + panY + "px) scale(" + zoom + ")";
-
-            }
-
-
-            imagem.addEventListener(
-                "click",
-                function (evento) {
-
-                    evento.stopPropagation();
-
-
-                    if (zoom === 1) {
-
-                        zoom = 2.5;
-                        panX = 0;
-                        panY = 0;
-
-                    } else {
-
-                        zoom = 1;
-                        panX = 0;
-                        panY = 0;
-
-                    }
-
-
-                    aplicarTransformacao();
-
-                }
-            );
-
-
-            /* Arrastar para
-               mover quando ampliado */
-            imagem.addEventListener(
-                "pointerdown",
-                function (evento) {
-
-                    if (zoom > 1) {
-
-                        arrastando = true;
-                        inicioX = evento.clientX - panX;
-                        inicioY = evento.clientY - panY;
-
-                    }
-
-                }
-            );
-
-
-            imagem.addEventListener(
-                "pointermove",
-                function (evento) {
-
-                    if (arrastando) {
-
-                        panX = evento.clientX - inicioX;
-                        panY = evento.clientY - inicioY;
-                        aplicarTransformacao();
-
-                    }
-
-                }
-            );
-
-
-            imagem.addEventListener(
-                "pointerup",
-                function () {
-
-                    arrastando = false;
-
-                }
-            );
-
-
-            imagem.addEventListener(
-                "pointerleave",
-                function () {
-
-                    arrastando = false;
-
-                }
-            );
-
-
-            /* Toque no fundo escuro
-               também fecha */
             overlay.addEventListener(
                 "click",
                 function () {
@@ -2915,7 +2835,7 @@ function obterNomeArquivoResposta(resposta) {
             ).trim();
         } catch (erro) {
             console.warn(
-                "Não foi possível decodificar o nome do arquivo:",
+                "NÃ£o foi possÃ­vel decodificar o nome do arquivo:",
                 erro
             );
         }
@@ -2949,211 +2869,317 @@ function obterNomeArquivoResposta(resposta) {
 // GERAR RDD
 // ============================================================
 
+
 // ============================================================
-// ANIMAÇÃO "GERAR RDD" (mesma overlay do OCR)
+// ENVIAR PDF (e-mail / whatsapp / arquivo)
 // ============================================================
 
-function mostrarGerandoRDD(
-    totalCupons
-) {
+function obterPdfGerado() {
 
-    const overlay =
-        document.getElementById(
-            "processingOverlay"
+    const dados = STATE.pdfGerado;
+
+    if (!dados || !dados.blob) {
+
+        alert("Nenhum PDF gerado nesta sessao.");
+
+        return null;
+
+    }
+
+    return dados;
+
+}
+
+
+function arquivoPdf() {
+
+    const dados = obterPdfGerado();
+
+    if (!dados) {
+
+        return null;
+
+    }
+
+    return new File(
+        [dados.blob],
+        dados.nome || "RDD.pdf",
+        { type: "application/pdf" }
+    );
+
+}
+
+
+function podeCompartilharArquivo() {
+
+    try {
+
+        return !!(
+            navigator.canShare &&
+            navigator.canShare({
+                files: [arquivoPdf()]
+            })
         );
 
-    if (
-        !overlay
-    ) {
+    } catch (erro) {
+
+        return false;
+
+    }
+
+}
+
+
+async function compartilharPdf() {
+
+    const arquivo = arquivoPdf();
+
+    if (!arquivo) {
 
         return;
 
     }
 
-    overlay.classList.add(
-        "show"
-    );
+    try {
 
-    overlay.setAttribute(
-        "aria-hidden",
-        "false"
-    );
+        await navigator.share({
+            files: [arquivo],
+            title: "RDD",
+            text: "Segue o RDD em anexo."
+        });
 
-    const titulo =
-        document.getElementById(
-            "processingTitle"
-        );
+    } catch (erro) {
 
-    const texto =
-        document.getElementById(
-            "processingText"
-        );
-
-    const contador =
-        document.getElementById(
-            "processingCounter"
-        );
-
-    const barra =
-        document.getElementById(
-            "processingProgressBar"
-        );
-
-    if (
-        titulo
-    ) {
-
-        titulo.textContent =
-            "⏳ Gerando RDD...";
+        /* usuario cancelou */
 
     }
 
-    if (
-        texto
-    ) {
+}
+
+
+function enviarPdfPorEmail() {
+
+    const dados = obterPdfGerado();
+
+    if (!dados) {
+
+        return;
+
+    }
+
+    if (podeCompartilharArquivo()) {
+
+        compartilharPdf();
+
+        return;
+
+    }
+
+    /* fallback: mailto sem anexo */
+    window.location.href =
+        "mailto:?subject=" +
+        encodeURIComponent("RDD - " + dados.nome) +
+        "&body=" +
+        encodeURIComponent("Segue o RDD em anexo.");
+
+}
+
+
+function enviarPdfPorWhats() {
+
+    const dados = obterPdfGerado();
+
+    if (!dados) {
+
+        return;
+
+    }
+
+    if (podeCompartilharArquivo()) {
+
+        compartilharPdf();
+
+        return;
+
+    }
+
+    /* fallback: wa.me */
+    window.open(
+        "https://wa.me/?text=" +
+        encodeURIComponent("RDD - " + dados.nome),
+        "_blank"
+    );
+
+}
+
+
+async function enviarPdfComoArquivo() {
+
+    const dados = obterPdfGerado();
+
+    if (!dados) {
+
+        return;
+
+    }
+
+    if (window.showDirectoryPicker) {
+
+        try {
+
+            const diretorio = await window.showDirectoryPicker(
+                { mode: "readwrite" }
+            );
+
+            const alvo = await diretorio.getFileHandle(
+                dados.nome || "RDD.pdf",
+                { create: true }
+            );
+
+            const gravador = await alvo.createWritable();
+
+            await gravador.write(dados.blob);
+            await gravador.close();
+
+            alert("PDF salvo na pasta selecionada.");
+
+            return;
+
+        } catch (erro) {
+
+            /* usuario cancelou */
+
+            return;
+
+        }
+
+    }
+
+    baixarPdfGerado();
+
+}
+
+
+function baixarPdfGerado() {
+
+    const dados = obterPdfGerado();
+
+    if (!dados) {
+
+        return;
+
+    }
+
+    const url = URL.createObjectURL(dados.blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = dados.nome || "RDD.pdf";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+}
+
+
+
+// ============================================================
+// ANIMAÇÃO "GERAR RDD" (mesma overlay do OCR)
+// ============================================================
+
+function mostrarGerandoRDD(totalCupons) {
+
+    const overlay = document.getElementById("processingOverlay");
+
+    if (!overlay) {
+
+        return;
+
+    }
+
+    overlay.classList.add("show");
+    overlay.setAttribute("aria-hidden", "false");
+
+    const titulo = document.getElementById("processingTitle");
+    const texto = document.getElementById("processingText");
+    const contador = document.getElementById("processingCounter");
+    const barra = document.getElementById("processingProgressBar");
+
+    if (titulo) {
+
+        titulo.textContent = "⏳ Gerando RDD...";
+
+    }
+
+    if (texto) {
 
         texto.textContent =
             "Montando a planilha, convertendo para PDF e anexando os comprovantes. Isso pode levar alguns segundos.";
 
     }
 
-    if (
-        contador
-    ) {
+    if (contador) {
 
         contador.textContent =
-            ( Number( totalCupons ) || 0 ) +
-            " cupom(ns) · aguarde...";
+            (Number(totalCupons) || 0) + " cupom(ns) · aguarde...";
 
     }
 
-    if (
-        barra
-    ) {
+    if (barra) {
 
-        /* Barra avança devagar:
-           o tempo real só é conhecido
-           no servidor (LibreOffice). */
-
-        barra.style.transition =
-            "none";
-
-        barra.style.width =
-            "12%";
-
+        barra.style.transition = "none";
+        barra.style.width = "12%";
         void barra.offsetWidth;
-
-        barra.style.transition =
-            "width 25s linear";
-
-        barra.style.width =
-            "92%";
+        barra.style.transition = "width 25s linear";
+        barra.style.width = "92%";
 
     }
 
 }
 
-function finalizarGerandoRDD(
-    sucesso
-) {
 
-    const overlay =
-        document.getElementById(
-            "processingOverlay"
-        );
+function finalizarGerandoRDD(sucesso) {
 
-    if (
-        !overlay
-    ) {
+    const overlay = document.getElementById("processingOverlay");
+
+    if (!overlay) {
 
         return;
 
     }
 
-    const titulo =
-        document.getElementById(
-            "processingTitle"
-        );
+    const titulo = document.getElementById("processingTitle");
+    const texto = document.getElementById("processingText");
+    const contador = document.getElementById("processingCounter");
+    const barra = document.getElementById("processingProgressBar");
 
-    const texto =
-        document.getElementById(
-            "processingText"
-        );
+    if (barra) {
 
-    const contador =
-        document.getElementById(
-            "processingCounter"
-        );
+        barra.style.transition = "none";
 
-    const barra =
-        document.getElementById(
-            "processingProgressBar"
-        );
+    }
 
-    if (
-        sucesso
-    ) {
+    if (sucesso) {
 
-        if (
-            titulo
-        ) {
-
-            titulo.textContent =
-                "✅ RDD gerado!";
-
-        }
-
-        if (
-            texto
-        ) {
-
-            texto.textContent =
-                "O PDF foi criado com os comprovantes anexados.";
-
-        }
-
-        if (
-            contador
-        ) {
-
-            contador.textContent =
-                "Concluído";
-
-        }
-
-        if (
-            barra
-        ) {
-
-            barra.style.transition =
-                "none";
-
-            barra.style.width =
-                "100%";
-
-        }
+        if (titulo) titulo.textContent = "✅ RDD gerado!";
+        if (texto) texto.textContent =
+            "O PDF foi criado com os comprovantes anexados.";
+        if (contador) contador.textContent = "Concluído";
+        if (barra) barra.style.width = "100%";
 
         setTimeout(
             function () {
 
-                overlay.classList.remove(
-                    "show"
-                );
+                overlay.classList.remove("show");
+                overlay.setAttribute("aria-hidden", "true");
 
-                overlay.setAttribute(
-                    "aria-hidden",
-                    "true"
-                );
+                if (barra) {
 
-                if (
-                    barra
-                ) {
-
-                    barra.style.transition =
-                        "none";
-
-                    barra.style.width =
-                        "15%";
+                    barra.style.transition = "none";
+                    barra.style.width = "15%";
 
                 }
 
@@ -3161,32 +3187,21 @@ function finalizarGerandoRDD(
             700
         );
 
-    } else {
+        return;
 
-        overlay.classList.remove(
-            "show"
-        );
+    }
 
-        overlay.setAttribute(
-            "aria-hidden",
-            "true"
-        );
+    overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden", "true");
 
-        if (
-            barra
-        ) {
+    if (barra) {
 
-            barra.style.transition =
-                "none";
-
-            barra.style.width =
-                "15%";
-
-        }
+        barra.style.width = "15%";
 
     }
 
 }
+
 
 async function gerarRDD() {
 
@@ -3209,8 +3224,7 @@ async function gerarRDD() {
 
                 return (
                     !cupom.document ||
-                    !cupom.category ||
-                    !cupom.description
+                    !cupom.category
                 );
 
             }
@@ -3222,7 +3236,7 @@ async function gerarRDD() {
     ) {
 
         alert(
-            "Existem cupons sem número de documento ou sem nome do estabelecimento."
+            "Existem cupons sem nÃºmero de documento."
         );
 
         return;
@@ -3342,12 +3356,7 @@ async function gerarRDD() {
     }
 
 
-    /* Mesma animação de carregamento
-       que aparece ao ler o cupom. */
-    mostrarGerandoRDD(
-        STATE.cupons.length
-    );
-
+    mostrarGerandoRDD(STATE.cupons.length);
 
     try {
 
@@ -3406,74 +3415,33 @@ async function gerarRDD() {
             await resposta.blob();
 
 
-        const url =
-            URL.createObjectURL(
-                blob
-            );
+        STATE.pdfGerado = {
+
+            blob: blob,
+
+            nome: nomeArquivo
+
+        };
 
 
-        const link =
-            document.createElement(
-                "a"
-            );
-
-
-        link.href =
-            url;
-
-
-        link.download =
-            nomeArquivo;
-
-
-        document.body.appendChild(
-            link
+        /* Fecha a animacao com
+           "RDD gerado!" e so
+           entao mostra a tela 5 */
+        finalizarGerandoRDD(
+            true
         );
 
 
-        link.click();
+        await new Promise(
+            function (resolver) {
 
+                setTimeout(
+                    resolver,
+                    750
+                );
 
-        link.remove();
-
-
-        URL.revokeObjectURL(
-            url
+            }
         );
-
-
-        const message =
-            document.getElementById(
-                "message"
-            );
-
-
-        if (message) {
-
-            message.innerHTML = `
-
-                <div style="
-                    background:#f0fdf4;
-                    border:1px solid #bbf7d0;
-                    color:#166534;
-                    padding:15px;
-                    border-radius:10px;
-                ">
-
-                    <strong>
-                        RDD gerado com sucesso!
-                    </strong>
-
-                    <br><br>
-
-                    O PDF foi gerado com os
-                    comprovantes anexados.
-
-                </div>
-
-            `;
-
-        }
 
 
         if (
@@ -3481,15 +3449,12 @@ async function gerarRDD() {
         ) {
 
             window.RDDMostrarTela(
-                4
+                5
             );
 
         }
 
 
-        finalizarGerandoRDD(
-            true
-        );
 
     } catch (erro) {
 
@@ -3629,7 +3594,7 @@ function formatarDataExibicao(
 
     if (!data) {
 
-        return "Não identificada";
+        return "NÃ£o identificada";
 
     }
 
