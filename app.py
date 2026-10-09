@@ -55,6 +55,15 @@ GITHUB_BRANCH = os.getenv("GITHUB_BRANCH", "main").strip()
 GITHUB_COUNTER_PATH = os.getenv("GITHUB_COUNTER_PATH", "counter/rdd-counter.json").strip()
 COUNTER_START = 210
 
+# Diagnostico seguro: mostra só o tamanho e o prefixo
+# do token (NUNCA o valor inteiro) para conferir se
+# a variavel chegou inteira no Render.
+if GITHUB_TOKEN:
+    print(
+        f"[RDD] GITHUB_TOKEN carregado: {len(GITHUB_TOKEN)} chars, "
+        f"prefixo '{GITHUB_TOKEN[:4]}...'"
+    )
+
 
 def _gh_headers():
     return {
@@ -192,6 +201,22 @@ def root():
 @app.get("/health")
 def health():
     return {"ok": True, "template": TEMPLATE.exists(), "db": str(DB_PATH)}
+
+
+@app.get("/api/token-info")
+def token_info():
+    """Diagnostico seguro: mostra apenas tamanho e prefixo
+    do GITHUB_TOKEN (NUNCA o valor) para conferir se a
+    variavel de ambiente chegou inteira no Render."""
+    if not GITHUB_TOKEN:
+        return {"set": False, "hint": "GITHUB_TOKEN nao definida"}
+    return {
+        "set": True,
+        "chars": len(GITHUB_TOKEN),
+        "prefix": GITHUB_TOKEN[:4],
+        "suffix": GITHUB_TOKEN[-4:],
+        "expect": "chars=40, prefix='ghp_'",
+    }
 
 
 @app.get("/api/next-rdd")
