@@ -2825,6 +2825,245 @@ function obterNomeArquivoResposta(resposta) {
 // GERAR RDD
 // ============================================================
 
+// ============================================================
+// ANIMAÇÃO "GERAR RDD" (mesma overlay do OCR)
+// ============================================================
+
+function mostrarGerandoRDD(
+    totalCupons
+) {
+
+    const overlay =
+        document.getElementById(
+            "processingOverlay"
+        );
+
+    if (
+        !overlay
+    ) {
+
+        return;
+
+    }
+
+    overlay.classList.add(
+        "show"
+    );
+
+    overlay.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    const titulo =
+        document.getElementById(
+            "processingTitle"
+        );
+
+    const texto =
+        document.getElementById(
+            "processingText"
+        );
+
+    const contador =
+        document.getElementById(
+            "processingCounter"
+        );
+
+    const barra =
+        document.getElementById(
+            "processingProgressBar"
+        );
+
+    if (
+        titulo
+    ) {
+
+        titulo.textContent =
+            "⏳ Gerando RDD...";
+
+    }
+
+    if (
+        texto
+    ) {
+
+        texto.textContent =
+            "Montando a planilha, convertendo para PDF e anexando os comprovantes. Isso pode levar alguns segundos.";
+
+    }
+
+    if (
+        contador
+    ) {
+
+        contador.textContent =
+            ( Number( totalCupons ) || 0 ) +
+            " cupom(ns) · aguarde...";
+
+    }
+
+    if (
+        barra
+    ) {
+
+        /* Barra avança devagar:
+           o tempo real só é conhecido
+           no servidor (LibreOffice). */
+
+        barra.style.transition =
+            "none";
+
+        barra.style.width =
+            "12%";
+
+        void barra.offsetWidth;
+
+        barra.style.transition =
+            "width 25s linear";
+
+        barra.style.width =
+            "92%";
+
+    }
+
+}
+
+function finalizarGerandoRDD(
+    sucesso
+) {
+
+    const overlay =
+        document.getElementById(
+            "processingOverlay"
+        );
+
+    if (
+        !overlay
+    ) {
+
+        return;
+
+    }
+
+    const titulo =
+        document.getElementById(
+            "processingTitle"
+        );
+
+    const texto =
+        document.getElementById(
+            "processingText"
+        );
+
+    const contador =
+        document.getElementById(
+            "processingCounter"
+        );
+
+    const barra =
+        document.getElementById(
+            "processingProgressBar"
+        );
+
+    if (
+        sucesso
+    ) {
+
+        if (
+            titulo
+        ) {
+
+            titulo.textContent =
+                "✅ RDD gerado!";
+
+        }
+
+        if (
+            texto
+        ) {
+
+            texto.textContent =
+                "O PDF foi criado com os comprovantes anexados.";
+
+        }
+
+        if (
+            contador
+        ) {
+
+            contador.textContent =
+                "Concluído";
+
+        }
+
+        if (
+            barra
+        ) {
+
+            barra.style.transition =
+                "none";
+
+            barra.style.width =
+                "100%";
+
+        }
+
+        setTimeout(
+            function () {
+
+                overlay.classList.remove(
+                    "show"
+                );
+
+                overlay.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
+
+                if (
+                    barra
+                ) {
+
+                    barra.style.transition =
+                        "none";
+
+                    barra.style.width =
+                        "15%";
+
+                }
+
+            },
+            700
+        );
+
+    } else {
+
+        overlay.classList.remove(
+            "show"
+        );
+
+        overlay.setAttribute(
+            "aria-hidden",
+            "true"
+        );
+
+        if (
+            barra
+        ) {
+
+            barra.style.transition =
+                "none";
+
+            barra.style.width =
+                "15%";
+
+        }
+
+    }
+
+}
+
 async function gerarRDD() {
 
     if (
@@ -2979,6 +3218,13 @@ async function gerarRDD() {
     }
 
 
+    /* Mesma animação de carregamento
+       que aparece ao ler o cupom. */
+    mostrarGerandoRDD(
+        STATE.cupons.length
+    );
+
+
     try {
 
         const resposta =
@@ -3117,11 +3363,20 @@ async function gerarRDD() {
         }
 
 
+        finalizarGerandoRDD(
+            true
+        );
+
     } catch (erro) {
 
         console.error(
             "Erro ao gerar RDD:",
             erro
+        );
+
+
+        finalizarGerandoRDD(
+            false
         );
 
 
