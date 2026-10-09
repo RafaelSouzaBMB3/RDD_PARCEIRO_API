@@ -2,7 +2,7 @@ const API_URL = "https://rdd-parceiro-api-1.onrender.com";
 
 
 // ============================================================
-// ESTADO GLOBAL ÃšNICO
+// ESTADO GLOBAL ÚNICO
 // ============================================================
 
 if (!window.RDD_PARCEIRO_STATE) {
@@ -30,7 +30,7 @@ const STATE = window.RDD_PARCEIRO_STATE;
 
 
 // ============================================================
-// INICIALIZAÃ‡ÃƒO
+// INICIALIZAÇÃO
 // ============================================================
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (STATE.inicializado) {
 
         console.log(
-            "RDD Parceiro: inicializaÃ§Ã£o duplicada ignorada."
+            "RDD Parceiro: inicialização duplicada ignorada."
         );
 
         return;
@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // PERÃODO AUTOMÃTICO
+    // PERÍODO AUTOMÁTICO
     // ========================================================
 
     if (periodo) {
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         periodo.value =
             primeiroDia.toLocaleDateString("pt-BR") +
-            " atÃ© " +
+            " até " +
             ultimoDia.toLocaleDateString("pt-BR");
 
     }
@@ -233,7 +233,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // ETAPA 1 â†’ ETAPA 2
+    // ETAPA 1 → ETAPA 2
     // ========================================================
 
     if (next1) {
@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 ) {
 
                     alert(
-                        "Informe um CPF vÃ¡lido com 11 nÃºmeros."
+                        "Informe um CPF válido com 11 números."
                     );
 
                     if (cpf) {
@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // VOLTAR â†’ DADOS
+    // VOLTAR → DADOS
     // ========================================================
 
     if (back1) {
@@ -348,7 +348,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // ETAPA 2 â†’ ETAPA 3
+    // ETAPA 2 → ETAPA 3
     // ========================================================
 
     if (next2) {
@@ -429,7 +429,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     alert(
                         "Existem cupons que precisam ser revisados. " +
-                        "Informe o nÃºmero do documento."
+                        "Informe o número do documento."
                     );
 
                     return;
@@ -449,7 +449,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // ========================================================
-    // VOLTAR â†’ CUPONS
+    // VOLTAR → CUPONS
     // ========================================================
 
     if (back2) {
@@ -668,7 +668,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (mcat) {
 
         mcat.value =
-            "Materiais";
+            "materiais";
 
     }
 
@@ -756,7 +756,7 @@ function carregarScript(src) {
 
                     reject(
                         new Error(
-                            "NÃ£o foi possÃ­vel carregar: " +
+                            "Não foi possível carregar: " +
                             src
                         )
                     );
@@ -833,7 +833,7 @@ const status =
     if (statusTitle) {
 
         statusTitle.textContent =
-            "ðŸ”Ž Lendo os comprovantes...";
+            "🔎 Lendo os comprovantes...";
 
     }
 
@@ -894,8 +894,8 @@ const status =
 
             if (window.RDD_PROCESSAMENTO) {
                 window.RDD_PROCESSAMENTO.atualizar(
-                    "ðŸ”Ž Lendo comprovante...",
-                    "O sistema estÃ¡ identificando data, estabelecimento, documento e valor.",
+                    "🔎 Lendo comprovante...",
+                    "O sistema está identificando data, estabelecimento, documento e valor.",
                     arquivos.length,
                     i + 1
                 );
@@ -903,7 +903,7 @@ const status =
 
             if (window.RDD_PROCESSAMENTO) {
                 window.RDD_PROCESSAMENTO.atualizar(
-                    "âš™ï¸ Processando imagem...",
+                    "⚙️ Processando imagem...",
                     "Convertendo e preparando o comprovante para leitura.",
                     arquivos.length,
                     i + 1
@@ -933,7 +933,7 @@ const status =
         if (statusTitle) {
 
             statusTitle.textContent =
-                "âœ… Comprovantes processados";
+                "✅ Comprovantes processados";
 
         }
 
@@ -958,7 +958,7 @@ const status =
         if (statusTitle) {
 
             statusTitle.textContent =
-                "âš ï¸ AtenÃ§Ã£o";
+                "⚠️ Atenção";
 
         }
 
@@ -966,8 +966,8 @@ const status =
         if (statusText) {
 
             statusText.textContent =
-                "NÃ£o foi possÃ­vel processar todos os comprovantes. " +
-                "VocÃª poderÃ¡ revisar manualmente.";
+                "Não foi possível processar todos os comprovantes. " +
+                "Você poderá revisar manualmente.";
 
         }
 
@@ -1051,7 +1051,7 @@ async function processarCupom(
         } catch (erro) {
 
             console.warn(
-                "Falha na conversÃ£o HEIC:",
+                "Falha na conversão HEIC:",
                 erro
             );
 
@@ -1107,7 +1107,7 @@ async function processarCupom(
 
 
     // --------------------------------------------------------
-    // INTERPRETAÃ‡ÃƒO
+    // INTERPRETAÇÃO
     // --------------------------------------------------------
 
     const dados =
@@ -1154,7 +1154,7 @@ async function processarCupom(
             "",
 
         category:
-            "Materiais",
+            "materiais",
 
         value:
             dados.value ||
@@ -1176,7 +1176,7 @@ async function processarCupom(
 
 
 // ============================================================
-// INTERPRETAR OCR
+// INTERPRETAÇÃO OCR
 // ============================================================
 
 function interpretarCupom(
@@ -1194,7 +1194,7 @@ function interpretarCupom(
         value: "",
 
         category:
-            "Materiais"
+            "materiais"
 
     };
 
@@ -1372,7 +1372,7 @@ function interpretarCupom(
 
         /DOCUMENTO[^0-9]{0,20}(\d{4,20})/i,
 
-        /N[ÂºÂ°.]?\s*[:\-]?\s*(\d{4,20})/i
+        /N[º°.]?\s*[:\-]?\s*(\d{4,20})/i
 
     ];
 
@@ -1425,15 +1425,15 @@ function interpretarCupom(
 
         "R$",
 
-        "EMISSAO",
+        "EMISSÃO",
 
-        "EMISSÃƒO",
+        "EMISSÃO",
 
         "CONSUMIDOR",
 
         "ENDERECO",
 
-        "ENDEREÃ‡O",
+        "ENDEREO",
 
         "CHAVE",
 
@@ -1449,7 +1449,7 @@ function interpretarCupom(
 
         "VALOR UNITARIO",
 
-        "VALOR UNITÃRIO"
+        "VALOR UNITÁRIO"
 
     ];
 
@@ -1505,7 +1505,7 @@ function interpretarCupom(
 
         if (
             /\d{2,}/.test(limpa) &&
-            !/[A-Za-z\u00C0-\u00FF]{4,}/.test(limpa)
+            !/[A-Za-zÀ-ÿ]{4,}/.test(limpa)
         ) {
 
             continue;
@@ -1574,7 +1574,7 @@ function renderizarCupons() {
                             color:#0b6b45;
                             font-weight:bold;
                         ">
-                            âœ“ Dados identificados
+                            ✓ Dados identificados
                         </span>
                     `
 
@@ -1583,7 +1583,7 @@ function renderizarCupons() {
                             color:#b42318;
                             font-weight:bold;
                         ">
-                            âš ï¸ RevisÃ£o necessÃ¡ria
+                            ⚠️ Revisão necessária
                         </span>
                     `;
 
@@ -1592,7 +1592,7 @@ function renderizarCupons() {
                 cupom.value
                     ? "R$ " +
                       cupom.value
-                    : "NÃ£o identificado";
+                    : "Não identificado";
 
 
             card.innerHTML = `
@@ -1631,7 +1631,7 @@ function renderizarCupons() {
                         ">
 
                             <strong>
-                                ðŸ§¾ Cupom ${index + 1}
+                                🧾 Cupom ${index + 1}
                             </strong>
 
                             ${statusHTML}
@@ -1659,7 +1659,7 @@ function renderizarCupons() {
 
                                 ${escapeHTML(
                                     cupom.description ||
-                                    "NÃ£o identificado"
+                                    "Não identificado"
                                 )}
                             </div>
 
@@ -1671,7 +1671,7 @@ function renderizarCupons() {
 
                                 ${escapeHTML(
                                     cupom.document ||
-                                    "NÃ£o identificado"
+                                    "Não identificado"
                                 )}
                             </div>
 
@@ -1719,7 +1719,7 @@ function renderizarCupons() {
                                     padding:0 12px;
                                 "
                             >
-                                ðŸ” Ver cupom
+                                🔍 Ver cupom
                             </button>
 
 
@@ -1732,7 +1732,7 @@ function renderizarCupons() {
                                     padding:0 12px;
                                 "
                             >
-                                âœï¸ Editar
+                                ✏️ Editar
                             </button>
 
                         </div>
@@ -1753,7 +1753,7 @@ function renderizarCupons() {
 
 
     // --------------------------------------------------------
-    // BOTÃƒO EDITAR
+    // BOTÃO EDITAR
     // --------------------------------------------------------
 
     lista
@@ -1785,7 +1785,7 @@ function renderizarCupons() {
 
 
     // --------------------------------------------------------
-    // BOTÃƒO VER
+    // BOTÃO VER
     // --------------------------------------------------------
 
     lista
@@ -1882,7 +1882,7 @@ function atualizarResumo() {
 
 
 // ============================================================
-// REVISÃƒO
+// REVISÃO
 // ============================================================
 
 function atualizarRevisao() {
@@ -2196,7 +2196,7 @@ function abrirEdicao(index) {
     if (mcat) {
 
         mcat.value =
-            "Materiais";
+            "materiais";
 
         mcat.disabled =
             true;
@@ -2229,7 +2229,7 @@ function abrirEdicao(index) {
 
 
     // --------------------------------------------------------
-    // BOTÃƒO SALVAR
+    // BOTÃO SALVAR
     // --------------------------------------------------------
 
     const save =
@@ -2247,13 +2247,13 @@ function abrirEdicao(index) {
             false;
 
         save.textContent =
-            "ðŸ’¾ Salvar alteraÃ§Ãµes";
+            "💾 Salvar alterações";
 
     }
 
 
     // --------------------------------------------------------
-    // TÃTULO
+    // TÍTULO
     // --------------------------------------------------------
 
     const titulo =
@@ -2265,7 +2265,7 @@ function abrirEdicao(index) {
     if (titulo) {
 
         titulo.textContent =
-            "âœï¸ Editar cupom";
+            "✏️ Editar cupom";
 
     }
 
@@ -2394,7 +2394,7 @@ function abrirVisualizacao(index) {
     if (mcat) {
 
         mcat.value =
-            "Materiais";
+            "materiais";
 
         mcat.disabled =
             true;
@@ -2458,7 +2458,7 @@ function abrirVisualizacao(index) {
     if (titulo) {
 
         titulo.textContent =
-            "ðŸ” Visualizar cupom";
+            "🔍 Visualizar cupom";
 
     }
 
@@ -2475,7 +2475,7 @@ function abrirVisualizacao(index) {
 
 
 // ============================================================
-// SALVAR EDIÃ‡ÃƒO
+// SALVAR EDIÇÃO
 // ============================================================
 
 function salvarEdicao() {
@@ -2546,13 +2546,13 @@ function salvarEdicao() {
 
 
     // --------------------------------------------------------
-    // DOCUMENTO Ã‰ OBRIGATÃ“RIO
+    // DOCUMENTO É OBRIGATÓRIO
     // --------------------------------------------------------
 
     if (!documento) {
 
         alert(
-            "Informe o nÃºmero do documento."
+            "Informe o número do documento."
         );
 
 
@@ -2575,7 +2575,7 @@ function salvarEdicao() {
 
 
     cupom.category =
-        "Materiais";
+        "materiais";
 
 
     cupom.description =
@@ -2634,7 +2634,7 @@ function fecharModal() {
     }
 
 
-    // Reabilita os campos para a prÃ³xima ediÃ§Ã£o
+    // Reabilita os campos para a próxima edição
 
     const campos = [
 
@@ -2835,7 +2835,7 @@ function obterNomeArquivoResposta(resposta) {
             ).trim();
         } catch (erro) {
             console.warn(
-                "NÃ£o foi possÃ­vel decodificar o nome do arquivo:",
+                "Não foi possível decodificar o nome do arquivo:",
                 erro
             );
         }
@@ -3023,6 +3023,49 @@ async function enviarPdfComoArquivo() {
 
     }
 
+    const nomePadrao = dados.nome || "RDD.pdf";
+
+    /* 1) showSaveFilePicker: deixa escolher
+       o NOME do ficheiro e a PASTA de destino.
+       E a opcao mais completa no Chrome/Edge. */
+    if (window.showSaveFilePicker) {
+
+        try {
+
+            const opcoes = {
+
+                suggestedName: nomePadrao,
+
+                types: [{
+                    description: "Documento PDF",
+                    accept: { "application/pdf": [".pdf"] }
+                }]
+
+            };
+
+            const alvo = await window.showSaveFilePicker(opcoes);
+
+            const gravador = await alvo.createWritable();
+
+            await gravador.write(dados.blob);
+            await gravador.close();
+
+            alert("PDF salvo com sucesso.");
+
+            return;
+
+        } catch (erro) {
+
+            /* AbortError = usuario cancelou.
+               Nao vamos forcar o download. */
+            return;
+
+        }
+
+    }
+
+    /* 2) showDirectoryPicker: escolhe a pasta
+       e salva com o nome padrao. */
     if (window.showDirectoryPicker) {
 
         try {
@@ -3032,7 +3075,7 @@ async function enviarPdfComoArquivo() {
             );
 
             const alvo = await diretorio.getFileHandle(
-                dados.nome || "RDD.pdf",
+                nomePadrao,
                 { create: true }
             );
 
@@ -3041,13 +3084,11 @@ async function enviarPdfComoArquivo() {
             await gravador.write(dados.blob);
             await gravador.close();
 
-            alert("PDF salvo na pasta selecionada.");
+            alert("PDF salvo na pasta escolhida.");
 
             return;
 
         } catch (erro) {
-
-            /* usuario cancelou */
 
             return;
 
@@ -3055,9 +3096,11 @@ async function enviarPdfComoArquivo() {
 
     }
 
+    /* 3) fallback: download normal */
     baixarPdfGerado();
 
 }
+
 
 
 function baixarPdfGerado() {
@@ -3110,7 +3153,7 @@ function mostrarGerandoRDD(totalCupons) {
 
     if (titulo) {
 
-        titulo.textContent = "⏳ Gerando RDD...";
+        titulo.textContent = "â³ Gerando RDD...";
 
     }
 
@@ -3164,7 +3207,7 @@ function finalizarGerandoRDD(sucesso) {
 
     if (sucesso) {
 
-        if (titulo) titulo.textContent = "✅ RDD gerado!";
+        if (titulo) titulo.textContent = "âœ… RDD gerado!";
         if (texto) texto.textContent =
             "O PDF foi criado com os comprovantes anexados.";
         if (contador) contador.textContent = "Concluído";
@@ -3236,7 +3279,7 @@ async function gerarRDD() {
     ) {
 
         alert(
-            "Existem cupons sem nÃºmero de documento."
+            "Existem cupons sem número de documento."
         );
 
         return;
@@ -3300,7 +3343,7 @@ async function gerarRDD() {
                             "",
 
                         category:
-                            "Materiais",
+                            "materiais",
 
                         value:
                             cupom.value ||
@@ -3414,7 +3457,6 @@ async function gerarRDD() {
         const blob =
             await resposta.blob();
 
-
         STATE.pdfGerado = {
 
             blob: blob,
@@ -3425,8 +3467,8 @@ async function gerarRDD() {
 
 
         /* Fecha a animacao com
-           "RDD gerado!" e so
-           entao mostra a tela 5 */
+           "RDD gerado!" e so entao
+           mostra a tela de envio */
         finalizarGerandoRDD(
             true
         );
@@ -3488,8 +3530,8 @@ async function gerarRDD() {
         }
 
     }
-
 }
+
 
 
 // ============================================================
@@ -3594,7 +3636,7 @@ function formatarDataExibicao(
 
     if (!data) {
 
-        return "NÃ£o identificada";
+        return "Não identificada";
 
     }
 
