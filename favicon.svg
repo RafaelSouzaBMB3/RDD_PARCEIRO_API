@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#06284A"/>
+  <rect x="30" y="30" width="452" height="452" fill="none" stroke="#D6A84F" stroke-width="11"/>
+  <circle cx="102" cy="133" r="43" fill="#D6A84F"/>
+  <text x="102" y="133" font-family="Arial, Helvetica, sans-serif" font-size="50" font-weight="700" fill="#06284A" text-anchor="middle" dominant-baseline="central">M</text>
+  <text x="256" y="240" font-family="Arial, Helvetica, sans-serif" font-size="154" font-weight="700" fill="#FFFFFF" text-anchor="middle">RDD</text>
+  <line x1="154" y1="379" x2="358" y2="379" stroke="#D6A84F" stroke-width="9"/>
+  <text x="256" y="430" font-family="Arial, Helvetica, sans-serif" font-size="79" font-weight="700" fill="#D6A84F" text-anchor="middle">BMB3</text>
+</svg>
