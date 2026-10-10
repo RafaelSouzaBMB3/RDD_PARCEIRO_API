@@ -15,7 +15,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from openpyxl import load_workbook
-from openpyxl.styles import Border, Side, PatternFill, Font, Alignment
+from openpyxl.styles import Border, Side, PatternFill, Font, Alignment, Color
 from PIL import Image
 import fitz  # PyMuPDF
 
@@ -387,47 +387,66 @@ def fill_workbook(payload, rdd_number, output_xlsx):
     ws.print_area = "A1:L49"
 
     # --------------------------------------------------------
-    # AREA FINAL: apenas o TOTAL (linha 47)
-    # O modelo do repositorio traz varias linhas
-    # abaixo da tabela (SUBTOTAL, Aprovado, Anotacoes,
-    # PAGAMENTOS e o total repetido). Mantemos somente
-    # o TOTAL da linha 47, em azul, e limpamos todo o
-    # restante para que nada apareca abaixo dele.
+    # AREA FINAL (linhas 44 a 49)
+    # - L44 Total, L45 SUBTOTAL, L46 Aprovado/Anotacoes/
+    #   PAGAMENTOS: mantem-se como no modelo.
+    # - L47 TOTAL: fundo AZUL e TEXTO BRANCO.
+    # - L48 e L49: totalmente apagadas (o modelo do
+    #   repositorio repete o total nestas 2 linhas).
     # --------------------------------------------------------
     try:
-        # 1) limpa as linhas 48 e 49 (total duplicado)
-        for linha_inferior in (48, 49):
-            celula_inferior = ws[f"L{linha_inferior}"]
-            celula_inferior.value = None
-            celula_inferior.border = Border()
+        # 1) apaga por completo as linhas 48 e 49
+        #    (sem texto, sem cor de fundo e sem bordas)
+        for linha_apagada in (48, 49):
+            for coluna in "ABCDEFGHIJKL":
+                celula_apagada = ws[f"{coluna}{linha_apagada}"]
+                celula_apagada.value = None
+                celula_apagada.border = Border()
+                celula_apagada.fill = PatternFill()
+                celula_apagada.font = Font()
+                celula_apagada.alignment = Alignment()
 
-        # 2) limpa o texto da coluna K dessas linhas
-        for linha_inferior in (48, 49):
-            celula_rotulo = ws[f"K{linha_inferior}"]
-            celula_rotulo.value = None
-            celula_rotulo.border = Border()
-
-        # 3) garante que a linha 47 tem o rotulo e o total
-        ws["K47"] = "TOTAL"
-        ws["K47"].font = Font(bold=True)
-        ws["K47"].alignment = Alignment(horizontal="right")
-
-        # mantem a formula do total na L47
+        # 2) garante a formula do total na L47
         if not ws["L47"].value:
-            ws["L47"] = f"=L45"
+            ws["L47"] = "=L45"
 
-        # 4) pinta o total de azul
-        celula_total = ws["L47"]
-        celula_total.font = Font(
+        # 2) L47 - rotulo e total com fundo azul / texto branco
+        #    Aplicado celula a celula para forcar um
+        #    estilo combinado novo (fundo + texto).
+        preenchimento_azul = PatternFill(
+            start_color="1F497D",
+            end_color="1F497D",
+            fill_type="solid"
+        )
+        fonte_branca = Font(
+            name="Arial",
+            size=11,
             bold=True,
-            color="FF0000FF"
+            color="FFFFFF"
         )
-        celula_total.alignment = Alignment(
-            horizontal="right"
+        alinhamento_direita = Alignment(
+            horizontal="right",
+            vertical="center"
         )
 
-    except Exception as erro_total:
-        print(f"[RDD] aviso ao ajustar area final: {erro_total}")
+        celula_rotulo_total = ws["K47"]
+        celula_rotulo_total.value = "TOTAL"
+        celula_rotulo_total.fill = preenchimento_azul
+        celula_rotulo_total.font = fonte_branca
+        celula_rotulo_total.alignment = alinhamento_direita
+
+        if not ws["L47"].value:
+            ws["L47"] = "=L45"
+
+        celula_valor_total = ws["L47"]
+        celula_valor_total.fill = preenchimento_azul
+        celula_valor_total.font = fonte_branca
+        celula_valor_total.alignment = alinhamento_direita
+        celula_valor_total.number_format = '"R$ "#,##0.00'
+
+    except Exception as erro_area:
+        print(f"[RDD] aviso ao ajustar area final: {erro_area}")
+
 
 
     # --------------------------------------------------------
