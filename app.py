@@ -387,19 +387,48 @@ def fill_workbook(payload, rdd_number, output_xlsx):
     ws.print_area = "A1:L49"
 
     # --------------------------------------------------------
-    # TOTAL DUPLICADO (L48/L49)
-    # O modelo do repositório traz a fórmula do total
-    # repetida em três linhas (L47, L48, L49). Mantemos
-    # apenas a L47 e limpamos as outras duas, para que
-    # o valor total apareça UMA vez no fim da folha.
+    # AREA FINAL: apenas o TOTAL (linha 47)
+    # O modelo do repositorio traz varias linhas
+    # abaixo da tabela (SUBTOTAL, Aprovado, Anotacoes,
+    # PAGAMENTOS e o total repetido). Mantemos somente
+    # o TOTAL da linha 47, em azul, e limpamos todo o
+    # restante para que nada apareca abaixo dele.
     # --------------------------------------------------------
     try:
-        for linha_duplicada in (48, 49):
-            celula_duplicada = ws[f"L{linha_duplicada}"]
-            celula_duplicada.value = None
-            celula_duplicada.border = Border()
+        # 1) limpa as linhas 48 e 49 (total duplicado)
+        for linha_inferior in (48, 49):
+            celula_inferior = ws[f"L{linha_inferior}"]
+            celula_inferior.value = None
+            celula_inferior.border = Border()
+
+        # 2) limpa o texto da coluna K dessas linhas
+        for linha_inferior in (48, 49):
+            celula_rotulo = ws[f"K{linha_inferior}"]
+            celula_rotulo.value = None
+            celula_rotulo.border = Border()
+
+        # 3) garante que a linha 47 tem o rotulo e o total
+        ws["K47"] = "TOTAL"
+        ws["K47"].font = Font(bold=True)
+        ws["K47"].alignment = Alignment(horizontal="right")
+
+        # mantem a formula do total na L47
+        if not ws["L47"].value:
+            ws["L47"] = f"=L45"
+
+        # 4) pinta o total de azul
+        celula_total = ws["L47"]
+        celula_total.font = Font(
+            bold=True,
+            color="FF0000FF"
+        )
+        celula_total.alignment = Alignment(
+            horizontal="right"
+        )
+
     except Exception as erro_total:
-        print(f"[RDD] aviso ao limpar total duplicado: {erro_total}")
+        print(f"[RDD] aviso ao ajustar area final: {erro_total}")
+
 
     # --------------------------------------------------------
     # GRADE DA TABELA (barras diretas nas células)

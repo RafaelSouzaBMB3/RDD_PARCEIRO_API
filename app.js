@@ -3153,7 +3153,7 @@ function mostrarGerandoRDD(totalCupons) {
 
     if (titulo) {
 
-        titulo.textContent = "â³ Gerando RDD...";
+        titulo.textContent = "⏳ Gerando RDD...";
 
     }
 
