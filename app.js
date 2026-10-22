@@ -723,7 +723,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (mcat) {
 
         mcat.value =
-            "Materiais";
+            cupom.category || "Materiais";
 
     }
 
@@ -2558,7 +2558,7 @@ function abrirVisualizacao(index) {
             cupom.tipoDocumento || "";
 
         mdocTipo.disabled =
-            true;
+            false;
 
     }
 
@@ -2723,7 +2723,9 @@ function salvarEdicao() {
 
 
     cupom.category =
-        "Materiais";
+        mcat
+            ? mcat.value
+            : "Materiais";
 
 
     cupom.description =
