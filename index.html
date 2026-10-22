@@ -6,6 +6,33 @@
 
     <title>RDD Parceiro BMB3</title>
     <!-- =====================================================
+         ICONES RDD BMB3 (atalhos, aba, PWA, iOS/Android)
+         ===================================================== -->
+
+    <!-- Windows / separadores / atalhos -->
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- Navegadores modernos -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="icone-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icone-16.png">
+
+    <!-- iOS / iPadOS (ecra principal) -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152.png">
+    <link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="RDD BMB3">
+
+    <!-- Android / PWA -->
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#06284A">
+
+    <!-- =====================================================
          ICONES RDD BMB3 (atalhos, aba, PWA)
          ===================================================== -->
 
@@ -1270,6 +1297,15 @@
 
                 </button>
 
+                <button
+                    type="button"
+                    id="baixarPlanilha"
+                    class="btn btn-secondary">
+
+                    &#128196; Baixar planilha Excel
+
+                </button>
+
             </div>
 
             <div style="margin-top:22px;">
@@ -1411,6 +1447,40 @@
                     type="text"
                     id="mdoc">
 
+            </div>
+
+            <div class="field">
+
+                <label for="mdocTipo">
+                    Tipo de documento *
+                </label>
+
+                <select
+                    id="mdocTipo">
+
+                    <option
+                        value=""
+                        disabled
+                        selected>
+                    Selecione o tipo
+                    </option>
+
+                    <option
+                        value="cupom">
+                    CUPOM (NFC-e)
+                    </option>
+
+                    <option
+                        value="notaprodutos">
+                    NOTA DE PRODUTOS (Danfe)
+                    </option>
+
+                    <option
+                        value="notadeservicos">
+                    NOTA DE SERVIÇOS (NFS-e)
+                    </option>
+
+                </select>
             </div>
 
 

@@ -30,6 +30,43 @@ const STATE = window.RDD_PARCEIRO_STATE;
 
 
 // ============================================================
+// PREFIXO DO TIPO DE DOCUMENTO (coluna Documento no Excel)
+// ============================================================
+
+const TIPO_PREFIXO_DOCUMENTO = {
+    // CUPOM = NFC-e
+    "cupom": "NFC-e ",
+    // NOTA DE PRODUTOS = Danfe
+    "notaprodutos": "Danfe ",
+    // NOTA DE SERVICOS = NFS-e
+    "notadeservicos": "NFS-e ",
+    "notaservicos": "NFS-e "
+};
+
+
+function prefixoDocumento(valor) {
+    if (!valor) {
+        return "";
+    }
+    const chave = String(valor)
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/_/g, "")
+        .replace(/-/g, "");
+    return TIPO_PREFIXO_DOCUMENTO[chave] || "";
+}
+
+
+function documentoComPrefixo(documento, tipo) {
+    const texto = String(documento || "").trim();
+    if (!texto) {
+        return "";
+    }
+    return prefixoDocumento(tipo) + texto;
+}
+
+// ============================================================
 // INICIALIZAÇÃO
 // ============================================================
 
@@ -603,6 +640,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+    const botaoPlanilha =
+        document.getElementById(
+            "baixarPlanilha"
+        );
+
+    if (botaoPlanilha) {
+
+        botaoPlanilha.addEventListener(
+            "click",
+            function () {
+
+                baixarPlanilhaExcel();
+
+            }
+        );
+
+    }
+
     if (botaoNovo2) {
 
         botaoNovo2.addEventListener(
@@ -1151,6 +1206,9 @@ async function processarCupom(
 
         document:
             dados.document ||
+            "",
+
+        tipoDocumento:
             "",
 
         category:
@@ -2079,7 +2137,66 @@ function configurarModal() {
 
     }
 
-}
+
+    // ========================================================
+    // MODAL CONFIGURAÇÕES
+    // ========================================================
+
+    const settingsButton =
+        document.getElementById("settingsButton");
+
+    const settingsModal =
+        document.getElementById("settingsModal");
+
+    const closeSettings =
+        document.getElementById("closeSettings");
+
+    if (settingsButton && settingsModal) {
+
+        settingsButton.addEventListener(
+            "click",
+            function () {
+
+                settingsModal.classList.add("show");
+
+            }
+        );
+
+    }
+
+
+    if (closeSettings && settingsModal) {
+
+        closeSettings.addEventListener(
+            "click",
+            function () {
+
+                settingsModal.classList.remove("show");
+
+            }
+        );
+
+    }
+
+
+    if (settingsModal) {
+
+        settingsModal.addEventListener(
+            "click",
+            function (event) {
+
+                if (event.target === settingsModal) {
+
+                    settingsModal.classList.remove("show");
+
+                }
+
+            }
+        );
+
+    }
+
+    }
 
 
 // ============================================================
@@ -2140,6 +2257,12 @@ function abrirEdicao(index) {
     const mdoc =
         document.getElementById(
             "mdoc"
+        );
+
+
+    const mdocTipo =
+        document.getElementById(
+            "mdocTipo"
         );
 
 
@@ -2346,6 +2469,12 @@ function abrirVisualizacao(index) {
         );
 
 
+    const mdocTipo =
+        document.getElementById(
+            "mdocTipo"
+        );
+
+
     const mvalue =
         document.getElementById(
             "mvalue"
@@ -2423,6 +2552,15 @@ function abrirVisualizacao(index) {
 
     }
 
+    if (mdocTipo) {
+
+        mdocTipo.value =
+            cupom.tipoDocumento || "";
+
+        mdocTipo.disabled =
+            true;
+
+    }
 
     if (mvalue) {
 
@@ -2544,6 +2682,16 @@ function salvarEdicao() {
             ? mdoc.value.trim()
             : "";
 
+    const mdocTipo =
+        document.getElementById(
+            "mdocTipo"
+        );
+
+    const tipoDocumento =
+        mdocTipo
+            ? mdocTipo.value.trim()
+            : "";
+
 
     // --------------------------------------------------------
     // DOCUMENTO É OBRIGATÓRIO
@@ -2586,6 +2734,9 @@ function salvarEdicao() {
 
     cupom.document =
         documento;
+
+    cupom.tipoDocumento =
+        tipoDocumento;
 
 
     cupom.value =
@@ -3342,6 +3493,10 @@ async function gerarRDD() {
                             cupom.document ||
                             "",
 
+                        tipoDocumento:
+                            cupom.tipoDocumento ||
+                            "",
+
                         category:
                             "Materiais",
 
@@ -3417,6 +3572,20 @@ async function gerarRDD() {
 
                 }
             );
+
+        // Guarda o numero do RDD (para download da planilha depois)
+        try {
+
+            const rddNumero =
+                resposta.headers.get("X-RDD-Number");
+
+            if (rddNumero) {
+
+                STATE.rddNumeroGerado = rddNumero;
+
+            }
+
+        } catch (e) {}
 
 
         if (!resposta.ok) {
@@ -3532,6 +3701,117 @@ async function gerarRDD() {
     }
 }
 
+
+
+// ============================================================
+// BAIXAR PLANILHA EXCEL
+// ============================================================
+
+function baixarPlanilhaExcel() {
+
+    const rddNumero =
+        STATE.rddNumeroGerado;
+
+    if (!rddNumero) {
+
+        alert(
+            "Nenhum RDD gerado ainda para baixar a planilha."
+        );
+
+        return;
+
+    }
+
+    const botao =
+        document.getElementById("baixarPlanilha");
+
+    if (botao) {
+
+        botao.disabled = true;
+        botao.textContent = "BAIXANDO PLANILHA...";
+
+    }
+
+    fetch(
+        API_URL +
+        "/api/planilha/" +
+        encodeURIComponent(rddNumero)
+    )
+    .then(
+        function (resposta) {
+
+            if (!resposta.ok) {
+
+                return resposta.text().then(
+                    function (texto) {
+
+                        throw new Error(
+                            texto ||
+                            "Erro ao baixar a planilha."
+                        );
+
+                    }
+                );
+
+            }
+
+            return resposta.blob();
+
+        }
+    )
+    .then(
+        function (blob) {
+
+            const url =
+                URL.createObjectURL(blob);
+
+            const a =
+                document.createElement("a");
+
+            a.href = url;
+
+            a.download = rddNumero + ".xlsx";
+
+            document.body.appendChild(a);
+
+            a.click();
+
+            document.body.removeChild(a);
+
+            URL.revokeObjectURL(url);
+
+        }
+    )
+    .catch(
+        function (erro) {
+
+            console.error(
+                "Erro ao baixar planilha:",
+                erro
+            );
+
+            alert(
+                "Nao foi possivel baixar a planilha: " +
+                erro.message
+            );
+
+        }
+    )
+    .finally(
+        function () {
+
+            if (botao) {
+
+                botao.disabled = false;
+                botao.textContent =
+                    "&#128196; Baixar planilha Excel";
+
+            }
+
+        }
+    );
+
+}
 
 
 // ============================================================

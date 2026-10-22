@@ -136,6 +136,28 @@ CATEGORY_COLUMNS = {
     "Diversos": "K",
 }
 
+# Prefixos que sao inseridos ANTES do numero do documento,
+# conforme o tipo escolhido pelo usuario na edicao do cupom.
+TIPO_PREFIXO_DOCUMENTO = {
+    # CUMPRO = NFC-e
+    "cupom": "NFC-e ",
+    "nfce": "NFC-e ",
+    # NOTA DE PRODUTOS = Danfe
+    "notaprodutos": "Danfe ",
+    "danfe": "Danfe ",
+    # NOTA DE SERVIÇOS = NFS-e
+    "notadeservicos": "NFS-e ",
+    "nfse": "NFS-e ",
+}
+
+
+def prefixo_documento(tipo):
+    """Devolve o prefixo ('NFC-e ', 'Danfe ', 'NFS-e ') do tipo,
+    ou string vazia quando nao houver tipo informado."""
+    chave = str(tipo or "").strip().lower()
+    chave = chave.replace(" ", "").replace("_", "").replace("-", "")
+    return TIPO_PREFIXO_DOCUMENTO.get(chave, "")
+
 app = FastAPI(title="RDD Parceiro BMB3 API", version="1.0.0")
 
 app.add_middleware(
@@ -144,7 +166,7 @@ app.add_middleware(
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["Content-Disposition"],
+    expose_headers=["Content-Disposition", "X-RDD-Number"],
 )
 
 
@@ -315,6 +337,22 @@ def get_next_rdd_number():
         con.close()
 
 
+@app.get("/api/planilha/{rdd_number}")
+def download_planilha(rdd_number: str):
+    """Devolve a planilha XLSX gerada para um RDD (ex.: RDD-242)."""
+    import re as _re
+    if not _re.fullmatch(r"RDD-\d{3}", rdd_number):
+        raise HTTPException(400, "Numero do RDD invalido.")
+    caminho = DATA_DIR / f"{rdd_number}.xlsx"
+    if not caminho.exists():
+        raise HTTPException(404, f"Planilha do {rdd_number} nao encontrada.")
+    return FileResponse(
+        caminho,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename=f"{rdd_number}.xlsx",
+    )
+
+
 def fill_workbook(payload, rdd_number, output_xlsx):
     wb = load_workbook(TEMPLATE)
     if "RDD" not in wb.sheetnames:
@@ -375,7 +413,12 @@ def fill_workbook(payload, rdd_number, output_xlsx):
 
         ws[f"C{idx}"] = item.get("account", "")
         ws[f"D{idx}"] = item.get("description", "")
-        ws[f"E{idx}"] = item.get("document", "")
+        ws[f"E{idx}"] = (
+            prefixo_documento(
+                item.get("tipoDocumento") or item.get("tipo")
+            )
+            + str(item.get("document") or "").strip()
+        )
 
         category = str(item.get("category", "")).strip()
         if category not in CATEGORY_COLUMNS:
@@ -585,10 +628,19 @@ async def generate(
 
         final_pdf = append_images_to_pdf(pdf, image_paths) if image_paths else pdf
 
+        # --- Salva a planilha XLSX para download posterior ---
+        try:
+            planilha_path = DATA_DIR / f"RDD-{rdd_number:03d}.xlsx"
+            import shutil as _shutil
+            _shutil.copy2(xlsx, planilha_path)
+        except Exception as exc_planilha:
+            print(f"[RDD] aviso ao salvar planilha: {exc_planilha}")
+
         return FileResponse(
             final_pdf,
             media_type="application/pdf",
             filename=f"{safe_filename(data.get('nome'))} - RDD-{rdd_number:03d}.pdf",
+            headers={"X-RDD-Number": f"RDD-{rdd_number:03d}"},
             background=None,
         )
 
