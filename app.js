@@ -2198,6 +2198,71 @@ function configurarModal() {
 
     }
 
+    // --------------------------------------------------------
+    // CONFIGURACOES: categorias disponiveis
+    // --------------------------------------------------------
+
+    const catIds = ["catMateriais", "catTransporte", "catCombustivel", "catRefeicoes", "catHospedagem", "catDiversos"];
+
+    function carregarCategoriasSalvas() {
+        try {
+            const salvo = localStorage.getItem("rdd_categorias");
+            if (salvo) {
+                const selecionadas = JSON.parse(salvo);
+                catIds.forEach(function (id) {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.checked = selecionadas.includes(id);
+                    }
+                });
+            }
+        } catch (e) {}
+    }
+
+    function salvarCategorias() {
+        const selecionadas = [];
+        catIds.forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el && el.checked) {
+                selecionadas.push(id);
+            }
+        });
+        try {
+            localStorage.setItem("rdd_categorias", JSON.stringify(selecionadas));
+        } catch (e) {}
+        return selecionadas;
+    }
+
+    function obterCategoriasSelecionadas() {
+        try {
+            const salvo = localStorage.getItem("rdd_categorias");
+            if (salvo) {
+                return JSON.parse(salvo);
+            }
+        } catch (e) {}
+        return catIds.slice();
+    }
+
+    // Ao abrir o modal de configuracoes, carregar as selecionadas
+    const settingsBtn = document.getElementById("settingsButton");
+    if (settingsBtn && settingsModal) {
+        settingsBtn.addEventListener("click", carregarCategoriasSalvas);
+    }
+
+    // Ao clicar em cada checkbox, salvar
+    catIds.forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener("change", salvarCategorias);
+        }
+    });
+
+    // Salvar ao fechar via X
+    if (closeSettings && settingsModal) {
+        closeSettings.addEventListener("click", salvarCategorias);
+    }
+
+
 
 // ============================================================
 // EDITAR CUPOM
@@ -2319,10 +2384,10 @@ function abrirEdicao(index) {
     if (mcat) {
 
         mcat.value =
-            "Materiais";
+            cupom.category || "Materiais";
 
         mcat.disabled =
-            true;
+            false;
 
     }
 
@@ -2523,10 +2588,10 @@ function abrirVisualizacao(index) {
     if (mcat) {
 
         mcat.value =
-            "Materiais";
+            cupom.category || "Materiais";
 
         mcat.disabled =
-            true;
+            false;
 
     }
 
