@@ -2683,14 +2683,7 @@ function abrirVisualizacao(index) {
 
 function salvarEdicao() {
 
-    if (
-        STATE.modoModal !==
-        "editar"
-    ) {
-
-        return;
-
-    }
+    // Salvar sempre quando o botão é pressionado
 
 
     const index =
