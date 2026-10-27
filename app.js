@@ -716,23 +716,30 @@ document.addEventListener("DOMContentLoaded", function () {
     // CATEGORIA
     // ========================================================
 
-    const mcat =
-        document.getElementById("mcat");
-
-
-    if (mcat) {
-
-        mcat.value =
-            cupom.category || "Materiais";
-
-    }
-
-
     // ========================================================
     // MODAL
     // ========================================================
 
     configurarModal();
+
+    // GARANTIA: anexar listener do save direto (caso configurarModal falhe)
+    (function() {
+        var saveBtn = document.getElementById("save");
+        if (saveBtn && !saveBtn.__rddSaveHooked) {
+            saveBtn.__rddSaveHooked = true;
+            saveBtn.addEventListener("click", salvarEdicao);
+        }
+        var closeBtn = document.getElementById("close");
+        if (closeBtn && !closeBtn.__rddCloseHooked) {
+            closeBtn.__rddCloseHooked = true;
+            closeBtn.addEventListener("click", fecharModal);
+        }
+        var closeModalBtn = document.getElementById("closeModal");
+        if (closeModalBtn && !closeModalBtn.__rddCloseModalHooked) {
+            closeModalBtn.__rddCloseModalHooked = true;
+            closeModalBtn.addEventListener("click", fecharModal);
+        }
+    })();
 
 
     // ========================================================
