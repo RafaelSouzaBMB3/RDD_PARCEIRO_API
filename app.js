@@ -1208,7 +1208,6 @@ async function processarCupom(
             "",
 
         description:
-            dados.description ||
             "",
 
         document:
@@ -1226,14 +1225,7 @@ async function processarCupom(
             "",
 
         status:
-            (
-                dados.date &&
-                dados.description &&
-                dados.document &&
-                dados.value
-            )
-                ? "ok"
-                : "revisao"
+            "revisao"
 
     };
 
@@ -1750,7 +1742,7 @@ function renderizarCupons() {
                                     font-weight:bold;
                                     color:#071b33;
                                 ">
-                                    MATERIAIS
+                                    ${nomeCategoria(cupom.category)}
                                 </span>
                             </div>
 
@@ -4046,6 +4038,26 @@ function formatarDataExibicao(
 
 
     return data;
+
+}
+
+
+// ============================================================
+// NOME DA CATEGORIA (exibicao)
+// ============================================================
+
+function nomeCategoria(valor) {
+
+    const mapa = {
+        "Materiais": "Materiais",
+        "transporte": "Transporte",
+        "combustivel": "Combustível",
+        "refeicoes": "Refeições",
+        "hospedagem": "Hospedagem",
+        "diversos": "Diversos"
+    };
+
+    return mapa[valor] || valor || "Materiais";
 
 }
 
