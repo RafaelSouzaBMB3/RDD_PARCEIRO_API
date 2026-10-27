@@ -2401,8 +2401,13 @@ function abrirEdicao(index) {
 
     if (mdesc) {
 
-        mdesc.value =
-            cupom.description || "";
+        // Estabelecimento/Descricao SEMPRE abre em branco
+        mdesc.value = "";
+
+        mdesc.placeholder =
+            "Informe o estabelecimento";
+
+        mdesc.focus();
 
     }
 
@@ -2765,6 +2770,35 @@ function salvarEdicao() {
 
 
     // --------------------------------------------------------
+    // ESTABELECIMENTO/DESCRICAO E OBRIGATORIO
+    // --------------------------------------------------------
+
+    const descricao =
+        mdesc
+            ? mdesc.value.trim()
+            : "";
+
+
+    if (!descricao) {
+
+        alert(
+            "Informe o estabelecimento/descrição do cupom."
+        );
+
+
+        if (mdesc) {
+
+            mdesc.focus();
+
+        }
+
+
+        return;
+
+    }
+
+
+    // --------------------------------------------------------
     // DOCUMENTO É OBRIGATÓRIO
     // --------------------------------------------------------
 
@@ -2800,9 +2834,7 @@ function salvarEdicao() {
 
 
     cupom.description =
-        mdesc
-            ? mdesc.value.trim()
-            : "";
+        descricao;
 
 
     cupom.document =
